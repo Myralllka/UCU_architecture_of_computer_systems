@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/cpp_training2.dir/main.cpp.o  -o cpp_training2 
