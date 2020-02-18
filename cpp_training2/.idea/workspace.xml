@@ -12,9 +12,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75292e29-7c69-4672-ab18-4635c322fe90" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../lab2/.idea/lab2.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab2/cmake-build-debug/CMakeFiles/lab2.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2/cmake-build-debug/CMakeFiles/lab2.dir/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab2/cmake-build-debug/lab2" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2/cmake-build-debug/lab2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab2/lorem.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2/lorem.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab2/loremini.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lab2/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../lab2/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +45,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../lab2" />
   </component>
   <component name="RunManager">
     <configuration name="cpp_training2" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="file://.." PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp_training2" TARGET_NAME="cpp_training2" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="cpp_training2" RUN_TARGET_NAME="cpp_training2">
@@ -61,7 +65,7 @@
       <option name="presentableId" value="Default" />
       <updated>1581606856295</updated>
       <workItem from="1581606857778" duration="4664000" />
-      <workItem from="1581686980738" duration="6032000" />
+      <workItem from="1581686980738" duration="6048000" />
     </task>
     <servers />
   </component>
@@ -73,10 +77,10 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state x="414" y="145" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.27.1920.1053@0.27.1920.1053" timestamp="1581608261800" />
-    <state x="685" y="237" width="530" height="635" key="FileChooserDialogImpl" timestamp="1581687002568">
+    <state x="685" y="237" width="530" height="635" key="FileChooserDialogImpl" timestamp="1581931473023">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="685" y="237" width="530" height="635" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1581687002568" />
+    <state x="685" y="237" width="530" height="635" key="FileChooserDialogImpl/0.27.1920.1053@0.27.1920.1053" timestamp="1581931473023" />
     <state width="1862" height="307" key="GridCell.Tab.0.bottom" timestamp="1581621712632">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>

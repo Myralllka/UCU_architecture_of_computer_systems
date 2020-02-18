@@ -21,12 +21,17 @@ inline long long to_us(const D &d) {
     return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
 }
 
-long long read_word_by_word() {
+inline void write_to_file(std::string filename, long long counter) {
+    std::ofstream outfile;
+    outfile.open(filename, std::ios_base::app);
+    outfile << counter << std::endl;
+}
+
+long long read_word_by_word(std::string input_filename, std::string output_filename) {
     std::vector<std::string> v;
     std::string word, first_word;
-    std::ifstream f("lorem.txt");
-    int counter = 1;
-    if (f) std::cout << "Successfully open the file" << std::endl;
+    std::ifstream f(input_filename);
+    long long counter = 1;
     auto stage1_start_time = get_current_time_fenced();
     f >> first_word;
     std::for_each(first_word.begin(), first_word.end(), [](auto &c) { c = ::tolower(c); });
@@ -38,19 +43,19 @@ long long read_word_by_word() {
     }
     auto finish_time = get_current_time_fenced();
     auto total_time = finish_time - stage1_start_time;
-    std::cout << counter << std::endl;
+    write_to_file(output_filename, counter);
     return to_us(total_time);
 }
 
-long long read_all_words_in_memory() {
-    std::ifstream f("lorem.txt");
+long long read_all_words_in_memory(std::string input_filename, std::string output_filename) {
+    std::ifstream f(input_filename);
     std::string first_word, word;
     f >> first_word;
     std::for_each(first_word.begin(), first_word.end(), [](auto &c) { c = ::tolower(c); });
     if (ispunct(first_word.back())) first_word.pop_back();
     auto s = static_cast<std::ostringstream &>(
             std::ostringstream{} << f.rdbuf()).str();
-    int counter = 1;
+    long long counter = 1;
     auto stage1_start_time = get_current_time_fenced();
     for (auto &chr:s) {
         if (isalpha(chr)) word += tolower(chr);
@@ -61,12 +66,12 @@ long long read_all_words_in_memory() {
     }
     auto finish_time = get_current_time_fenced();
     auto total_time = finish_time - stage1_start_time;
-    std::cout << counter << std::endl;
+    write_to_file(output_filename, counter);
     return to_us(total_time);
 }
 
-long long read_all_words_in_memory_count_using_boost_regex() {
-    std::ifstream f("lorem.txt");
+long long read_all_words_in_memory_count_using_boost_regex(std::string input_filename, std::string output_filename) {
+    std::ifstream f(input_filename);
     std::string first_word, word, first_word_lowercase;
     f >> first_word;
     first_word_lowercase = first_word;
@@ -85,19 +90,20 @@ long long read_all_words_in_memory_count_using_boost_regex() {
     auto stage1_start_time = get_current_time_fenced();
     auto words_begin = std::sregex_iterator(s.begin(), s.end(), expression);
     auto words_end = std::sregex_iterator();
-    auto count = std::distance(words_begin, words_end) + 1;
+    auto counter = std::distance(words_begin, words_end) + 1;
     auto finish_time = get_current_time_fenced();
     auto total_time = finish_time - stage1_start_time;
-    std::cout << "count: " << count << std::endl;
+    write_to_file(output_filename, counter);
     return to_us(total_time);
 };
 
-int main() {
-    long long word_by_word = read_word_by_word();
-    std::cout << word_by_word << std::endl;
-    long long all_words_in_memory = read_all_words_in_memory();
-    std::cout << all_words_in_memory << std::endl;
-    long long all_words_in_memory_count_using_boost_regex = read_all_words_in_memory_count_using_boost_regex();
-    std::cout << all_words_in_memory_count_using_boost_regex << std::endl;
+typedef long long (*fn)(const std::string, const std::string);
+
+static fn functions[] = {read_word_by_word, read_all_words_in_memory,
+                         read_all_words_in_memory_count_using_boost_regex};
+
+int main(int argc, char *argv[]) {
+    long long result = functions[atoi(argv[1]) - 1](argv[2], argv[3]);
+    std::cout << result << std::endl;
     return 0;
 }
