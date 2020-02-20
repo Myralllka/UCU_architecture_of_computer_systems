@@ -1,5 +1,4 @@
 /opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/myralllka/Documents/AoCS/lab2
--- Found Boost: /usr/lib64/cmake/Boost-1.72.0/BoostConfig.cmake (found version "1.72.0")  
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/myralllka/Documents/AoCS/lab2/cmake-build-debug
