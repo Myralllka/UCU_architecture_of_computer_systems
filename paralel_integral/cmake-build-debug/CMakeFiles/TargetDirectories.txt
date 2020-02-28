@@ -1,0 +1,3 @@
+/home/myralllka/Documents/AoCS/paralel_integral/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/myralllka/Documents/AoCS/paralel_integral/cmake-build-debug/CMakeFiles/paralel_integral.dir
+/home/myralllka/Documents/AoCS/paralel_integral/cmake-build-debug/CMakeFiles/edit_cache.dir

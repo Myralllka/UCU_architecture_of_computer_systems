@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.15)
+project(paralel_integral)
+set(CMAKE_CXX_STANDARD 17)
+find_package(Threads REQUIRED)
+add_executable(paralel_integral main.cpp)
+target_link_libraries(paralel_integral Threads::Threads)
