@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/paralel_integral.dir/main.cpp.o  -o paralel_integral -lpthread 
