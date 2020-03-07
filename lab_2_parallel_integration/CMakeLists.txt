@@ -12,8 +12,8 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif ()
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_BUILD_TYPE Debug)
-#set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
 find_package(Threads REQUIRED)
 find_package(Boost COMPONENTS filesystem program_options system REQUIRED)

@@ -14,74 +14,80 @@
 
 // steps describe the number of steps for etch x and y separately
 template<typename func_T>
-void simple_integrate(func_T func, size_t steps, integration_args int_ars, double *res) {
+void simple_integrate(func_T func, integration_args int_ars, double *res) {
     double l_res = 0.0; // local result
     // return zero area if invalid range of integration
     assert(int_ars.end.x > int_ars.start.x
            && int_ars.end.y > int_ars.start.y
            && "invalid integration boundaries in simple integrate");
 
-    double dx = (int_ars.end.x - int_ars.start.x) / sqrt(steps);
-    double dy = (int_ars.end.y - int_ars.start.y) / sqrt(steps);
     // point to calculate
     point tmp_p{int_ars.start.x, int_ars.start.y};
 
     while (tmp_p.y < int_ars.end.y) {
         while (tmp_p.x < int_ars.end.x) {
             l_res += func(tmp_p, int_ars.conf);
-            tmp_p.x += dx;
+            tmp_p.x += int_ars.dx;
         }
         tmp_p.x = int_ars.start.x;
-        tmp_p.y += dy;
+        tmp_p.y += int_ars.dy;
     }
 
-    *res = l_res * dx * dy;
+    *res = l_res * int_ars.dx * int_ars.dy;
 }
 
 
 template<typename func_T>
-double integrate(func_T func, size_t steps, integration_args int_ars) {
+double integrate(func_T func, size_t steps, const integration_args &int_ars) {
     assert(int_ars.flow_n != 0
            && int_ars.end.x > int_ars.start.x
            && int_ars.end.y > int_ars.start.y
            && "invalid integration boundaries");
+
     double res = 0.0;
+    integration_args int_arg_template{int_ars};
+
+//    ############# start of rectangular separation ###########
+//    steps = sqrt(steps); // steps per x or y
+//    int_arg_template.dx = (int_ars.end.x - int_ars.start.x) / steps;
+//    int_arg_template.dy = (int_ars.end.y - int_ars.start.y) / steps;
+//    ####################### end #############################
+
+//  dxy - the length of the side of one integration square
+    double dxy = sqrt((int_ars.end.x - int_ars.start.x) * (int_ars.end.y - int_ars.start.y) / steps);
+    int_arg_template.dx = dxy;
+    int_arg_template.dy = dxy;
+
     // one flow case
     if (int_ars.flow_n == 1) {
-        simple_integrate(func, steps, int_ars, &res);
+        simple_integrate(func, int_arg_template, &res);
         return res;
     }
-    // integration block 'x' width
-    double int_dx = (int_ars.end.x - int_ars.start.x) / int_ars.flow_n;
 
-//    std::vector<std::thread> v{};
+    std::vector<std::thread> v{};
     std::vector<double> v_res(int_ars.flow_n);
     for (auto &el : v_res) {
         el = 0.0;
     }
-    steps /= int_ars.flow_n; // steps per thread
+
+    steps /= int_ars.flow_n; // steps per thread per x or y
 
     for (uint16_t i = 0; i < int_ars.flow_n; ++i) {
-//        v.emplace_back(// create config structure for etch thread
-//                simple_integrate<func_T>, func, steps,
-//                integration_args{
-//                        point{int_ars.start.x + int_dx * i, int_ars.start.y},
-//                        point{int_ars.start.x + int_dx * (i + 1), int_ars.end.y},
-//                        int_ars.conf,
-//                        1
-//                }, &(v_res[i]));
-        simple_integrate(func, steps,
-                         integration_args{
-                                 point{int_ars.start.x + int_dx * i, int_ars.start.y},
-                                 point{int_ars.start.x + int_dx * (i + 1), int_ars.end.y},
-                                 int_ars.conf,
-                                 1
-                         }, &(v_res[i]));
-    }
+        int_arg_template.start.x = int_ars.start.x + int_arg_template.dx * steps * i;
+        int_arg_template.end.x = int_ars.start.x + int_arg_template.dx * steps * (i + 1);
+        v.emplace_back(// create config structure for etch thread
+                simple_integrate<func_T>, func, int_arg_template, &(v_res[i]));
 
-//    for (uint16_t i = 0; i < int_ars.flow_n; ++i) {
-//        v[i].join();
-//    }
+//        simple_integrate(func, int_arg_template, &(v_res[i]));
+//        std::cout << "\nIntegration flow " << i << std::endl;
+//        std::cout << "[" << int_ars.start.x + int_dx * i << ", " << int_ars.start.x + int_dx * (i + 1) << "]" << std::endl;
+    }
+//    std::cout << "\nSteps " << steps * int_ars.flow_n << std::endl;
+//    std::cout << "============================ Experiment END ============================ " << std::endl;
+
+    for (uint16_t i = 0; i < int_ars.flow_n; ++i) {
+        v[i].join();
+    }
 
     for (uint16_t i = 0; i < int_ars.flow_n; ++i) {
         res += v_res[i];

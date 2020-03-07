@@ -21,35 +21,30 @@
 ----
 ### Function:
 ![formula](https://render.githubusercontent.com/render/math?math=f(x_1,x_2)=\sum_{i=1}^{m}c_i%20exp(-\frac{1}{\pi}%20((x_1%20-%20a_{1i})^2%20+%20(x_2%20-%20a_{2i})^2))%20cos(\pi((x_1%20-%20a_{1i})^2%20+%20(x_2%20-%20a_{2i})^2)))
+
+### Run: './start.sh --help' to view possible options
+First time running you must use `-c` option to compile the project.
+
 ### Project Structure
 
     - [cmake-build-debug]   # build directory
     - include               # headers
-    - scripts               # scripts
     - src                   # source files
         
     ## Names in [] are generated. 
 
-    build.sh - prepare (create dirs and run cmake) project for work and generate data
-    run.sh - runs tests and if nesesary runs build.sh
+    start.sh - interface to work with the project (run './start.sh --help' for more info)
+    execution.conf - is the file with all configuration values (well self documented)
     
     
-#### Conf file structure
-Input to the program is path to the configuration file. It is a line separated list of values.
-    
+#### Conf file structure  
     - Absolute precision
     - Relative precision (not less than 0.001)
     - Number of parallel execution flows
-    - Expected solution
+    - Initial number of integration steps
+    - Initial max number of integration steps
     - x region start
     - x region end
     - y region start
     - x region end
-    [possible additional params not needed yet]
-
-### Console Output
-
-    - Calculation result
-    - Absolut error
-    - Relative error
-    - Calculation time
+    - function parameters (arrays - a1, a2, c, coefitient - m)

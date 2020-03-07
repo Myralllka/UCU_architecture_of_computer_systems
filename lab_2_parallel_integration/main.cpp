@@ -82,10 +82,10 @@ int main(int argc, char *argv[]) {
 
     auto time_to_calculate = get_current_time_fenced() - before;
 
-
+    
 //  #####################   Program Output Block   ######################
-    std::cout << "Steps: " << steps << std::endl;
-    std::cout << "Flows: " << config.get_flow_num() << std::endl;
+//    std::cout << "Steps: " << steps << std::endl;
+//    std::cout << "Flows: " << config.get_flow_num() << std::endl;
     std::cout << "Result = " << cur_res << std::endl;
     std::cout << "Absolute_error = " << abs_err << std::endl;
     std::cout << "Relative_error = " << rel_err << std::endl;
@@ -93,31 +93,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-//template<typename T>
-//std::string vector_so_string(std::vector<T> v) {
-//    std::stringstream ss{};
-//    for (const auto &elem : v) {
-//        ss << elem << " ";
-//    }
-//    return ss.str();
-//}
-
-//void test_conf_opts() {
-//    ConfigFileOpt cf{};
-//    std::string file_name = "../execution.conf";
-//    cf.parse(file_name);
-//
-//    std::cout << "get_x " << cf.get_x().first << " " << cf.get_x().second << std::endl;
-//    std::cout << "get_y " << cf.get_y().first << " " << cf.get_y().second << std::endl;
-//    std::cout << "get_abs_pars " << cf.get_abs_pars() << std::endl;
-//    std::cout << "get_rel_pres " << cf.get_rel_pres() << std::endl;
-//    std::cout << "get_flow_num " << cf.get_flow_num() << std::endl;
-//    std::cout << "get_exp_sol " << cf.get_exp_sol() << std::endl;
-//    std::cout << "get_max_steps " << cf.get_max_steps() << std::endl;
-//    std::cout << "get_init_steps " << cf.get_init_steps() << std::endl;
-//    std::cout << "get_m " << cf.get_m() << std::endl;
-//    std::cout << "get_a1 " << vector_so_string(cf.get_a1()) << std::endl;
-//    std::cout << "get_a2 " << vector_so_string(cf.get_a2()) << std::endl;
-//    std::cout << "get_c " << vector_so_string(cf.get_c()) << std::endl;
-//}
