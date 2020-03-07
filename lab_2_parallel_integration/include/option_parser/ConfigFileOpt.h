@@ -16,10 +16,6 @@ public:
 
     ~ConfigFileOpt() = default;
 
-    ConfigFileOpt(const ConfigFileOpt &other);
-
-    ConfigFileOpt &operator=(const ConfigFileOpt &arg);
-
     void parse(const std::string &file_name);
 
     double get_abs_pars() const { return abs_pars; }
@@ -45,11 +41,11 @@ public:
     std::pair<double, double> get_y() const { return y; }
 
 private:
-    void _init_opt_description();
+    void init_opt_description();
 
-    static std::string _assert_file_exist(const std::string &f_name);
+    static std::string assert_file_exist(const std::string &f_name);
 
-    void _assert_valid_opt_vals() const;
+    void assert_valid_opt_vals() const;
 
     double abs_pars = 0.0, rel_pres = 0.0;
     size_t init_steps = 0, max_steps = 0, m = 0;

@@ -12,26 +12,12 @@
 namespace po = boost::program_options;
 
 ConfigFileOpt::ConfigFileOpt() {
-    _init_opt_description();
-}
-
-ConfigFileOpt::ConfigFileOpt(const ConfigFileOpt &other)
-        : abs_pars(other.abs_pars), rel_pres(other.rel_pres), flow_num(other.flow_num),
-          x(std::pair<double, double>{other.x.first, other.x.second}),
-          y(std::pair<double, double>{other.y.first, other.y.second}),
-          opt_conf(po::options_description{other.opt_conf}),
-          var_map(po::variables_map{other.var_map}) {}
-
-
-ConfigFileOpt &ConfigFileOpt::operator=(const ConfigFileOpt &arg) {
-    if (&arg == this) { return *this; }
-    ConfigFileOpt temp{arg};
-    return *this;
+    init_opt_description();
 }
 
 void ConfigFileOpt::parse(const std::string &file_name) {
     try {
-        std::ifstream conf_file(_assert_file_exist(file_name));
+        std::ifstream conf_file(assert_file_exist(file_name));
 
         po::store(po::parse_config_file(conf_file, opt_conf), var_map);
         po::notify(var_map);
@@ -39,10 +25,10 @@ void ConfigFileOpt::parse(const std::string &file_name) {
         std::cerr << E.what() << std::endl;
         throw OptionsParseException();
     }
-    _assert_valid_opt_vals();
+    assert_valid_opt_vals();
 }
 
-void ConfigFileOpt::_init_opt_description() {
+void ConfigFileOpt::init_opt_description() {
     opt_conf.add_options()
             ("abs_pres", po::value<double>(&abs_pars), "absolute precision")
             ("rel_pres", po::value<double>(&rel_pres), "relative precision")
@@ -59,14 +45,14 @@ void ConfigFileOpt::_init_opt_description() {
             ("c", po::value<std::vector<double>>(&c)->multitoken()->composing(), "parameter c");
 }
 
-std::string ConfigFileOpt::_assert_file_exist(const std::string &f_name) {
+std::string ConfigFileOpt::assert_file_exist(const std::string &f_name) {
     if (!boost::filesystem::exists(f_name)) {
         throw std::invalid_argument("File " + f_name + " not found!");
     }
     return f_name;
 }
 
-void ConfigFileOpt::_assert_valid_opt_vals() const {
+void ConfigFileOpt::assert_valid_opt_vals() const {
     assert(x.first < x.second && "Invalid integration range for x");
     assert(y.first < y.second && "Invalid integration range for y");
 }
