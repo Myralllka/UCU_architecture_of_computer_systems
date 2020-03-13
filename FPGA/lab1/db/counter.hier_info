@@ -1,0 +1,30 @@
+|counter
+clk => out[0]~reg0.CLK
+clk => out[1]~reg0.CLK
+clk => out[2]~reg0.CLK
+clk => out[3]~reg0.CLK
+clk => out[4]~reg0.CLK
+clk => out[5]~reg0.CLK
+reset => out[0]~reg0.ACLR
+reset => out[1]~reg0.ACLR
+reset => out[2]~reg0.ACLR
+reset => out[3]~reg0.ACLR
+reset => out[4]~reg0.ACLR
+reset => out[5]~reg0.ACLR
+reset => out[5].IN0
+direction => r_direction.CLK
+set => out[5].IN1
+set_value[0] => out[0]~reg0.ADATA
+set_value[1] => out[1]~reg0.ADATA
+set_value[2] => out[2]~reg0.ADATA
+set_value[3] => out[3]~reg0.ADATA
+set_value[4] => out[4]~reg0.ADATA
+set_value[5] => out[5]~reg0.ADATA
+out[0] <= out[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+out[1] <= out[1]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+out[2] <= out[2]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+out[3] <= out[3]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+out[4] <= out[4]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+out[5] <= out[5]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+
+
