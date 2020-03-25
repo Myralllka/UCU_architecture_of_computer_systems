@@ -3,4 +3,34 @@ project(count_number_of_all_words)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(count_number_of_all_words main.cpp includes/parser.h)
+# PVS Studio
+#include(PVS-Studio.cmake)
+#SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if (CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+endif ()
+
+
+#set(CMAKE_BUILD_TYPE Debug)
+
+find_package(Threads REQUIRED)
+find_package(Boost COMPONENTS filesystem program_options system REQUIRED)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+
+
+file(GLOB_RECURSE SRC "include/*.h" "src/*.cpp")
+add_executable(count_number_of_all_words main.cpp ${SRC})
+TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${Boost_LIBRARIES})
+
+
+#####################################
+## create own target for library
+#pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
+#        ANALYZE lab_2_parallel_integration
+#        OUTPUT FORMAT errorfile
+#        MODE GA:1,2,3 OP:1,2,3 GA:1,2,3 OP:1,2,3 64:1,2,3 CS:1,2,3 MISRA:1,2,3
+#        LOG target_${PROJECT_NAME}.err)
+
+#####################################

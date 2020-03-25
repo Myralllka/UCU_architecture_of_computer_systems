@@ -5,10 +5,13 @@
 #ifndef LAB_2_PARALLEL_INTEGRATION_CONFIGFILEOPT_H
 #define LAB_2_PARALLEL_INTEGRATION_CONFIGFILEOPT_H
 
-
+#include <iostream>
 #include <string>
 #include <boost/program_options.hpp>
-
+#include <glob.h>
+#include <vector>
+#include <iterator>
+#include <pair>
 
 class ConfigFileOpt {
 public:
