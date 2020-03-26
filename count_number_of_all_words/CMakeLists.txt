@@ -12,17 +12,19 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif ()
 
 
-#set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
 
 find_package(Threads REQUIRED)
+find_package(LibArchive)
+find_package(LibArchive 3.0.0)
 find_package(Boost COMPONENTS filesystem program_options system REQUIRED)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-
 
 file(GLOB_RECURSE SRC "include/*.h" "src/*.cpp")
 add_executable(count_number_of_all_words main.cpp ${SRC})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${LibArchive_LIBRARIES})
 
 
 #####################################
