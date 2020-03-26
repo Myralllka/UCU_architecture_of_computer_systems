@@ -1,7 +1,9 @@
 #include <iostream>
-#include "includes/config_file.h"
 #include <chrono>
 #include <map>
+#include "includes/config_file.h"
+#include "includes/linear_program.h"
+#include <archive.h>
 
 int main(int argc, char *argv[]) {
     //  ##################### Program Parameter Parsing ######################
@@ -25,9 +27,10 @@ int main(int argc, char *argv[]) {
     std::string infile = config.get_infile();
     std::string out_by_a_filename = config.get_out_by_a();
     std::string out_by_n_filename = config.get_out_by_n();
-    size_t threads = config.get_number_of_threads();
+//    size_t threads = config.get_number_of_threads();
 
-    std::cout << infile << out_by_a_filename << out_by_n_filename << threads << std::endl;
+    count_words(infile, out_by_a_filename, out_by_n_filename);
+//    std::cout << infile << out_by_a_filename << out_by_n_filename << threads << std::endl;
 
     return 0;
 }
