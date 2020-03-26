@@ -19,6 +19,7 @@ void count_words(std::string &input_filename, std::string &output_filename_a, st
         return ss.str();
     }();
     std::cout << output_filename_a << output_filename_n << std::endl;
-
-    extract_to_memory(buffer);
+    std::string output;
+    extract_to_memory(buffer, output);
+    std::cout << output << std::endl;
 }

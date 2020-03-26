@@ -29,12 +29,13 @@ static int copy_data(struct archive *ar, struct archive *aw) {
     }
 }
 
-static void extract_to_memory(std::string& buffer) {
+static void extract_to_memory(std::string& buffer, std::string output) {
     struct archive *a = archive_read_new();
     struct archive *ext;
     struct archive_entry *entry;
     int flags;
     int r;
+    size_t _used;
 
     /* Select which attributes we want to restore. */
     flags = ARCHIVE_EXTRACT_TIME;
@@ -54,6 +55,7 @@ static void extract_to_memory(std::string& buffer) {
         if (r == ARCHIVE_EOF) break;
         if (r < ARCHIVE_OK) fprintf(stderr, "%s\n", archive_error_string(a));
         if (r < ARCHIVE_WARN) exit(1);
+//        r = archive_write_open_memory(a, (void *) output.c_str(), output.size(), &_used);
         r = archive_write_header(ext, entry);
         if (r < ARCHIVE_OK) fprintf(stderr, "%s\n", archive_error_string(ext));
         else if (archive_entry_size(entry) > 0) {
