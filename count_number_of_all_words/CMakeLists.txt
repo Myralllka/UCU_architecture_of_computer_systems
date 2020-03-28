@@ -17,7 +17,7 @@ set(CMAKE_BUILD_TYPE Debug)
 find_package(Threads REQUIRED)
 find_package(LibArchive)
 find_package(LibArchive 3.0.0)
-find_package(Boost COMPONENTS filesystem program_options system REQUIRED)
+find_package(Boost COMPONENTS filesystem program_options system locale REQUIRED)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 file(GLOB_RECURSE SRC "include/*.h" "src/*.cpp")
