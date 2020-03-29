@@ -20,13 +20,13 @@ void count_words(std::string &input_filename, std::string &output_filename_a, st
     }();
 
     std::cout << output_filename_a << output_filename_n << std::endl;
-
+    std::vector<std::string> data;
 //    boost::locale::localization_backend_manager lbm
 //            = boost::locale::localization_backend_manager::global();
 //    auto s = lbm.get_all_backends();
 //    for_each(s.begin(), s.end(),
 //             [](std::string& x){ std::cout << x << std::endl; });
-    extract_to_memory(buffer);
+//    data = extract_to_memory(buffer);
     std::string grussen = "grüßEN";
     std::cout   <<"Upper "<< boost::locale::to_upper(grussen) << std::endl
                 <<"Lower "<< boost::locale::to_lower(grussen) << std::endl

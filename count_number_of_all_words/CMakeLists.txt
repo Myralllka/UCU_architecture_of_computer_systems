@@ -20,7 +20,7 @@ find_package(LibArchive 3.0.0)
 find_package(Boost COMPONENTS filesystem program_options system locale REQUIRED)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
-file(GLOB_RECURSE SRC "include/*.h" "src/*.cpp")
+file(GLOB_RECURSE SRC "includes/*.h" "src/*.cpp")
 add_executable(count_number_of_all_words main.cpp ${SRC})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${Boost_LIBRARIES})
