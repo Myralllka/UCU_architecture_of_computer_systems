@@ -20,32 +20,20 @@ void count_words(std::string &input_filename, std::string &output_filename_a, st
         ss << raw_file.rdbuf();
         return ss.str();
     }();
-
     data = extract_to_memory(buffer);
-
-
+    for (auto &element:data) {
+        element = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)));
+        std::cout << element << std::endl;
+    }
     // ##########################################################
     // IN PROCESS (DIFFERENT TESTING)
     // ##########################################################
-    // code from SO that makes all work
-//    boost::locale::generator gen;
-//    std::locale loc = gen("");
-//    std::locale::global(loc);
     // ##########################################################
     //check all existing lbm`s
-    boost::locale::localization_backend_manager lbm
-            = boost::locale::localization_backend_manager::global();
-    auto s = lbm.get_all_backends();
-    for_each(s.begin(), s.end(),
-             [](std::string& x){ std::cout << x << std::endl; });
+//    boost::locale::localization_backend_manager lbm
+//            = boost::locale::localization_backend_manager::global();
+//    auto s = lbm.get_all_backends();
+//    for_each(s.begin(), s.end(),
+//             [](std::string& x){ std::cout << x << std::endl; });
     // ##########################################################
-    // needed approach (don`t work.)
-
-    lbm.select("icu");
-
-    std::string grussen = "grüßEN";
-    std::cout   <<"Upper "<< boost::locale::to_upper(grussen) << std::endl;
-//                <<"Lower "<< boost::locale::to_lower(grussen) << std::endl
-//                <<"Title "<< boost::locale::to_title(grussen) << std::endl
-//                <<"Fold  "<< boost::locale::fold_case(grussen) << std::endl;
 }
