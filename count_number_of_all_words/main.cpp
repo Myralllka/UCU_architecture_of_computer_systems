@@ -3,6 +3,8 @@
 #include <map>
 #include "includes/config_file.h"
 #include "includes/linear_program.h"
+#include <boost/locale.hpp>
+
 
 int main(int argc, char *argv[]) {
     //  ##################### Program Parameter Parsing ######################
@@ -27,6 +29,10 @@ int main(int argc, char *argv[]) {
     std::string out_by_a_filename = config.get_out_by_a();
     std::string out_by_n_filename = config.get_out_by_n();
 //    size_t threads = config.get_number_of_threads();
+    //  #####################    Generate global locale       ######################
+    boost::locale::generator gen;
+    std::locale loc = gen("");
+    std::locale::global(loc);
     //  #####################    Count words in one thread    ######################
     count_words(infile, out_by_a_filename, out_by_n_filename);
 //    std::cout << infile << out_by_a_filename << out_by_n_filename << threads << std::endl;

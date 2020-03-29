@@ -2,4 +2,8 @@
     Topic: 
     Task:
     Authors: Solomia Leno & Morhunenko Mykola 
-    
+# Usage
+from `count_number_of_all_words/`
+```$shell
+./start.sh --help
+```

@@ -34,10 +34,7 @@ while true; do
   Options:
     -c    --compile       Compile before executing
     -h    --help          Show help message
-    -n    --number        Number of cycles for execution
-    -t    --threads       Number of threads
-    -d    --debug         Debuging mode
-    -f    --file          Path to the configuration file"
+    -t    --threads       Number of threads"
 #          "--build_graph   Build the graph on the result (running [number] times on 1-8 threads)"
       exit 0;
     ;;

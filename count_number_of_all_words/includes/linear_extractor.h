@@ -36,7 +36,6 @@ static std::vector<std::string> extract_to_memory(std::string &buffer) {
         std::string output(filesize, char{});
         //write explicitly to the other buffer
         r = archive_read_data(a, &output[0], output.size());
-//        std::cout << output << std::endl;
         result.push_back(output);
         if (r < ARCHIVE_WARN)
             exit(1);
