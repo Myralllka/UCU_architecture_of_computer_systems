@@ -1,10 +1,9 @@
 //
 // Created by myralllka on 3/26/20.
-// Code from https://github.com/libarchive/libarchive/wiki/Examples#A_Universal_Decompressor
 //
 
-#ifndef COUNT_NUMBER_OF_ALL_WORDS_EXTRACTOR_H
-#define COUNT_NUMBER_OF_ALL_WORDS_EXTRACTOR_H
+#ifndef COUNT_NUMBER_OF_ALL_WORDS_LINEAR_EXTRACTOR_H
+#define COUNT_NUMBER_OF_ALL_WORDS_LINEAR_EXTRACTOR_H
 
 #include <iostream>
 #include <archive.h>
@@ -12,6 +11,7 @@
 #include <vector>
 #include <boost/coroutine2/all.hpp>
 
+// The base of the code is from https://github.com/libarchive/libarchive/wiki/Examples#A_Universal_Decompressor
 static std::vector<std::string> extract_to_memory(std::string &buffer) {
     struct archive *a;
     struct archive_entry *entry;
@@ -21,6 +21,7 @@ static std::vector<std::string> extract_to_memory(std::string &buffer) {
     a = archive_read_new();
     archive_read_support_format_all(a);
     archive_read_support_filter_all(a);
+    // read from buffer, not from the file
     if ((r = archive_read_open_memory(a, buffer.c_str(), buffer.size())))
         exit(1);
     for (;;) {
@@ -33,6 +34,7 @@ static std::vector<std::string> extract_to_memory(std::string &buffer) {
             exit(1);
         filesize = archive_entry_size(entry);
         std::string output(filesize, char{});
+        //write explicitly to the other buffer
         r = archive_read_data(a, &output[0], output.size());
 //        std::cout << output << std::endl;
         result.push_back(output);
@@ -44,4 +46,4 @@ static std::vector<std::string> extract_to_memory(std::string &buffer) {
     return result;
 }
 
-#endif //COUNT_NUMBER_OF_ALL_WORDS_EXTRACTOR_H
+#endif //COUNT_NUMBER_OF_ALL_WORDS_LINEAR_EXTRACTOR_H
