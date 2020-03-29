@@ -10,11 +10,13 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <vector>
+#include <boost/coroutine2/all.hpp>
 
-static std::string extract_to_memory(std::string &buffer) {
+static std::vector<std::string> extract_to_memory(std::string &buffer) {
     struct archive *a;
     struct archive_entry *entry;
     int r;
+    std::vector<std::string> result;
     off_t filesize;
     a = archive_read_new();
     archive_read_support_format_all(a);
@@ -32,13 +34,14 @@ static std::string extract_to_memory(std::string &buffer) {
         filesize = archive_entry_size(entry);
         std::string output(filesize, char{});
         r = archive_read_data(a, &output[0], output.size());
-        std::cout << output << std::endl;
+//        std::cout << output << std::endl;
+        result.push_back(output);
         if (r < ARCHIVE_WARN)
             exit(1);
     }
     archive_read_close(a);
     archive_read_free(a);
-    exit(0);
+    return result;
 }
 
 #endif //COUNT_NUMBER_OF_ALL_WORDS_EXTRACTOR_H
