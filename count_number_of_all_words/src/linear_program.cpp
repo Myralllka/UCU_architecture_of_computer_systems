@@ -5,8 +5,8 @@
 #include "../includes/linear_extractor.h"
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <map>
+#include <string>
 #include <boost/locale.hpp>
 
 //namespace locale=boost::locale;
@@ -15,6 +15,8 @@ void count_words(std::string &input_filename, std::string &output_filename_a, st
     // read entire binary archive into the buffer
     std::ifstream raw_file(input_filename, std::ios::binary);
     std::vector<std::string> data;
+    std::string word;
+    std::map<std::string, int> map_of_words;
     auto buffer = [&raw_file] {
         std::ostringstream ss{};
         ss << raw_file.rdbuf();
@@ -23,11 +25,33 @@ void count_words(std::string &input_filename, std::string &output_filename_a, st
     data = extract_to_memory(buffer);
     for (auto &element:data) {
         element = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)));
-        std::cout << element << std::endl;
+        element.erase(std::remove_if(element.begin(), element.end(),
+                                     [](const unsigned &c) { return !isspace(c) && !isalpha(c); }), element.end());
+        for (auto &chr:element) {
+            if (isalpha(chr))
+                word += tolower(chr);
+            else if (isspace(chr)) {
+                auto itr = map_of_words.find(word);
+                if (itr != map_of_words.end()) {
+                    map_of_words[word] += 1;
+                } else {
+                    map_of_words[word] = 1;
+                }
+                word.clear();
+            }
+        }
+//        std::cout << element << std::endl;
     }
+    for (auto &pair:map_of_words) {
+        std::cout << pair.first << ": " << pair.second << std::endl;
+    }
+
+//    for(auto elem : )
+//    {
+//        std::cout << elem.first << " " << elem.second.first << " " << elem.second.second << "\n";
+//    }
     // ##########################################################
     // IN PROCESS (DIFFERENT TESTING)
-    // ##########################################################
     // ##########################################################
     //check all existing lbm`s
 //    boost::locale::localization_backend_manager lbm
