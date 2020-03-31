@@ -11,7 +11,7 @@
 #include <vector>
 #include <boost/coroutine2/all.hpp>
 
-// The base of the code is from https://github.com/libarchive/libarchive/wiki/Examples#A_Universal_Decompressor
+// The base of the code is from https://github.com/libarchive/libarchive/wiki/Examples#a-complete-extractor
 static std::vector<std::string> extract_to_memory(std::string &buffer) {
     struct archive *a;
     struct archive_entry *entry;
@@ -34,9 +34,10 @@ static std::vector<std::string> extract_to_memory(std::string &buffer) {
             exit(1);
         filesize = archive_entry_size(entry);
         std::string output(filesize, char{});
-        //write explicitly to the other buffer
+        // write exactly to the other output buffer
         r = archive_read_data(a, &output[0], output.size());
-        result.push_back(output);
+//        result.push_back(output);
+        result.emplace_back(std::move(output));
         if (r < ARCHIVE_WARN)
             exit(1);
     }
