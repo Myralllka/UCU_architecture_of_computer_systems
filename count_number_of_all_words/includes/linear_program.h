@@ -7,6 +7,7 @@
 
 #include <string>
 
-void count_words (std::string &input_filename, std::string &output_filename_a, std::string &output_filename_n);
+void count_words(const std::string &input_filename, const std::string &output_filename_a,
+                 const std::string &output_filename_n);
 
 #endif //COUNT_NUMBER_OF_ALL_WORDS_LINEAR_PROGRAM_H

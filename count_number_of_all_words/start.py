@@ -1,1 +1,4 @@
-#!/bin/env python3
+#!venv/bin python3
+
+if __name__ == '__main__':
+    pass

@@ -11,23 +11,39 @@
 #include <thread>
 #include <condition_variable>
 
+template<typename T>
 class t_queue {
 private:
-    std::deque<int> queue;
+    std::deque<T> queue;
     mutable std::mutex mut;
     std::condition_variable cond_variable;
+
 public:
     t_queue() = default;
 
     ~t_queue() = default;
 
-    void push(int d) {
-        std::lock_guard<std::mutex> lg(mut);
-        queue.push_back(d);
+    t_queue(const t_queue &q) = delete;
+
+    const t_queue &operator=(const t_queue &q) = delete;
+
+    void push(T d) {
+        {
+            std::lock_guard<std::mutex> lg(mut);
+            queue.push_back(d);
+        }
         cond_variable.notify_one();
     }
 
-    int pop() {
+    void emplace_back(T &&d) {
+        {
+            std::lock_guard<std::mutex> lg(mut);
+            queue.emplace_back(d);
+        }
+        cond_variable.notify_one();
+    }
+
+    T pop() {
         std::unique_lock<std::mutex> lg(mut);
         if (queue.size() == 0) {
             cond_variable.wait(lg);
