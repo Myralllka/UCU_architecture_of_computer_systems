@@ -11,7 +11,8 @@
 
 //namespace locale=boost::locale;
 
-void count_words(std::string &input_filename, std::string &output_filename_a, std::string &output_filename_n) {
+void count_words(const std::string &input_filename, const std::string &output_filename_a,
+                 const std::string &output_filename_n) {
     // read entire binary archive into the buffer
     std::ifstream raw_file(input_filename, std::ios::binary);
     std::vector<std::string> data;
@@ -23,7 +24,8 @@ void count_words(std::string &input_filename, std::string &output_filename_a, st
         return ss.str();
     }();
     data = extract_to_memory(buffer);
-    for (auto &element:data) {
+    std::cout << "files num: " << data.size() << std::endl;
+    for (auto &element : data) {
         element = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)));
         element.erase(std::remove_if(element.begin(), element.end(),
                                      [](const unsigned &c) { return !isspace(c) && !isalpha(c); }), element.end());
