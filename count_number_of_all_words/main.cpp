@@ -4,7 +4,7 @@
 #include "includes/config_file.h"
 #include "includes/linear_program.h"
 #include <boost/locale.hpp>
-
+#include "includes/merge_maps.h"
 
 int main(int argc, char *argv[]) {
     //  ##################### Program Parameter Parsing ######################
