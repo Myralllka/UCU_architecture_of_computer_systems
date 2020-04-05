@@ -66,7 +66,9 @@ void parallel_count(const std::string &input_filename, const std::string &output
     // read buffer
     if (input_filename.substr(input_filename.find_last_of('.') + 1) == "txt") {
         std::ifstream f(input_filename);
-        data.emplace_back(static_cast<std::ostringstream &>(std::ostringstream{} << f.rdbuf()).str());
+        std::stringstream s{};
+        s << f.rdbuf();
+        data.emplace_back(s.str());
     } else {
         extract_to_memory(read_binary_file_into_buffer(input_filename), &data);
     }
@@ -84,11 +86,11 @@ void parallel_count(const std::string &input_filename, const std::string &output
 
     // parallel counting
     std::vector<std::map<std::string, int>> vector_of_maps;
-    t_queue<std::map<std::string, int>> queue_of_maps;
     std::vector<std::thread> vector_of_threads(num_threads);
+    t_queue<std::map<std::string, int>> queue_of_maps;
+
     for (uint8_t i = 0; i < std::ceil(num_threads / 2); i++) {
-        std::map<std::string, int> map;
-        vector_of_maps.push_back(map);
+        vector_of_maps.emplace_back(std::map<std::string, int>{});
 
         vector_of_threads.emplace_back(count_words, std::ref(file_data), i * data_portion_len,
                                        std::min((i + 1) * data_portion_len, data.size()),
