@@ -25,4 +25,14 @@ inline long long to_us(const D &d) {
     return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
 }
 
+template<class D>
+inline long long to_ms(const D &d) {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
+}
+
+template<class D>
+inline long long to_s(const D &d) {
+    return std::chrono::duration_cast<std::chrono::seconds>(d).count();
+}
+
 #endif //LAB_2_PARALLEL_INTEGRATION_SPEED_TESTER_H
