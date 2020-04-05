@@ -14,15 +14,17 @@ void print(const std::map<std::string, int> &map_of_words, const std::string &ou
     outfile_number.open(output_filename_n);
 
     for (auto &pair:map_of_words) {
-        outfile_alpha << pair.first << ": " << pair.second << std::endl;
+        outfile_alpha << pair.first << "\t" << pair.second << std::endl;
     }
 
     auto multimap_of_words = flip_map(map_of_words);
 
-    std::map<int,std::string> :: iterator it;
-    for (it=multimap_of_words.begin() ; it!=multimap_of_words.end() ; it++)
-        outfile_number << "(" << (*it).first << ", "
-             << (*it).second << ")" << std::endl;
+//    std::map<int,std::string> :: iterator it;
+    auto it = multimap_of_words.rbegin();
+    while (it != multimap_of_words.rend()) {
+        outfile_number << (*it).second << "\t" << (*it).first << std::endl;
+        it++;
+    }
 //    for (auto &pair:multimap_of_words) {
 //        outfile_number << pair.first << ": " << pair.second << std::endl;
 //    }
