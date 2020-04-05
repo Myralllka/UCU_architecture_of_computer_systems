@@ -5,6 +5,7 @@
 #include "../includes/parallel_program.h"
 #include "../includes/linear_extractor.h"
 #include "../includes/merge_maps.h"
+#include "../includes/print_maps_to_files.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -85,30 +86,6 @@ void parallel_count(const std::string &input_filename, const std::string &output
     }
     vector_of_maps.clear();
 
-    std::ofstream outfile_by_a(output_filename_a);
-    std::ofstream outfile_by_n(output_filename_n);
+    print(map_of_all_words, output_filename_a, output_filename_n);
 
-    typedef std::function<bool(std::pair<std::string, int>, std::pair<std::string, int>)> Comparator;
-    Comparator comparator_by_a =
-            [](std::pair<std::string, int> el1 ,std::pair<std::string, int> el2)
-            {
-                return el1.first < el2.first;
-            };
-    Comparator comparator_by_n =
-            [](std::pair<std::string, int> el1 ,std::pair<std::string, int> el2)
-            {
-                return el1.second < el2.second;
-            };
-
-    std::set<std::pair<std::string, int>, Comparator> set_of_words_by_a(
-            map_of_all_words.begin(), map_of_all_words.end(), comparator_by_a);
-    for (std::pair<std::string, int> element : set_of_words_by_a)
-        outfile_by_a << element.first << ": " << element.second << std::endl;
-    outfile_by_a.close();
-
-    std::set<std::pair<std::string, int>, Comparator> set_of_words_by_n(
-            map_of_all_words.begin(), map_of_all_words.end(), comparator_by_n);
-    for (std::pair<std::string, int> element : set_of_words_by_n)
-        outfile_by_n << element.first << ": " << element.second << std::endl;
-    outfile_by_n.close();
 }
