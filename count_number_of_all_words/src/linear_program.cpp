@@ -17,6 +17,7 @@ void count_words(const std::string &input_filename, const std::string &output_fi
     std::string word;
     // read entire binary archive into the buffer
     extract_to_memory(read_binary_file_into_buffer(input_filename), &data);
+
     for (auto &element : data) {
         element = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)));
         element.erase(std::remove_if(element.begin(), element.end(),
