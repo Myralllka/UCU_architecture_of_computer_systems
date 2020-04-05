@@ -31,7 +31,7 @@ def check_results(config_file):
     # create new config file
     with open(config_file, r) as main_config:
         infile = main_config.readline()[9:]
-    with open("test_config.conf") as test_config:
+    with open("test_config.conf", r) as test_config:
         test_config.write("""infile = {}
 out_by_a = test_res_a.txt
 out_by_n = test_res_n.txt
