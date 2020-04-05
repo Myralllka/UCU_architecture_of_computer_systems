@@ -30,7 +30,6 @@ def run(n, config_file):
     os.chdir("../")
     print("> minimum runtime {} us".format(min(durations)))
 
-
 def check_results(config_file):
     print("..checking results")
     # run in 1 thread
@@ -73,3 +72,4 @@ if __name__ == "__main__":
         build(debug)
         run(n, config_file)
         check_results(config_file)
+

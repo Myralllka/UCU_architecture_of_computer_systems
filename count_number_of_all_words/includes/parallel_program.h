@@ -10,7 +10,7 @@
 #include <map>
 #include "tqueue.h"
 
-void count_words(std::vector<std::string> &data, const int start_position, const int end_position,
+void count_words(std::string &data, const int start_position, const int end_position,
                  std::map<std::string, int> &map_of_words, t_queue<std::map<std::string, int>> &queue);
 
 void merge_maps_queue(t_queue<std::map<std::string, int>> &queue);
