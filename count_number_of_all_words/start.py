@@ -1,4 +1,4 @@
-#!venv/bin python3
+#!/bin/env python3
 import sys, os
 import re
 

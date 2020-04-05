@@ -7,6 +7,7 @@
 #include "../includes/merge_maps.h"
 #include "../includes/print_maps_to_files.h"
 #include "../includes/tqueue.h"
+#include "../includes/speed_tester.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -22,8 +23,8 @@
 void count_words(std::vector<std::string> &data, const int start_position, const int end_position,
                  std::map<std::string, int> &map_of_words, t_queue<std::map<std::string, int>> &queue) {
     namespace bl =  boost::locale;
-    std::string word;
 
+    std::string word;
     for (auto cur = data.begin() + start_position; cur != data.begin() + end_position; cur++) {
         std::string element = *cur;
         element = bl::to_lower(bl::fold_case(bl::normalize(element)));
@@ -57,6 +58,7 @@ void merge_maps_queue(t_queue<std::map<std::string, int>> &queue) {
 void parallel_count(const std::string &input_filename, const std::string &output_filename_a,
                     const std::string &output_filename_n, const uint8_t num_threads) {
     // read entire binary archive into the buffer
+    auto total_time = get_current_time_fenced();
     std::ifstream raw_file(input_filename, std::ios::binary);
     std::vector<std::string> data;
 
@@ -68,8 +70,9 @@ void parallel_count(const std::string &input_filename, const std::string &output
     }();
     extract_to_memory(buffer, &data);
 
+    auto finish_time = get_current_time_fenced();
+    auto analyzing_time = get_current_time_fenced();
     size_t data_portion_len = std::ceil(data.size() / num_threads * 2);
-
     // parallel counting
     std::vector<std::map<std::string, int>> vector_of_maps;
     t_queue<std::map<std::string, int>> queue_of_maps;
@@ -79,8 +82,8 @@ void parallel_count(const std::string &input_filename, const std::string &output
         vector_of_maps.push_back(map);
 
         vector_of_threads.emplace_back(count_words, std::ref(data), i * data_portion_len,
-                                                std::min((i + 1) * data_portion_len, data.size()),
-                                                std::ref(vector_of_maps[i]), std::ref(queue_of_maps));
+                                       std::min((i + 1) * data_portion_len, data.size()),
+                                       std::ref(vector_of_maps[i]), std::ref(queue_of_maps));
     }
 
     for (uint8_t i = std::floor(num_threads / 2); i < num_threads; i++) {
@@ -92,5 +95,7 @@ void parallel_count(const std::string &input_filename, const std::string &output
     }
 
     std::map<std::string, int> map_of_all_words = queue_of_maps.pop_back();
+    std::cout << "Loading: " << to_us(finish_time - total_time) << std::endl;
+    std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
     print(map_of_all_words, output_filename_a, output_filename_n);
 }
