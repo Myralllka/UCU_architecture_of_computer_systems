@@ -20,10 +20,10 @@
 
 #define PACKET_SIZE 10000
 
-void count_words(std::string &data, const size_t start_position, const size_t end_position, t_queue<std::map<std::string, int>> &queue) {
+void count_words(const std::string &data, const size_t start_position, const size_t end_position, t_queue<std::map<std::string, int>> &queue) {
     size_t start = start_position;
     size_t end = end_position;
-    if (start_position - 1 > 0 && !isspace(data[start_position - 1])) {
+    if (start_position > 1 && !isspace(data[start_position - 1])) {
         while (!isspace(data[start - 1])) {
             start--;
         }
@@ -57,12 +57,23 @@ void count_words(std::string &data, const size_t start_position, const size_t en
     queue.emplace_back(std::map<std::string, int>{});
 }
 
+template <typename T>
+void print_map(T m) {
+    std::cout << "______________________" << std::endl;
+    for (const auto elem : m) {
+        std::cout << elem.first << " : " << elem.second << std::endl;
+    }
+    std::cout << "______________________" << std::endl;
+}
 void merge_maps_queue(t_queue<std::map<std::string, int>> &queue) {
     std::map<std::string, int> tmp_map;
     std::map<std::string, int> thread_map{};
+
     while (!(tmp_map = queue.pop_front()).empty()) {
-        thread_map = merge_maps(thread_map, tmp_map);
+        print_map(tmp_map);
+        thread_map.insert(tmp_map.begin(), tmp_map.end());
     }
+    print_map(tmp_map);
     queue.emplace_back(std::move(thread_map));
     queue.emplace_back(std::map<std::string, int>{});
 }
@@ -82,6 +93,14 @@ void parallel_count(const std::string &input_filename, const std::string &output
         data.emplace_back(s.str());
     } else {
         extract_to_memory(read_binary_file_into_buffer(input_filename), &data);
+    }
+    if (data.empty()) {
+        auto finish_time = get_current_time_fenced();
+        std::map<std::string, int> map_of_all_words{};
+        std::cout << "Loading: " << to_us(finish_time - total_time) << std::endl;
+        std::cout << "Analyzing: " << 0 << std::endl;
+        print(map_of_all_words, output_filename_a, output_filename_n);
+        return;
     }
     std::string file_data = data[0];
 
@@ -112,8 +131,6 @@ void parallel_count(const std::string &input_filename, const std::string &output
         t.join();
     }
     std::map<std::string, int> map_of_all_words = queue_of_maps.pop_front();
-
-//    std::map<std::string, int> map_of_all_words = queue_of_maps.pop_back();
     std::cout << "Loading: " << to_us(finish_time - total_time) << std::endl;
     std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
     print(map_of_all_words, output_filename_a, output_filename_n);

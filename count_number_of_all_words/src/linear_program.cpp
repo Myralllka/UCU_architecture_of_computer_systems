@@ -66,12 +66,10 @@ void linear_count(const std::string &input_filename, const std::string &output_f
 }
 
 std::string read_binary_file_into_buffer(const std::string &filename) {
-//    if (!boost::filesystem::exists(filename)) {
-//        boost::filesystem::path full_path(boost::filesystem::current_path());
-//        std::cout << "Current path is : " << full_path << std::endl;
-//        std::cout << "FIle name: " << filename << std::endl;
-//        exit(111);
-//    }
+    if (!boost::filesystem::exists(filename)) {
+        std::cerr << "Error: File '" << filename << "' do not exist!" << std::endl;
+        return std::string{};
+    }
     std::ifstream raw_file(filename, std::ios::binary);
     auto buffer = [&raw_file] {
         std::ostringstream ss{};

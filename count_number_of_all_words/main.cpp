@@ -6,6 +6,7 @@
 #include "includes/parallel_program.h"
 #include "includes/parser_exeption.h"
 #include <boost/locale.hpp>
+#include <boost/filesystem.hpp>
 #include "includes/speed_tester.h"
 
 int main(int argc, char *argv[]) {
@@ -33,8 +34,14 @@ int main(int argc, char *argv[]) {
     const std::string out_by_a_filename = config.get_out_by_a();
     const std::string out_by_n_filename = config.get_out_by_n();
     const uint8_t threads = config.get_number_of_threads();
+
     if (infile.empty() || out_by_a_filename.empty() or out_by_n_filename.empty() || threads < 1) {
         throw OptionsParseException();
+    }
+
+    if (!boost::filesystem::exists(infile)) {
+        std::cerr << "Error: File '" << infile << "' do not exist!" << std::endl;
+        exit(21);
     }
 
     //  #####################    Generate global locale       ######################
