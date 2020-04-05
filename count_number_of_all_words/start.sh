@@ -66,5 +66,5 @@ else
   sed -i "s/threads...*/threads = 1/g" ../config.conf;
 fi
 popd
-./cmake-build-debug/count_number_of_all_words $config_filename
+#./cmake-build-debug/count_number_of_all_words "$config_filename"
 
