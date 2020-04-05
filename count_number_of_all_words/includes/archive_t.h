@@ -36,11 +36,8 @@ public:
     void load_file(const std::string &file_name);
 
     template<class T>
-    void extract_files(T *tqueue);
-
-    template<class T>
     // TODO: unimplemented (need to pass by element of archive)
-    void extract_files_t(T *tqueue, uint16_t threads_n);
+    void extract_files_t(T *tqueue, uint16_t threads_n = 1);
 
 private:
     void init_archive();
@@ -50,12 +47,6 @@ private:
     // TODO: unimplemented (need to pass by element of archive)
     static void generic_extract_files(T *vector, t_queue<archive_entry *> *source_qt);
 };
-
-
-template<class T>
-void archive_t::extract_files(T *tqueue) {
-    extract_to_memory<T>(*buffer, tqueue);
-}
 
 // archive should be open !!!
 template<class T>
@@ -82,6 +73,10 @@ void archive_t::generic_extract_files(T *vector, t_queue<struct archive_entry *>
 
 template<class T>
 void archive_t::extract_files_t(T *tqueue, uint16_t threads_n) {
+    if (threads_n == 1) {
+        extract_to_memory<T>(*buffer, tqueue);
+        return;
+    }
     exit(125);  // TODO: unimplemented (need to pass by element of archive)
     /*
     struct archive_entry * entry;
