@@ -1,5 +1,5 @@
 #!/bin/bash
-config_filename=../execution.conf
+config_filename=config.conf
 while true; do
   case $1 in
     -c|--compile)
@@ -51,7 +51,7 @@ while true; do
 done
 
 mkdir -p ./cmake-build-debug;
-cd ./cmake-build-debug || exit;
+pushd ./cmake-build-debug || exit;
 #mkdir -p tmp;
 
 if [ "$comp" = true ]; then
@@ -65,3 +65,6 @@ if [ ! -z "$threads" ]; then
 else
   sed -i "s/threads...*/threads = 1/g" ../config.conf;
 fi
+popd
+./cmake-build-debug/count_number_of_all_words $config_filename
+
