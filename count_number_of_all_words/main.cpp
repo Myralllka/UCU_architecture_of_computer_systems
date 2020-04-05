@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
     }
     auto finish_time = get_current_time_fenced();
 //    std::cout << infile << out_by_a_filename << out_by_n_filename << threads << std::endl;
-    std::cout << "Total: "<< to_s(finish_time - total_time) << '.'<< to_ms(finish_time - total_time)%1000 << std::endl;
+    std::cout << "Total: "<< to_us(finish_time - total_time) << std::endl;
+//    std::cout << "Total: "<< to_s(finish_time - total_time) << '.'<< to_ms(finish_time - total_time)%1000 << std::endl;
     return 0;
 }
