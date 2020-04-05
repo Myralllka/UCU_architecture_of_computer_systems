@@ -3,6 +3,7 @@
 //
 
 #include "../includes/parallel_program.h"
+#include "../includes/linear_program.h"
 #include "../includes/linear_extractor.h"
 #include "../includes/merge_maps.h"
 #include "../includes/print_maps_to_files.h"
@@ -63,12 +64,12 @@ void parallel_count(const std::string &input_filename, const std::string &output
     std::vector<std::string> data;
 
     // read buffer
-    auto buffer = [&raw_file] {
-        std::ostringstream ss{};
-        ss << raw_file.rdbuf();
-        return ss.str();
-    }();
-    extract_to_memory(buffer, &data);
+    if (input_filename.substr(input_filename.find_last_of('.') + 1) == "txt") {
+        std::ifstream f(input_filename);
+        data.emplace_back(static_cast<std::ostringstream &>(std::ostringstream{} << f.rdbuf()).str());
+    } else {
+        extract_to_memory(read_binary_file_into_buffer(input_filename), &data);
+    }
     std::string file_data = data[0];
 
     namespace bl =  boost::locale;
