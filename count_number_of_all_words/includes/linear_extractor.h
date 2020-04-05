@@ -19,7 +19,8 @@ static void extract_to_memory(const std::string &buffer, T *result) {
     struct archive *a;
     struct archive_entry *entry;
     int status = ARCHIVE_OK;
-    off_t filesize;
+//    off_t filesize;
+    la_int64_t filesize;
 
     a = archive_read_new();
     archive_read_support_format_all(a);
