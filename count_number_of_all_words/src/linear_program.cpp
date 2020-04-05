@@ -8,24 +8,16 @@
 #include <map>
 #include <string>
 #include <boost/locale.hpp>
-
-//namespace locale=boost::locale;
+#include <algorithm>
 
 void count_words(const std::string &input_filename, const std::string &output_filename_a,
                  const std::string &output_filename_n) {
-    // read entire binary archive into the buffer
-    std::ifstream raw_file(input_filename, std::ios::binary);
+    std::map<std::string, int> map_of_words;
     std::vector<std::string> data;
     std::string word;
-    std::map<std::string, int> map_of_words;
+    // read entire binary archive into the buffer
 
-    auto buffer = [&raw_file] {
-        std::ostringstream ss{};
-        ss << raw_file.rdbuf();
-        return ss.str();
-    }();
-
-    extract_to_memory(buffer, &data);
+    extract_to_memory(read_binary_file_into_buffer(input_filename), &data);
 
     ////////////////debug//////////////////////
 //    std::cout << "files num: " << data.size() << std::endl;
@@ -52,9 +44,22 @@ void count_words(const std::string &input_filename, const std::string &output_fi
         }
 //        std::cout << element << std::endl;
     }
+    std::ofstream outfile_alpha;
+    std::ofstream outfile_number;
+    outfile_alpha.open(output_filename_a);
+    outfile_number.open(output_filename_n);
+
     for (auto &pair:map_of_words) {
-        std::cout << pair.first << ": " << pair.second << std::endl;
+        outfile_alpha << pair.first << ": " << pair.second << std::endl;
     }
+
+    auto multimap_of_words = flip_map(map_of_words);
+
+    for (auto &pair:multimap_of_words) {
+        outfile_number << pair.first << ": " << pair.second << std::endl;
+    }
+    outfile_alpha.close();
+    outfile_number.close();
 
     // ##########################################################
     // IN PROCESS (DIFFERENT TESTING)
@@ -66,4 +71,14 @@ void count_words(const std::string &input_filename, const std::string &output_fi
 //    for_each(s.begin(), s.end(),
 //             [](std::string& x){ std::cout << x << std::endl; });
     // ##########################################################
+}
+
+std::string read_binary_file_into_buffer(const std::string &filename) {
+    std::ifstream raw_file(filename, std::ios::binary);
+    auto buffer = [&raw_file] {
+        std::ostringstream ss{};
+        ss << raw_file.rdbuf();
+        return ss.str();
+    }();
+    return buffer;
 }
