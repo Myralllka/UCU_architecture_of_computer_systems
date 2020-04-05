@@ -7,7 +7,7 @@ import re
 def build(debug):
     print("..building project")
     os.system("mkdir -p cmake-build-debug")
-    os.chdir("build")
+    os.chdir("cmake-build-debug")
     if debug:
         os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. >> ../build_logs.txt")
     else:
@@ -21,7 +21,7 @@ def run(n, config_file):
     print("..runing program")
     os.chdir("cmake-build-debug")
     for _ in range(n):
-        os.system("./count_number_of_all_words ../{}}".format(config_file))
+        os.system("./count_number_of_all_words ../{}".format(config_file))
     os.chdir("../")
 
 
@@ -62,4 +62,4 @@ if __name__ == "__main__":
 
         build(debug)
         run(n, config_file)
-        check_results(config_file)
+        # check_results(config_file)
