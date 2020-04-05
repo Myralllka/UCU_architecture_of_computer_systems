@@ -4,6 +4,7 @@
 
 #include "../includes/parallel_program.h"
 #include "../includes/linear_extractor.h"
+#include "../includes/merge_maps.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
