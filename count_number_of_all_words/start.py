@@ -3,13 +3,10 @@ import sys, os
 import re
 
 
-EXEC = "./main"
-
-
 # ./start.py 1000 - number of times to repeat each method
 def build(debug):
     print("..building project")
-    os.system("mkdir -p build")
+    os.system("mkdir -p cmake-build-debug")
     os.chdir("build")
     if debug:
         os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. >> ../build_logs.txt")
@@ -22,30 +19,29 @@ def build(debug):
 
 def run(n, config_file):
     print("..runing program")
-    os.chdir("build")
-    for i in range(n):
-
-    for i in range(len(METHODS)):
-        print("....{}".format(METHODS[i]))
-        for _ in range(n):
-            os.system(EXEC + " {} ../{} ../{} > ../data/result/time.txt".format(i + 1, input_file, result_file))
-            with open("../data/result/time.txt", 'r') as durations_file:
-                data = durations_file.readlines()
-            duration = int(data[0].split()[-2])
-            durations[i].append(duration)
-        DURATION[i] = min(durations[i])
-        with open("../{}".format(result_file), 'r') as read_file:
-            data = read_file.readlines()
-            RESULTS[i] = (int(data[0]), float(data[1]))
+    os.chdir("cmake-build-debug")
+    for _ in range(n):
+        os.system("./count_number_of_all_words ../{}}".format(config_file))
     os.chdir("../")
-    os.system("rm data/result/time.txt")
 
 
-def check_results():
+def check_results(config_file):
     print("..checking results")
     # run in 1 thread
     # create new config file
+    with open(config_file, r) as main_config:
+        infile = main_config.readline()[9:]
+    with open("test_config.conf") as test_config:
+        test_config.write("""infile = {}
+out_by_a = test_res_a.txt
+out_by_n = test_res_n.txt
+threads = 1""".format(infile))
+    run(1, "test_config.conf")
     # check files
+    os.system("rm test_config.conf")
+    os.system("rm test_res_a.txt")
+    os.system("rm test_res_n.txt")
+
 
 #./start.py config.conf -n 100 -d
 # config.conf configuration file
