@@ -43,11 +43,7 @@ void count_words(std::vector<std::string> &data, const int start_position, const
             }
         }
     }
-    queue.emplace_back(map_of_words);
-//
-//    for (auto &pair : map_of_words) {
-//        std::cout << pair.first << ": " << pair.second << std::endl;
-//    }
+    queue.emplace_back(merge_maps(map_of_words, map_of_words));
 }
 
 void merge_maps_queue(t_queue<std::map<std::string, int>> &queue) {
