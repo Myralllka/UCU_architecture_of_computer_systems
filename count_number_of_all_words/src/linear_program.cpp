@@ -3,6 +3,7 @@
 //
 #include "../includes/linear_program.h"
 #include "../includes/linear_extractor.h"
+#include "../includes/print_maps_to_files.h"
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -37,22 +38,7 @@ void count_words(const std::string &input_filename, const std::string &output_fi
         }
 //        std::cout << element << std::endl;
     }
-    std::ofstream outfile_alpha;
-    std::ofstream outfile_number;
-    outfile_alpha.open(output_filename_a);
-    outfile_number.open(output_filename_n);
-
-    for (auto &pair:map_of_words) {
-        outfile_alpha << pair.first << ": " << pair.second << std::endl;
-    }
-
-    auto multimap_of_words = flip_map(map_of_words);
-
-    for (auto &pair:multimap_of_words) {
-        outfile_number << pair.first << ": " << pair.second << std::endl;
-    }
-    outfile_alpha.close();
-    outfile_number.close();
+    print(map_of_words, output_filename_a, output_filename_n);
 
     // ##########################################################
     // IN PROCESS (DIFFERENT TESTING)
