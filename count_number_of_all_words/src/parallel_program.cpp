@@ -18,7 +18,7 @@
 #include <thread>
 #include <cmath>
 
-#define PACKET_SIZE 1000
+#define PACKET_SIZE 10000
 
 void count_words(std::string &data, const size_t start_position, const size_t end_position, t_queue<std::map<std::string, int>> &queue) {
     size_t start = start_position;
@@ -61,7 +61,7 @@ void merge_maps_queue(t_queue<std::map<std::string, int>> &queue) {
     std::map<std::string, int> tmp_map;
     std::map<std::string, int> thread_map{};
     while (!(tmp_map = queue.pop_front()).empty()) {
-        thread_map.insert(tmp_map.begin(), tmp_map.end());
+        thread_map = merge_maps(thread_map, tmp_map);
     }
     queue.emplace_back(std::move(thread_map));
     queue.emplace_back(std::map<std::string, int>{});
