@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     if (infile.empty() || out_by_a_filename.empty() or out_by_n_filename.empty() || threads < 1) {
         throw OptionsParseException();
     }
-    
+
     //  #####################    Generate global locale       ######################
     boost::locale::generator gen;
     std::locale loc = gen("");
