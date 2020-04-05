@@ -74,4 +74,10 @@ void parallel_count(const std::string &input_filename, const std::string &output
     for (auto &t: vector_of_threads) {
         t.join();
     }
+
+    std::map<std::string, int> map_of_all_words;
+    for (auto &map:vector_of_maps) {
+        map_of_all_words = merge_maps(map_of_all_words, map);
+    }
+    vector_of_maps.clear();
 }
