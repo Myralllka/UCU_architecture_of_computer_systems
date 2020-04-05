@@ -21,14 +21,14 @@
 #define PACKET_SIZE 1000
 
 void count_words(std::string &data, const size_t start_position, const size_t end_position, t_queue<std::map<std::string, int>> &queue) {
-    int start = start_position;
-    int end = end_position;
+    size_t start = start_position;
+    size_t end = end_position;
     if (start_position - 1 > 0 && !isspace(data[start_position - 1])) {
-        while (!isspace(data[start_position - 1])) {
+        while (!isspace(data[start - 1])) {
             start--;
         }
     }
-    while (!isspace(data[end_position - 1])) {
+    while (!isspace(data[end - 1])) {
         end--;
     }
     std::string word;
@@ -60,10 +60,11 @@ void count_words(std::string &data, const size_t start_position, const size_t en
 void merge_maps_queue(t_queue<std::map<std::string, int>> &queue) {
     std::map<std::string, int> tmp_map;
     std::map<std::string, int> thread_map{};
-
+    std::cout << 2 << std::endl;
     while (!(tmp_map = queue.pop_front()).empty()) {
         thread_map.insert(tmp_map.begin(), tmp_map.end());
     }
+    std::cout << 3 << std::endl;
     queue.emplace_back(std::move(thread_map));
     queue.emplace_back(std::map<std::string, int>{});
 }
@@ -108,9 +109,11 @@ void parallel_count(const std::string &input_filename, const std::string &output
     for (uint8_t i = std::ceil(num_threads / 2); i < num_threads; i++) {
         vector_of_threads.emplace_back(merge_maps_queue, std::ref(queue_of_maps));
     }
+
     for (auto &t: vector_of_threads) {
         t.join();
     }
+    std::cout << 1 << std::endl;
     std::map<std::string, int> map_of_all_words = queue_of_maps.pop_front();
 
 //    std::map<std::string, int> map_of_all_words = queue_of_maps.pop_back();

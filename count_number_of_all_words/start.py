@@ -62,6 +62,7 @@ if __name__ == "__main__":
     else:
         config_file = sys.argv[1]
         arguments = ' '.join(sys.argv)
+        n = 1
         if re.search("-n \d+ ", arguments) is not None:
             n = int(re.search("-n \d+ ", arguments).group(0)[2:-1])
         debug = False
