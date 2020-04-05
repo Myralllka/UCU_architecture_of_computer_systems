@@ -20,7 +20,7 @@
 
 #define PACKET_SIZE 1000
 
-void count_words(std::string &data, const int start_position, const int end_position, t_queue<std::map<std::string, int>> &queue) {
+void count_words(std::string &data, const size_t start_position, const size_t end_position, t_queue<std::map<std::string, int>> &queue) {
     int start = start_position;
     int end = end_position;
     if (start_position - 1 > 0 && !isspace(data[start_position - 1])) {
