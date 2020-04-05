@@ -24,11 +24,12 @@ def run(n, config_file):
     os.chdir("cmake-build-debug")
     for _ in range(n):
         os.system("./count_number_of_all_words ../{} >> durations.txt".format(config_file))
-        with open("durations.txt", 'r') as dur_file:
-            durations.append(float(re.match(r"Total: \d+.\d+", dur_file.readlines()[-1]).group(0)))
+        # with open("durations.txt", 'r') as dur_file:
+            # durations.append(float(re.search(r"Total: \d+\.\d+", ''.join(dur_file.readlines())).group(0)[7:]))
+
     os.system("rm durations.txt")
     os.chdir("../")
-    print("> minimum runtime {}".format(min(durations)))
+    # print("> minimum runtime {}".format(min(durations)))
 
 
 def check_results(config_file):
@@ -68,4 +69,3 @@ if __name__ == "__main__":
 
         build(debug)
         run(n, config_file)
-        # check_results(config_file)
