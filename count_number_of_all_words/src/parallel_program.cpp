@@ -60,11 +60,9 @@ void count_words(std::string &data, const size_t start_position, const size_t en
 void merge_maps_queue(t_queue<std::map<std::string, int>> &queue) {
     std::map<std::string, int> tmp_map;
     std::map<std::string, int> thread_map{};
-    std::cout << 2 << std::endl;
     while (!(tmp_map = queue.pop_front()).empty()) {
         thread_map.insert(tmp_map.begin(), tmp_map.end());
     }
-    std::cout << 3 << std::endl;
     queue.emplace_back(std::move(thread_map));
     queue.emplace_back(std::map<std::string, int>{});
 }
@@ -113,7 +111,6 @@ void parallel_count(const std::string &input_filename, const std::string &output
     for (auto &t: vector_of_threads) {
         t.join();
     }
-    std::cout << 1 << std::endl;
     std::map<std::string, int> map_of_all_words = queue_of_maps.pop_front();
 
 //    std::map<std::string, int> map_of_all_words = queue_of_maps.pop_back();

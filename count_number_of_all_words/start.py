@@ -20,21 +20,20 @@ def build(debug):
 def run(n, config_file):
     durations = list()
     print("..runing program")
-    os.chdir("cmake-build-debug")
+    # os.chdir("cmake-build-debug")
     for _ in range(n):
-        os.system("./count_number_of_all_words ../{} >> durations.txt".format(config_file))
+        os.system("./cmake-build-debug/count_number_of_all_words ./{} >> durations.txt".format(config_file))
         with open("durations.txt", 'r') as dur_file:
-            # print(re.match(r"Total: \d+", dur_file.readlines()[-1]).group(0).split()[1])
             durations.append(float(re.match(r"Total: \d+", dur_file.readlines()[-1]).group(0).split()[1]))
     os.system("rm durations.txt")
-    os.chdir("../")
     print("> minimum runtime {} us".format(min(durations)))
 
 def check_results(config_file):
     print("..checking results")
     # run in 1 thread
     # create new config file
-    with open(config_file, 'r') as main_config:
+    os.system("pwd")
+    with open("./{}".format(config_file), 'r') as main_config:
         infile = main_config.readline()[9:]
     with open("test_config.conf", 'w') as test_config:
         test_config.write("""infile = {}
@@ -43,13 +42,13 @@ out_by_n = test_res_n.txt
 threads = 1""".format(infile))
     run(1, "test_config.conf")
     # check files
-    if (os.system("cmp ./cmake-build-debug/res_a.txt ./cmake-build-debug/test_res_a.txt")):
+    if (os.system("cmp ./res_a.txt ./test_res_a.txt")):
         print("different results sorted by alpha!")
-    if (os.system("cmp ./cmake-build-debug/res_n.txt ./cmake-build-debug/test_res_n.txt")):
+    if (os.system("cmp ./res_n.txt ./test_res_n.txt")):
         print("different results sorted by number!")
     os.system("rm test_config.conf")
-    os.system("rm ./cmake-build-debug/test_res_a.txt")
-    os.system("rm ./cmake-build-debug/test_res_n.txt")
+    os.system("rm ./test_res_a.txt")
+    os.system("rm ./test_res_n.txt")
 
 
 #./start.py config.conf -n 100 -d
@@ -62,9 +61,9 @@ if __name__ == "__main__":
     else:
         config_file = sys.argv[1]
         arguments = ' '.join(sys.argv)
-        n = 1
-        if re.search("-n \d+ ", arguments) is not None:
-            n = int(re.search("-n \d+ ", arguments).group(0)[2:-1])
+        n = 5
+        # if re.search("-n \d+ ", arguments) is not None:
+        #     n = int(re.search("-n \d+ ", arguments).group(0)[2:-1])
         debug = False
         if re.search("-d", arguments) is not None:
             debug = True
