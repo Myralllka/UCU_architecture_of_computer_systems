@@ -30,7 +30,6 @@ void archive_t::init_archive() {
 
 void archive_t::load_file(const std::string &file_name) {
     std::ifstream raw_file(file_name, std::ios::binary);
-    std::string word;
 
     std::ostringstream ss{};
     ss << raw_file.rdbuf();

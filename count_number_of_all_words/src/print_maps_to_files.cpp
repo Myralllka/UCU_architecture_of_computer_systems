@@ -23,7 +23,7 @@ void print(const std::map<std::string, int> &map_of_words, const std::string &ou
     auto it = multimap_of_words.rbegin();
     while (it != multimap_of_words.rend()) {
         outfile_number << (*it).second << "\t" << (*it).first << std::endl;
-        it++;
+        ++it;
     }
 //    for (auto &pair:multimap_of_words) {
 //        outfile_number << pair.first << ": " << pair.second << std::endl;

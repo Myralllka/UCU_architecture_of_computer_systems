@@ -9,8 +9,10 @@
 #include <archive_entry.h>
 #include <string>
 #include <vector>
+#include <ibase.h>
 #include "tqueue.h"
 #include "linear_extractor.h"
+#include "not_implemented_err.h"
 
 class archive_t {
     struct archive *archive = nullptr;
@@ -51,7 +53,7 @@ private:
 // archive should be open !!!
 template<class T>
 void archive_t::generic_extract_files(T *vector, t_queue<struct archive_entry *> *source_qt) {
-    exit(125);  // TODO: unimplemented (need to pass by element of archive)
+    throw NotImplementedException{};  // TODO: unimplemented (need to pass by element of archive)
     /*
     struct archive_entry * entry = source_qt->pop_front();
 //    off_t filesize;
@@ -78,7 +80,7 @@ void archive_t::extract_files_t(T *tqueue, uint16_t threads_n) {
         extract_to_memory<T>(*buffer, tqueue);
         return;
     }
-    exit(125);  // TODO: unimplemented (need to pass by element of archive)
+    throw NotImplementedException{}; // TODO: unimplemented (need to pass by element of archive)
     /*
     struct archive_entry * entry;
     int status;
