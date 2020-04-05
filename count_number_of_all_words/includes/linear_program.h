@@ -7,8 +7,8 @@
 
 #include <string>
 
-void count_words(const std::string &input_filename, const std::string &output_filename_a,
-                 const std::string &output_filename_n);
+void linear_count(const std::string &input_filename, const std::string &output_filename_a,
+                  const std::string &output_filename_n);
 
 std::string read_binary_file_into_buffer(const std::string &filename);
 

@@ -4,6 +4,7 @@
 #include "../includes/linear_program.h"
 #include "../includes/linear_extractor.h"
 #include "../includes/print_maps_to_files.h"
+#include "../includes/speed_tester.h"
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -11,14 +12,23 @@
 #include <boost/locale.hpp>
 #include <algorithm>
 
-void count_words(const std::string &input_filename, const std::string &output_filename_a,
-                 const std::string &output_filename_n) {
+void linear_count(const std::string &input_filename, const std::string &output_filename_a,
+                  const std::string &output_filename_n) {
     std::map<std::string, int> map_of_words;
     std::vector<std::string> data;
     std::string word;
-    // read entire binary archive into the buffer
-    extract_to_memory(read_binary_file_into_buffer(input_filename), &data);
+    // ##########################################################
+    auto total_time = get_current_time_fenced();
+    if (input_filename.substr(input_filename.find_last_of('.') + 1) == "txt") {
+        std::ifstream f(input_filename);
+        data.emplace_back(static_cast<std::ostringstream &>(std::ostringstream{} << f.rdbuf()).str());
+    } else {
+        extract_to_memory(read_binary_file_into_buffer(input_filename), &data);
+    }
+    auto finish_time = get_current_time_fenced();
 
+    // ##########################################################
+    auto analyzing_time = get_current_time_fenced();
     for (auto &element : data) {
         element = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)));
         element.erase(std::remove_if(element.begin(), element.end(),
@@ -36,8 +46,9 @@ void count_words(const std::string &input_filename, const std::string &output_fi
                 word.clear();
             }
         }
-//        std::cout << element << std::endl;
     }
+    std::cout << "Loading: " << to_us(finish_time - total_time) << std::endl;
+    std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
     print(map_of_words, output_filename_a, output_filename_n);
 
     // ##########################################################
