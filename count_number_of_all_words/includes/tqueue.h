@@ -18,6 +18,7 @@ private:
     mutable std::mutex mut;
     std::condition_variable cond_variable;
 
+// size consider atomic
 public:
     t_queue() = default;
 
@@ -27,10 +28,18 @@ public:
 
     const t_queue &operator=(const t_queue &q) = delete;
 
-    void push(T d) {
+    void push_back(T d) {
         {
             std::lock_guard<std::mutex> lg(mut);
             queue.push_back(d);
+        }
+        cond_variable.notify_one();
+    }
+
+    void push_front(T d) {
+        {
+            std::lock_guard<std::mutex> lg(mut);
+            queue.push_front(d);
         }
         cond_variable.notify_one();
     }
@@ -43,14 +52,27 @@ public:
         cond_variable.notify_one();
     }
 
-    T pop() {
-        std::unique_lock<std::mutex> lg(mut);
-        if (queue.size() == 0) {
-            cond_variable.wait(lg);
+    void emplace_front(T d) {
+        {
+            std::lock_guard<std::mutex> lg(mut);
+            queue.emplace_front(d);
         }
+        cond_variable.notify_one();
+    }
+
+    T pop_front() {
+        std::unique_lock<std::mutex> lg(mut);
         cond_variable.wait(lg, [this]() { return queue.size() != 0; });
-        int d = queue.front();
+        T d = queue.front();
         queue.pop_front();
+        return d;
+    }
+
+    T pop_back() {
+        std::unique_lock<std::mutex> lg(mut);
+        cond_variable.wait(lg, [this]() { return queue.size() != 0; });
+        T d = queue.back();
+        queue.pop_back();
         return d;
     }
 
