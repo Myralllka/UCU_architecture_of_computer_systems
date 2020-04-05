@@ -18,18 +18,26 @@ void count_words(const std::string &input_filename, const std::string &output_fi
     std::vector<std::string> data;
     std::string word;
     std::map<std::string, int> map_of_words;
+
     auto buffer = [&raw_file] {
         std::ostringstream ss{};
         ss << raw_file.rdbuf();
         return ss.str();
     }();
-    data = extract_to_memory(buffer);
+
+    extract_to_memory(buffer, &data);
+
+    ////////////////debug//////////////////////
     std::cout << "files num: " << data.size() << std::endl;
+    for (const auto &el : data) {
+        std::cout << el.size() << "###" << el << std::endl;
+    }
+    ////////////////////////////////////////////
     for (auto &element : data) {
         element = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)));
         element.erase(std::remove_if(element.begin(), element.end(),
                                      [](const unsigned &c) { return !isspace(c) && !isalpha(c); }), element.end());
-        for (auto &chr:element) {
+        for (auto &chr : element) {
             if (isalpha(chr))
                 word += tolower(chr);
             else if (isspace(chr)) {
@@ -48,10 +56,6 @@ void count_words(const std::string &input_filename, const std::string &output_fi
         std::cout << pair.first << ": " << pair.second << std::endl;
     }
 
-//    for(auto elem : )
-//    {
-//        std::cout << elem.first << " " << elem.second.first << " " << elem.second.second << "\n";
-//    }
     // ##########################################################
     // IN PROCESS (DIFFERENT TESTING)
     // ##########################################################
