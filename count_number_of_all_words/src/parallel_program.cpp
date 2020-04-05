@@ -12,7 +12,7 @@
 #include <boost/locale.hpp>
 #include <thread>
 
-//namespace locale=boost::locale;
+
 void count_words(std::vector<std::string> &data, const int start_position, const int end_position,
         std::map<std::string, int> &map_of_words) {
     std::string word;
@@ -40,21 +40,6 @@ void count_words(std::vector<std::string> &data, const int start_position, const
     for (auto &pair:map_of_words) {
         std::cout << pair.first << ": " << pair.second << std::endl;
     }
-
-//    for(auto elem : )
-//    {
-//        std::cout << elem.first << " " << elem.second.first << " " << elem.second.second << "\n";
-//    }
-    // ##########################################################
-    // IN PROCESS (DIFFERENT TESTING)
-    // ##########################################################
-    //check all existing lbm`s
-//    boost::locale::localization_backend_manager lbm
-//            = boost::locale::localization_backend_manager::global();
-//    auto s = lbm.get_all_backends();
-//    for_each(s.begin(), s.end(),
-//             [](std::string& x){ std::cout << x << std::endl; });
-    // ##########################################################
 }
 
 void parallel_count(const std::string &input_filename, const std::string &output_filename_a,
