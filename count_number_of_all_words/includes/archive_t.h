@@ -54,7 +54,8 @@ void archive_t::generic_extract_files(T *vector, t_queue<struct archive_entry *>
     exit(125);  // TODO: unimplemented (need to pass by element of archive)
     /*
     struct archive_entry * entry = source_qt->pop_front();
-    off_t filesize;
+//    off_t filesize;
+    la_int64_t filesize;
     int status;
     while (entry != nullptr) {
         filesize = archive_entry_size(entry);
