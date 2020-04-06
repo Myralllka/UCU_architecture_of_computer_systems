@@ -11,8 +11,7 @@
 
 int main(int argc, char *argv[]) {
     //  ##################### Program Parameter Parsing ######################
-    // TODO: should be config.conf in current directory
-    std::string filename = "config.conf";
+    std::string filename = "config.dat";
     if (argc == 2) {
         filename = argv[1];
     } else if (argc > 2) {

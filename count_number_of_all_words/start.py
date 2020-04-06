@@ -1,6 +1,7 @@
-# !/bin/env python3
-import sys, os
+#!/bin/python3
+import os
 import re
+import sys
 
 
 # ./start.py 1000 - number of times to repeat each method
@@ -28,11 +29,11 @@ def run(n, config_file):
     os.system("rm durations.txt")
     print("> minimum runtime {} us".format(min(durations)))
 
+
 def check_results(config_file):
     print("..checking results")
     # run in 1 thread
     # create new config file
-    os.system("pwd")
     with open("./{}".format(config_file), 'r') as main_config:
         infile = main_config.readline()[9:]
     with open("test_config.conf", 'w') as test_config:
@@ -51,8 +52,8 @@ threads = 1""".format(infile))
     os.system("rm ./test_res_n.txt")
 
 
-#./start.py config.conf -n 100 -d
-# config.conf configuration file
+# ./start.py config.dat -n 100 -d
+# config.dat configuration file
 # -n 100 to repeat program 100 times
 # -d debug build type
 if __name__ == "__main__":
@@ -72,3 +73,4 @@ if __name__ == "__main__":
         run(n, config_file)
         check_results(config_file)
 
+        os.system("rm res_*")

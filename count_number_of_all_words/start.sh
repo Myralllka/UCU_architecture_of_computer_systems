@@ -1,5 +1,5 @@
 #!/bin/bash
-config_filename=config.conf
+config_filename=config.dat
 while true; do
   case $1 in
     -c|--compile)
@@ -62,9 +62,9 @@ if [ "$comp" = true -o ! -e count_number_of_all_words ]; then
 fi;
 
 if [ ! -z "$threads" ]; then
-  sed -i "s/threads...*/threads = $threads/g" ../config.conf;
+  sed -i "s/threads...*/threads = $threads/g" ../config.dat;
 else
-  sed -i "s/threads...*/threads = 1/g" ../config.conf;
+  sed -i "s/threads...*/threads = 1/g" ../config.dat;
 fi
 ./count_number_of_all_words "../$config_filename"
 popd > /dev/null
