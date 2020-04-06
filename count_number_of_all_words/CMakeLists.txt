@@ -12,7 +12,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif ()
 
 
-set(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_BUILD_TYPE Debug)
 
 find_package(Threads REQUIRED)
 find_package(LibArchive 3.0.0)

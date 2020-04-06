@@ -51,12 +51,13 @@ while true; do
 done
 
 mkdir -p ./cmake-build-debug;
-pushd ./cmake-build-debug || exit;
+mkdir -p res;
+pushd ./cmake-build-debug  > /dev/null || exit 1
 #mkdir -p tmp;
 
 if [ "$comp" = true ]; then
   echo Compiling...
-  cmake -G"Unix Makefiles" ..;
+  cmake -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles" ..;
   make;
 fi;
 
@@ -65,6 +66,5 @@ if [ ! -z "$threads" ]; then
 else
   sed -i "s/threads...*/threads = 1/g" ../config.conf;
 fi
-popd
-#./cmake-build-debug/count_number_of_all_words "$config_filename"
-
+./count_number_of_all_words "../$config_filename"
+popd > /dev/null

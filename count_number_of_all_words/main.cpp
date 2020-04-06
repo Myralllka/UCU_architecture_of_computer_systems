@@ -1,10 +1,10 @@
 #include <iostream>
 #include <chrono>
 #include <map>
-#include "includes/config_file.h"
-#include "includes/linear_program.h"
-#include "includes/parallel_program.h"
-#include "includes/parser_exeption.h"
+#include "includes/files/config_file.h"
+#include "includes/caunting/linear_program.h"
+#include "includes/caunting/parallel_program.h"
+#include "includes/exceptions/parser_exeption.h"
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
 #include "includes/speed_tester.h"
