@@ -44,9 +44,15 @@ threads = 1""".format(infile))
     run(1, "test_config.conf")
     # check files
     if (os.system("cmp ./res_a.txt ./test_res_a.txt")):
-        print("different results sorted by alpha!")
+        print("different results sorted by alpha! see error folder")
+        os.system("mkdir -p error")
+        os.system("cp ./res_a.txt ./error/res_a.txt")
+        os.system("cp ././test_res_a.txt ./error/./test_res_a.txt")
     if (os.system("cmp ./res_n.txt ./test_res_n.txt")):
-        print("different results sorted by number!")
+        print("different results sorted by number! see error folder")
+        os.system("mkdir -p error")
+        os.system("cp ./res_n.txt ./error/res_n.txt")
+        os.system("cp ././test_res_n.txt ./error/./test_res_n.txt")
     os.system("rm test_config.conf")
     os.system("rm ./test_res_a.txt")
     os.system("rm ./test_res_n.txt")
