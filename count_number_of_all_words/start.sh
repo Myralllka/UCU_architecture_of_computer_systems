@@ -55,7 +55,7 @@ mkdir -p res;
 pushd ./cmake-build-debug  > /dev/null || exit 1
 #mkdir -p tmp;
 
-if [ "$comp" = true ]; then
+if [ "$comp" = true -o ! -e count_number_of_all_words ]; then
   echo Compiling...
   cmake -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles" ..;
   make;
