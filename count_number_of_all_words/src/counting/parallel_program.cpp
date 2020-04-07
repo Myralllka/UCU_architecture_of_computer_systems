@@ -22,13 +22,13 @@
 #define PACKET_SIZE 10000
 
 void count_words(const std::vector<std::string> &data, size_t start_position, size_t end_position, t_queue<std::map<std::string, int>> &res_map) {
-    std::cout << &res_map[0] << std::endl;
+//    std::cout << res_map.pop_front() << std::endl;
 
     std::string word;
 
     std::map<std::string, int> thread_map = std::map<std::string, int>{};
     std::map<std::string, int> tmp{};
-    result.emplace_back(std::move(tmp));
+    res_map.emplace_back(std::move(tmp));
 }
 
 
