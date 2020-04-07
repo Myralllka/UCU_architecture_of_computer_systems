@@ -3,15 +3,27 @@
 //
 
 #include "../../includes/merging/merge_maps.h"
+#include <map>
+#include <string>
+#include <iostream>
 
-
-void merge_maps_queue(t_queue<std::map<std::string, int>> &queue) {
-    std::map<std::string, int> tmp_map;
-    std::map<std::string, int> thread_map{};
-
-    while (!(tmp_map = queue.pop_front()).empty()) {
-        thread_map.insert(tmp_map.begin(), tmp_map.end());
+inline void print_map(std::map<std::string, int> map) {
+    for (auto &pair:map) {
+        std::cout << pair.first << "\t" << pair.second << std::endl;
     }
-    queue.emplace_back(std::move(thread_map));
-    queue.emplace_back(std::map<std::string, int>{});
+}
+
+void merge_maps_queue(t_queue<std::map<std::string, int>> &queue, uint8_t num_of_threads) {
+//    while (!queue.peek_front().empty()) {
+//        std::cout << "oh shit" << std::endl;
+//    while (queue.get_size() > 1) {
+    for (; num_of_threads > 1; num_of_threads--) {
+        auto map1 = queue.pop_front();
+        auto map2 = queue.pop_front();
+        for (auto &element:map1) {
+            map2[element.first] += map1[element.first];
+        }
+        queue.emplace_back(std::move(map2));
+    }
+//    queue.emplace_back(std::map<std::string, int>{});
 }

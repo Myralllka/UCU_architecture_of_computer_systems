@@ -3,38 +3,58 @@ import os
 import re
 import sys
 
+outA, outN = "", ''
 
-# ./start.py 1000 - number of times to repeat each method
-def build(debug):
+
+def build(d, r):
+    """
+    :param d: debug
+    :param r: release
+    """
     print("..building project")
     os.system("mkdir -p cmake-build-debug")
     os.chdir("cmake-build-debug")
-    if debug:
-        os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. >> ../build_logs.txt")
+    cflags = ''
+    if d:
+        cflags = "-DCMAKE_BUILD_TYPE=Debug"
+    elif r:
+        cflags = "-DCMAKE_BUILD_TYPE=Release"
     else:
-        os.system("cmake -G \"Unix Makefiles\" .. >> ../build_logs.txt")
+        cflags = "-G \"Unix Makefiles\""
+    os.system("cmake  {} .. >> ../build_logs.txt".format(cflags))
     os.system("make >> ../build_logs.txt")
     os.chdir("../")
     os.system("rm build_logs.txt")
 
 
-def run(n, config_file):
+def run(n, conf):
     durations = list()
+    analyzing = list()
+    loadings = list()
     print("..runing program")
     # os.chdir("cmake-build-debug")
     for _ in range(n):
-        os.system("./cmake-build-debug/count_number_of_all_words ./{} >> durations.txt".format(config_file))
+        print("...rinning {} time".format(_ + 1))
+        os.system("./cmake-build-debug/count_number_of_all_words ./{} >> durations.txt".format(conf))
         with open("durations.txt", 'r') as dur_file:
-            durations.append(float(re.match(r"Total: \d+", dur_file.readlines()[-1]).group(0).split()[1]))
+            analyzing.append(float(re.findall(r"Analyzing: \d+", dur_file.read())[-1].split()[1]))
+        with open("durations.txt", 'r') as dur_file:
+            durations.append(float(re.findall(r"Total: \d+", dur_file.read())[-1].split()[1]))
+        with open("durations.txt", 'r') as dur_file:
+            loadings.append(float(re.findall(r"Loading: \d+", dur_file.read())[-1].split()[1]))
     os.system("rm durations.txt")
-    print("> minimum runtime {} us".format(min(durations)))
+    print("> minimum total runtime {} us\n> minimum total analyzing {} us, \n> minimum total loading {} us"
+          .format(min(durations), min(analyzing), min(loadings)))
 
 
 def check_results(config_file):
-    print("..checking results")
+    print("..checking results. running program in one thread for etalon results...")
     with open("./{}".format(config_file), 'r') as main_config:
-        outA = main_config.readlines()[1].split()[-1]
-        print(outA)
+        tmp = main_config.readlines()
+        # print(tmp)
+        outA = tmp[1].split()[-1]
+        outN = tmp[2].split()[-1]
+        # print(outA, outN)
     # run in 1 thread
     # create new config file
     with open("./{}".format(config_file), 'r') as main_config:
@@ -46,15 +66,15 @@ out_by_n = test_res_n.txt
 threads = 1""".format(infile))
     run(1, "test_config.conf")
     # check files
-    if (os.system("cmp ./res_a.txt ./test_res_a.txt")):
+    if os.system("cmp {} ./test_res_a.txt".format(outA)):
         print("different results sorted by alpha! see error folder")
         os.system("mkdir -p error")
-        os.system("cp ./res_a.txt ./error/res_a.txt")
+        os.system("cp {} ./error/res_a.txt".format(outA))
         os.system("cp ././test_res_a.txt ./error/./test_res_a.txt")
-    if (os.system("cmp ./res_n.txt ./test_res_n.txt")):
+    if os.system("cmp {} ./test_res_n.txt".format(outN)):
         print("different results sorted by number! see error folder")
         os.system("mkdir -p error")
-        os.system("cp ./res_n.txt ./error/res_n.txt")
+        os.system("cp {} ./error/res_n.txt".format(outN))
         os.system("cp ././test_res_n.txt ./error/./test_res_n.txt")
     os.system("rm test_config.conf")
     os.system("rm ./test_res_a.txt")
@@ -72,15 +92,16 @@ if __name__ == "__main__":
     else:
         config_file = sys.argv[1]
         arguments = ' '.join(sys.argv)
-        n = 5
-        # if re.search("-n \d+ ", arguments) is not None:
-        #     n = int(re.search("-n \d+ ", arguments).group(0)[2:-1])
-        debug = False
+        n = 1
+        if re.search("-n \d+", arguments) is not None:
+            n = int(re.search("-n \d+", arguments).group(0)[2:])
+        debug, release = False, False
         if re.search("-d", arguments) is not None:
             debug = True
-
-        build(debug)
+        if re.search("-o", arguments) is not None:
+            release = True
+        build(debug, release)
         run(n, config_file)
         check_results(config_file)
 
-        os.system("rm res_*")
+        os.system("rm {} {}".format(outA, outN)) if outA else outA

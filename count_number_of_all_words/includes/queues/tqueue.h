@@ -76,6 +76,14 @@ public:
         return d;
     }
 
+    T peek_front() {
+        std::unique_lock<std::mutex> lg(mut);
+        cond_variable.wait(lg, [this]() { return queue.size() != 0; });
+        T d = queue.back();
+        return d;
+    }
+
+
     size_t get_size() const {
         std::lock_guard<std::mutex> lg(mut);
         return queue.size();

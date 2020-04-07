@@ -5,5 +5,6 @@
 # Usage
 from `count_number_of_all_words/`
 ```$shell
-./start.py config.dat
+./start.py config.dat [parameters]
 ```
+# 
