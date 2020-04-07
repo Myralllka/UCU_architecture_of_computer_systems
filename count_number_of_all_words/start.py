@@ -32,6 +32,9 @@ def run(n, config_file):
 
 def check_results(config_file):
     print("..checking results")
+    with open("./{}".format(config_file), 'r') as main_config:
+        outA = main_config.readlines()[1].split()[-1]
+        print(outA)
     # run in 1 thread
     # create new config file
     with open("./{}".format(config_file), 'r') as main_config:
@@ -63,6 +66,7 @@ threads = 1""".format(infile))
 # -n 100 to repeat program 100 times
 # -d debug build type
 if __name__ == "__main__":
+    os.system("rm -rf ./error")
     if len(sys.argv) < 2:
         print("Usage:\n\t./start.py <path_to_config_file>")
     else:

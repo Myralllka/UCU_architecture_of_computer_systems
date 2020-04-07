@@ -51,7 +51,6 @@ while true; do
 done
 
 mkdir -p ./cmake-build-debug;
-mkdir -p res;
 pushd ./cmake-build-debug  > /dev/null || exit 1
 #mkdir -p tmp;
 
@@ -66,5 +65,5 @@ if [ ! -z "$threads" ]; then
 else
   sed -i "s/threads...*/threads = 1/g" ../config.dat;
 fi
-./count_number_of_all_words "../$config_filename"
+#./count_number_of_all_words "../$config_filename"
 popd > /dev/null
