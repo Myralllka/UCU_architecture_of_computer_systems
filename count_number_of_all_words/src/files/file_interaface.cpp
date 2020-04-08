@@ -20,15 +20,12 @@ void print(const std::map<std::string, size_t> &map_of_words, const std::string 
 
     auto multimap_of_words = flip_map(map_of_words);
 
-//    std::map<int,std::string> :: iterator it;
     auto it = multimap_of_words.rbegin();
     while (it != multimap_of_words.rend()) {
         outfile_number << (*it).second << "\t" << (*it).first << std::endl;
         ++it;
     }
-//    for (auto &pair:multimap_of_words) {
-//        outfile_number << pair.first << ": " << pair.second << std::endl;
-//    }
+
     outfile_alpha.close();
     outfile_number.close();
 }

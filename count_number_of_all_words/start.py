@@ -52,8 +52,8 @@ def check_results(config_file):
     with open("./{}".format(config_file), 'r') as main_config:
         tmp = main_config.readlines()
         # print(tmp)
-        outA = tmp[1].split()[-1]
-        outN = tmp[2].split()[-1]
+        outA = tmp[1].split()[-1].split('./')[-1]
+        outN = tmp[2].split()[-1].split('./')[-1]
         # print(outA, outN)
     # run in 1 thread
     # create new config file
@@ -81,19 +81,25 @@ threads = 1""".format(infile))
     os.system("rm ./test_res_n.txt")
 
 
+def heelp():
+    print("Usage:\n\t./start.py <path_to_config_file> [options]\n"
+          "Options:\n\t-n <number>\tNumber of cycles\n"
+          "\t-b\t\t(re)Build the program\n"
+          "\t-d\t\tAdd debug Building option\n"
+          "\t-o\t\tAdd release Building option\n"
+          "\t-h\t\tHelp message (this message)")
+    exit(1)
+
+
 # ./start.py config.dat -n 100 -d
 # config.dat configuration file
 # -n 100 to repeat program 100 times
 # -d debug build type
 if __name__ == "__main__":
-    os.system("rm -rf ./error")
-    if len(sys.argv) < 2:
-        print("Usage:\n\t./start.py <path_to_config_file> [options]"
-              "Options:\n\t -n <number>\t\tNumber of cycles"
-              "\t-b\t\t(re)Build the program"
-              "\t-d\t\tDebug Building option"
-              "\t-o\t\tRelease Building option")
-    else:
+    try:
+        os.system("rm -rf ./error")
+        if len(sys.argv) < 2:
+            heelp()
         config_file = sys.argv[1]
         arguments = ' '.join(sys.argv)
         n = 1
@@ -106,6 +112,11 @@ if __name__ == "__main__":
             release = True
         if re.search("-b", arguments) is not None:
             build(debug, release)
+        if re.search("-h", arguments) is not None:
+            heelp()
         run(n, config_file)
         check_results(config_file)
-
+    except Exception as e:
+        print(e)
+        os.system("rm -rf test_config.conf ./test_res_a.txt ./test_res_n.txt ./error durations.txt 2> /dev/null")
+        exit(1)

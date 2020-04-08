@@ -5,19 +5,12 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <string>
-#include <vector>
-#include <iterator>
 #include <iostream>
 #include "../../includes/files/config_file.h"
 #include "../../includes/exceptions/parser_exeption.h"
 
 
 namespace po = boost::program_options;
-
-void to_cout(const std::vector<std::string> &v) {
-    std::copy(v.begin(), v.end(),
-              std::ostream_iterator<std::string>{std::cout, "\n"});
-}
 
 ConfigFileOpt::ConfigFileOpt() {
     init_opt_description();

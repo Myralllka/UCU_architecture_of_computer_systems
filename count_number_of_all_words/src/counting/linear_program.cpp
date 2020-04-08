@@ -11,13 +11,10 @@
 #include <boost/locale.hpp>
 #include <algorithm>
 
-void linear_count(const std::string &input_filename, const std::string &output_filename_a,
+void linear_count(const std::vector<std::string> &data, const std::string &output_filename_a,
                   const std::string &output_filename_n) {
     std::map<std::string, size_t> map_of_words;
-    std::vector<std::string> data;
     std::string word;
-    read_input_file(input_filename, data);
-
 //    for (auto &element : data) {
     auto element = data[0];
     element = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)));

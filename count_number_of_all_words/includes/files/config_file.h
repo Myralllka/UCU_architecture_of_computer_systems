@@ -31,8 +31,6 @@ private:
 
     static std::string assert_file_exist(const std::string &f_name);
 
-    void assert_valid_opt_vals() const;
-
     // declare all parameters
     std::string input_file;
     std::string out_by_a;

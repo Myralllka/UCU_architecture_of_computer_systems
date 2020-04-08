@@ -7,7 +7,7 @@
 
 #include <string>
 
-void linear_count(const std::string &input_filename, const std::string &output_filename_a,
+void linear_count(const std::vector<std::string> &data, const std::string &output_filename_a,
                   const std::string &output_filename_n);
 
 #endif //COUNT_NUMBER_OF_ALL_WORDS_LINEAR_PROGRAM_H
