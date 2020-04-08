@@ -10,7 +10,7 @@
 #include <algorithm>
 
 
-void print(const std::map<std::string, int> &map_of_words, const std::string &output_filename_a,
+void print(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
            const std::string &output_filename_n);
 
 std::string read_binary_file_into_buffer(const std::string &filename);

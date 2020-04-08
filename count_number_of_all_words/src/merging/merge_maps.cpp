@@ -7,13 +7,13 @@
 #include <string>
 #include <iostream>
 
-inline void print_map(std::map<std::string, int> map) {
+inline void print_map(std::map<std::string, size_t> map) {
     for (auto &pair:map) {
         std::cout << pair.first << "\t" << pair.second << std::endl;
     }
 }
 
-void merge_maps_queue(t_queue<std::map<std::string, int>> &queue, uint8_t num_of_threads) {
+void merge_maps_queue(t_queue<std::map<std::string, size_t>> &queue, uint8_t num_of_threads) {
 //    while (!queue.peek_front().empty()) {
 //        std::cout << "oh shit" << std::endl;
 //    while (queue.get_size() > 1) {
@@ -25,5 +25,5 @@ void merge_maps_queue(t_queue<std::map<std::string, int>> &queue, uint8_t num_of
         }
         queue.emplace_back(std::move(map2));
     }
-//    queue.emplace_back(std::map<std::string, int>{});
+//    queue.emplace_back(std::map<std::string, size_t>{});
 }

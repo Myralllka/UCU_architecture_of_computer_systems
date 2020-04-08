@@ -26,35 +26,35 @@ inline void print_map(std::map<std::string, int> map) {
     }
 }
 
-void count(const std::vector<std::string> &data, t_queue<std::map<std::string, int>> &result_queue) {
-    std::map<std::string, int> result_map{};
-    auto analyzing_time = get_current_time_fenced();
-    for (auto element:data) {
+void count(const std::vector<std::string> &data, t_queue<std::map<std::string, size_t>> &result_queue) {
+    std::map<std::string, size_t> result_map{};
+//    auto analyzing_time = get_current_time_fenced();
+    for (auto &element:data) {
         if (element.empty() || std::all_of(element.begin(), element.end(), isspace)) continue;
-        element.erase(std::remove_if(element.begin(), element.end(), [](const unsigned &c) { return !isspace(c) && !isalpha(c); }),
-                  element.end());
-        result_map[boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)))] += 1;
+        result_map[element] += 1;
     }
-    std::cout << "j: " << to_s(get_current_time_fenced() - analyzing_time) << "\tsize: " << data.size() <<std::endl;
+//    std::cout << "j: " << to_us(get_current_time_fenced() - analyzing_time) << "\tsize: " << data.size() <<std::endl;
     result_queue.emplace_back(std::move(result_map));
 }
-
 
 void parallel_count(const std::string &input_filename, const std::string &output_filename_a,
                     const std::string &output_filename_n, const uint8_t number_of_threads) {
     std::vector<std::string> data;
-    std::map<std::string, int> map_of_words;
+    std::map<std::string, size_t> map_of_words;
     std::vector<std::thread> vector_of_threads{};
-    t_queue<std::map<std::string, int>> result_queue;
+    std::vector<std::map<std::string, size_t>> vector_of_results{};
+    t_queue<std::map<std::string, size_t >> result_queue;
     std::vector<std::string> words;
     read_input_file(input_filename, data);
 //        for (auto &str : data) {
     auto str = data[0];
+    str = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(str)));
+    str.erase(std::remove_if(str.begin(), str.end(), [](const unsigned &c) { return !isspace(c) && !isalpha(c); }),
+              str.end());
     boost::split(words, str, boost::is_any_of("\t\n "));
     size_t data_portion_len = (words.size() % number_of_threads) ? words.size() / number_of_threads + 1 : words.size() /
                                                                                                           number_of_threads;
 //    size_t data_portion_len = PACKET_SIZE;
-    std::cout << "w.size:"<<words.size() << std::endl;
     auto analyzing_time = get_current_time_fenced();
     for (size_t i = 0; i < number_of_threads; i++) {
         std::vector<std::string> tmp;
@@ -62,11 +62,15 @@ void parallel_count(const std::string &input_filename, const std::string &output
                             std::min(words.size() - data_portion_len * (i), data_portion_len));
         std::move(words.begin() + data_portion_len * i, it, std::back_inserter(tmp));
         vector_of_threads.emplace_back(count, std::move(tmp), std::ref(result_queue));
+//        std::map<std::string, int> tmp_map;
+//        vector_of_threads.emplace_back(count, std::move(tmp), std::move(tmp_map));
+//        vector_of_results.emplace_back(std::ref(tmp_map));
     }
     for (auto &t: vector_of_threads) {
         t.join();
     }
-    std::cout << "Analyzing: " << to_s(get_current_time_fenced() - analyzing_time) << std::endl;
+//    merge_maps_vector(vector_of_results);
+    std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
     merge_maps_queue(result_queue, number_of_threads);
     print(result_queue.pop_back(), output_filename_a, output_filename_n);
 }

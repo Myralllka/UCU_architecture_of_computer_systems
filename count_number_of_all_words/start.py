@@ -109,4 +109,3 @@ if __name__ == "__main__":
         run(n, config_file)
         check_results(config_file)
 
-        os.system("rm {} {}".format(outA, outN)) if outA else outA
