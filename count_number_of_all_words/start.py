@@ -31,10 +31,10 @@ def run(n, conf):
     durations = list()
     analyzing = list()
     loadings = list()
-    print("..runing program")
+    print("..running program")
     # os.chdir("cmake-build-debug")
     for _ in range(n):
-        print("...rinning {} time".format(_ + 1))
+        print("...running {} time".format(_ + 1))
         os.system("./cmake-build-debug/count_number_of_all_words ./{} >> durations.txt".format(conf))
         with open("durations.txt", 'r') as dur_file:
             analyzing.append(float(re.findall(r"Analyzing: \d+", dur_file.read())[-1].split()[1]))
