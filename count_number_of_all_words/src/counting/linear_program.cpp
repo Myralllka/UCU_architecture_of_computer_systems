@@ -20,9 +20,9 @@ void linear_count(const std::string &input_filename, const std::string &output_f
 
 //    for (auto &element : data) {
     auto element = data[0];
-    auto analyzing_time = get_current_time_fenced();
     element = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)));
     element.erase(std::remove_if(element.begin(), element.end(),[](const unsigned &c) { return !isspace(c) && !isalpha(c); }), element.end());
+    auto analyzing_time = get_current_time_fenced();
     for (auto &chr : element) {
         if (isalpha(chr))
             word += tolower(chr);

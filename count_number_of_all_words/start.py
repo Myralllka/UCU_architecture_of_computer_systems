@@ -88,7 +88,11 @@ threads = 1""".format(infile))
 if __name__ == "__main__":
     os.system("rm -rf ./error")
     if len(sys.argv) < 2:
-        print("Usage:\n\t./start.py <path_to_config_file>")
+        print("Usage:\n\t./start.py <path_to_config_file> [options]"
+              "Options:\n\t -n <number>\t\tNumber of cycles"
+              "\t-b\t\t(re)Build the program"
+              "\t-d\t\tDebug Building option"
+              "\t-o\t\tRelease Building option")
     else:
         config_file = sys.argv[1]
         arguments = ' '.join(sys.argv)
@@ -100,7 +104,8 @@ if __name__ == "__main__":
             debug = True
         if re.search("-o", arguments) is not None:
             release = True
-        build(debug, release)
+        if re.search("-b", arguments) is not None:
+            build(debug, release)
         run(n, config_file)
         check_results(config_file)
 
