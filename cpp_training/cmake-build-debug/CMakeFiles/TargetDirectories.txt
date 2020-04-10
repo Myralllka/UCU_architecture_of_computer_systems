@@ -1,3 +1,0 @@
-/home/myralllka/Documents/AoCS/cpp_training/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/myralllka/Documents/AoCS/cpp_training/cmake-build-debug/CMakeFiles/cpp_training.dir
-/home/myralllka/Documents/AoCS/cpp_training/cmake-build-debug/CMakeFiles/edit_cache.dir

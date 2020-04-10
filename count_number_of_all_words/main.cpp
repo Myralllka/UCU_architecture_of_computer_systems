@@ -47,22 +47,6 @@ int main(int argc, char *argv[]) {
     outfile_number.open(out_by_n_filename);
     outfile_alpha.close();
     outfile_number.close();
-//    outfile_alpha << std::endl;
-//    outfile_number <<std::endl;
-//    for (auto &pair:multimap_of_words) {
-//        outfile_number << pair.first << ": " << pair.second << std::endl;
-//    }
-//    std::vector<std::string> tmp;
-//    boost::split(tmp, out_by_a_filename, boost::is_any_of("/"));
-//    if ( tmp.size() > 2 && !boost::filesystem::exists(tmp[1])){
-//        std::cerr << "Error: File '" << out_by_a_filename << "' do not exist and can not be created!" << std::endl;
-//        exit(21);
-//    }
-//    boost::split(tmp, out_by_n_filename, boost::is_any_of("/"));
-//    if ( tmp.size() > 2 && !boost::filesystem::exists(tmp[1])){
-//        std::cerr << "Error: File '" << out_by_n_filename << "' do not exist and can not be created!" << std::endl;
-//        exit(21);
-//    }
     if (!boost::filesystem::exists(infile) || !boost::filesystem::exists(out_by_a_filename) ||
         !boost::filesystem::exists(out_by_n_filename)) {
         std::cerr << "Error: File '" << infile << "' do not exist (or can not be created)!" << std::endl;

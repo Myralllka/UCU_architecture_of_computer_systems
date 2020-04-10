@@ -27,9 +27,10 @@
 void count(const std::vector<std::string> &data, t_queue<std::map<std::string, size_t>> &result_queue) {
     std::map<std::string, size_t> result_map{};
 //    auto analyzing_time = get_current_time_fenced();
-    for (auto &element:data) {
+    for (auto element:data) {
+        element.erase(std::remove_if(element.begin(), element.end(), [](const unsigned &c) { return !isspace(c) && !isalpha(c); }),element.end());
         if (element.empty() || std::all_of(element.begin(), element.end(), isspace)) continue;
-        result_map[element] += 1;
+        result_map[boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(element)))] += 1;
     }
 //    std::cout << "j: " << to_us(get_current_time_fenced() - analyzing_time) << "\tsize: " << data.size() <<std::endl;
     result_queue.emplace_back(std::move(result_map));
@@ -45,9 +46,9 @@ void parallel_count(const std::vector<std::string> &data, const std::string &out
     std::vector<std::string> words;
 //        for (auto &str : data) {
     auto str = data[0];
-    str = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(str)));
-    str.erase(std::remove_if(str.begin(), str.end(), [](const unsigned &c) { return !isspace(c) && !isalpha(c); }),
-              str.end());
+//    str = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(str)));
+//    str.erase(std::remove_if(str.begin(), str.end(), [](const unsigned &c) { return !isspace(c) && !isalpha(c); }),
+//              str.end());
     boost::split(words, str, boost::is_any_of("\t\n "));
     size_t data_portion_len = (words.size() % number_of_threads) ? words.size() / number_of_threads + 1 : words.size() /
                                                                                                           number_of_threads;
@@ -66,7 +67,7 @@ void parallel_count(const std::vector<std::string> &data, const std::string &out
     for (auto &t: vector_of_threads) {
         t.join();
     }
-    std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
     merge_maps_queue(result_queue, number_of_threads);
+    std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
     print(result_queue.pop_back(), output_filename_a, output_filename_n);
 }
