@@ -19,6 +19,14 @@ class tqueue_radio : public t_queue<T> {
     std::mutex sub_mux;
 
 public:
+    explicit tqueue_radio(size_t max_size) : t_queue<T>(max_size) {}
+
+    ~tqueue_radio() = default;
+
+    tqueue_radio(const tqueue_radio &q) = delete;
+
+    const tqueue_radio &operator=(const tqueue_radio &q) = delete;
+
     void subscribe() {
         std::lock_guard<std::mutex> lg(sub_mux);
         subscribers += 1;

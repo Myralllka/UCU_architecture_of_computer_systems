@@ -28,13 +28,7 @@ void fast_count_words(const std::string &str, std::map<std::string, size_t> *res
                    cbegin(delims), cend(delims),
                    [result_map](auto first, auto second) {
                        if (first != second) {
-                           std::string element = string(first, second);
-                           element = boost::locale::to_lower(
-                                   boost::locale::fold_case(boost::locale::normalize(element)));
-                           element.erase(std::remove_if(element.begin(), element.end(),
-                                                        [](const unsigned &c) { return !isspace(c) && !isalpha(c); }),
-                                         element.end());
-                           (*result_map)[element] += 1;
+                           (*result_map)[string(first, second)] += 1;
                        }
                    });
 }

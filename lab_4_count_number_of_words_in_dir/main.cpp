@@ -11,6 +11,8 @@
 
 #include "includes/debug_control.h"
 
+#define MAX_LOAD_QUEUE_SIZE 10
+
 int main(int argc, char *argv[]) {
     auto start_time = get_current_time_fenced();
     //  ##################### Program Parameter Parsing ######################
@@ -78,7 +80,7 @@ int main(int argc, char *argv[]) {
 
     //  ##############  Load, Unarchive and Count words in Text ####################
     if (threads > 1) {
-        t_queue<file_packet> packet_queue{};
+        t_queue<file_packet> packet_queue{MAX_LOAD_QUEUE_SIZE};
         std::thread file_loader_thread{read_files_thread<std::vector<std::string>, t_queue<file_packet>>,
                                        std::ref(files_list), &packet_queue};
         parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);

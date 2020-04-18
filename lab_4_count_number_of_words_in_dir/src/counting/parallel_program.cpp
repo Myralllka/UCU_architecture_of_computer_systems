@@ -8,13 +8,14 @@
 #include "../../includes/counting/word_count.h"
 #include <vector>
 #include <thread>
+#include <boost/locale.hpp>
 
 
 #include "../../includes/debug_control.h"
 
-//#define PACKET_SIZE 10000
-
-// publish data for threads (POISON PILL == "" EMPTY STRING)
+#define MAP_PACKET_SIZE 10000
+#define MAX_DATA_QUEUE_SIZE 10
+#define MAX_MAP_QUEUE_SIZE 10
 
 static void unarchive_thread(t_queue<file_packet> *file_q, tqueue_radio<std::string> *data_q) {
     data_q->publish();
@@ -32,8 +33,9 @@ static void unarchive_thread(t_queue<file_packet> *file_q, tqueue_radio<std::str
         }
     }
 
-    file_q->emplace_back(file_packet{});
+    file_q->emplace_back(file_packet{}); // forward poison pill
     data_q->unpublish(); // IF LAST SEND A POISON PILL!!!
+
 #ifdef DEBUG_INFO
     std::cout << "U" << std::flush;
 #endif
@@ -49,13 +51,32 @@ static void count_thread(tqueue_radio<std::string> *data_q, tqueue_radio<std::ma
 #ifdef DEBUG_INFO
         std::cout << "." << std::flush;
 #endif
+        /////////////////////// NORMALIZE CONTENT /////////////////////////
+        content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
+        content.erase(std::remove_if(content.begin(), content.end(),
+                                     [](const unsigned &c) { return !isspace(c) && !isalpha(c); }), content.end());
+        ///////////////////////////////////////////////////////////////////
+
         fast_count_words(content, &result_map);
+
+        ///////////////////// PUBLISH FULL MAP ////////////////////////////
+        if (result_map.size() > MAP_PACKET_SIZE) {
+            map_queue->emplace_back(std::move(result_map));
+            result_map = std::map<std::string, size_t>{};
+        }
+        ///////////////////////////////////////////////////////////////////
     }
+
+    ///////////////////////// FORWARD POISON PILL //////////////////////////
     data_q->emplace_back("");
     data_q->unsubscribe();
+    ////////////////////////////////////////////////////////////////////////
 
+    ////////////////////// CLOSE NEXT PIPE IF NEEDED ///////////////////////
+    map_queue->emplace_front(
+            std::move(result_map));
     map_queue->unpublish(); // IF LAST SEND A POISON PILL!!!
-    map_queue->emplace_back(std::move(result_map));
+    ////////////////////////////////////////////////////////////////////////
 #ifdef DEBUG_INFO
     std::cout << "C" << std::flush;
 #endif
@@ -73,12 +94,15 @@ static void merge_maps_thread(tqueue_radio<std::map<std::string, size_t>> *queue
         }
         queue->emplace_front(std::move(merge_group[0]));
     }
+
+
     if (merge_group[1].empty()) {
         queue->emplace_front(std::move((merge_group[0])));
     } else {
         queue->emplace_front(std::move(merge_group[1]));
     }
-    queue->emplace_back(std::map<std::string, size_t>{});
+
+    queue->emplace_back(std::map<std::string, size_t>{}); // PILL
     queue->unsubscribe();
 #ifdef DEBUG_INFO
     std::cout << "M" << std::flush;
@@ -90,10 +114,9 @@ void parallel_count(t_queue<file_packet> *loader_queue,
                     const uint8_t number_of_threads) {
     std::vector<std::thread> vector_of_threads{};
 
-    tqueue_radio<std::string> data_queue;
-    tqueue_radio<std::map<std::string, size_t>> map_queue;
+    tqueue_radio<std::string> data_queue{MAX_DATA_QUEUE_SIZE};
+    tqueue_radio<std::map<std::string, size_t>> map_queue{MAX_MAP_QUEUE_SIZE};
 
-//    size_t data_portion_len = PACKET_SIZE; // TODO: limit queue size
     auto analyzing_time = get_current_time_fenced();
 
     /////////////////////////// UNARCHIVE ///////////////////////////
