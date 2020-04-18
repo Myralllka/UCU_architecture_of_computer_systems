@@ -12,7 +12,6 @@
 
 template<typename T>
 class tqueue_radio : public t_queue<T> {
-    std::atomic_uint16_t pub_n = 0;
     uint32_t publishers = 0;
     std::mutex pub_mux;
 
@@ -21,16 +20,17 @@ class tqueue_radio : public t_queue<T> {
 
 public:
     void subscribe() {
-//        std::lock_guard<std::mutex> lg(sub_mux);
-//        subscribers += 1;
+        std::lock_guard<std::mutex> lg(sub_mux);
+        subscribers += 1;
     }
 
-    void unsubscribe() {
+    bool unsubscribe() {
         std::lock_guard<std::mutex> lg(sub_mux);
         subscribers -= 1;
+        return subscribers == 0;
     }
 
-    void get_sub_num() {
+    [[nodiscard]] uint32_t get_sub_num() const {
         std::lock_guard<std::mutex> lg(sub_mux);
         return subscribers;
     }
@@ -40,12 +40,16 @@ public:
         publishers += 1;
     }
 
-    void unpublish() {
+    bool unpublish(bool if_last_send = true, T to_back_data = T{}) {
         std::lock_guard<std::mutex> lg(pub_mux);
+        if (publishers == 1 && if_last_send) {
+            push_back(to_back_data);
+        }
         publishers -= 1;
+        return publishers == 0;
     }
 
-    void get_pub_num() {
+    [[nodiscard]] uint32_t get_pub_num() const {
         std::lock_guard<std::mutex> lg(pub_mux);
         return publishers;
     }

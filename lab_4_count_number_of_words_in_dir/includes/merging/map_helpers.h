@@ -19,4 +19,10 @@ std::multimap<B, A> flip_map(const M<A, B, Args...> &src) {
     return dst;
 }
 
+inline void print_map(const std::map<std::string, int> &map) {
+    for (auto &pair:map) {
+        std::cout << pair.first << "\t" << pair.second << std::endl;
+    }
+}
+
 #endif //COUNT_NUMBER_OF_ALL_WORDS_MAP_HELPERS_H

@@ -24,6 +24,9 @@ TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${CMAKE_THREAD_LIBS_
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${Boost_LIBRARIES})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${LibArchive_LIBRARIES})
 
+add_executable(test test.cpp)
+TARGET_LINK_LIBRARIES(test LINK_PUBLIC ${Boost_LIBRARIES})
+
 #####################################
 ## create own target for library
 #pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL

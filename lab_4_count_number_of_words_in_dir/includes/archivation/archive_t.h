@@ -14,6 +14,8 @@
 #include "linear_extractor.h"
 #include "../exceptions/not_implemented_err.h"
 
+#include "../debug_control.h"
+
 class archive_t {
     struct archive *archive_obj = nullptr;
     std::string buffer = "";
@@ -36,7 +38,6 @@ public:
 
     void load_file(const std::string &file_name);
 
-//    void extract_all(t_queue<std::string> *tqueue);
     template<class T>
     void extract_all(T *tqueue);
 
@@ -59,6 +60,7 @@ void archive_t::extract_all(T *tqueue) {
 
     while ((status = archive_read_next_header(archive_obj, &entry)) != ARCHIVE_EOF && status != ARCHIVE_FATAL) {
         processed_f++;
+
         if (status < ARCHIVE_OK) {
             if (status < ARCHIVE_WARN) {
                 std::cerr << "Error: Serious archive_obj damage! " << archive_error_string(archive_obj) << std::endl;
@@ -68,7 +70,12 @@ void archive_t::extract_all(T *tqueue) {
             std::cerr << "Warning: Some bad blocks in the archive_obj! " << archive_error_string(archive_obj)
                       << std::endl;
         }
+
+
         if (archive_entry_size(entry) > 0) {
+#ifdef DEBUG_INFO
+            std::cout << "Unarchive entry: " << "(size: " << archive_entry_size(entry) << ")" << std::endl;
+#endif
             filesize = archive_entry_size(entry);
             std::string output(filesize, char{});
 
