@@ -1,4 +1,4 @@
-infile = archives
+infile = archives/dir
 out_by_a = res/res_a.txt
 out_by_n = res/res_n.txt
 threads = 2

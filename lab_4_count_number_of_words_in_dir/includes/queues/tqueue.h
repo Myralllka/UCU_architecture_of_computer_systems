@@ -86,8 +86,8 @@ public:
         std::unique_lock<std::mutex> lg(mut);
         std::vector<T> res(n);
         data_received_notify.wait(lg, [this, n]() { return queue.size() >= n; });
-        for (uint8_t i = n - 1; i >= 0; --i) {
-            res.emplace(i, std::move(queue.back()));
+        for (uint8_t i = 0; i < n; --i) {
+            res.emplace(n - 1 - i, std::move(queue.back()));
             queue.pop_back();
         }
         return res;

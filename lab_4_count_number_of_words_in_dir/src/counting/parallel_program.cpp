@@ -93,29 +93,23 @@ void parallel_count(t_queue<file_packet> *loader_queue,
     tqueue_radio<std::string> data_queue;
     tqueue_radio<std::map<std::string, size_t>> map_queue;
 
-    std::vector<std::string> words;
-    std::map<std::string, size_t> result_map;
-
-//    size_t data_portion_len = PACKET_SIZE;
+//    size_t data_portion_len = PACKET_SIZE; // TODO: limit queue size
     auto analyzing_time = get_current_time_fenced();
 
     /////////////////////////// UNARCHIVE ///////////////////////////
-//    for (uint8_t i = 0; i < number_of_threads; i++) {
-    for (uint8_t i = 0; i < 1; i++) {
-        vector_of_threads.emplace_back(unarchive_thread, loader_queue, &data_queue);
-    }
+    vector_of_threads.emplace_back(unarchive_thread, loader_queue, &data_queue);
     /////////////////////////////////////////////////////////////////
 
     ///////////////////////////   COUNT   ///////////////////////////
-    for (uint8_t i = 0; i < number_of_threads; i++) {
+    for (uint8_t i = 0; i < number_of_threads; i++)
         vector_of_threads.emplace_back(count_thread, &data_queue, &map_queue);
-    }
     /////////////////////////////////////////////////////////////////
 
     merge_maps_thread(&map_queue);
     for (auto &t: vector_of_threads) {
         t.join();
     }
+
 #ifdef DEBUG_INFO
     std::cout << "Analyzing: " << to_s(get_current_time_fenced() - analyzing_time) << std::endl;
 #else

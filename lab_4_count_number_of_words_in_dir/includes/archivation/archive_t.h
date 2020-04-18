@@ -11,7 +11,6 @@
 #include <vector>
 #include <ibase.h>
 #include "../queues/tqueue.h"
-#include "linear_extractor.h"
 #include "../exceptions/not_implemented_err.h"
 
 #include "../debug_control.h"

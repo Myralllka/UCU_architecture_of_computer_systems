@@ -12,8 +12,7 @@
 void linear_count(const std::vector<std::string> &file_names, const std::string &output_filename_a,
                   const std::string &output_filename_n) {
     std::map<std::string, size_t> map_of_words;
-    std::string word;
-    std::chrono::duration<long, std::ratio<1, 1000000000>> load_time{};
+    std::chrono::duration<int32_t, std::ratio<1, 1000000000>> load_time{};
 
     auto analyzing_time = get_current_time_fenced();
     std::vector<file_packet> file_buf{};

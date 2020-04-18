@@ -29,10 +29,10 @@ TARGET_LINK_LIBRARIES(test LINK_PUBLIC ${Boost_LIBRARIES})
 
 #####################################
 ## create own target for library
-#pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
-#        ANALYZE count_number_of_all_words
-#        OUTPUT FORMAT errorfile
-#        MODE GA:1,2,3 OP:1,2,3 GA:1,2,3 OP:1,2,3 64:1,2,3 CS:1,2,3 MISRA:1,2,3
-#        LOG target_${PROJECT_NAME}.err)
+pvs_studio_add_target(TARGET ${PROJECT_NAME}.analyze ALL
+        ANALYZE count_number_of_all_words
+        OUTPUT FORMAT errorfile
+        MODE GA:1,2,3 OP:1,2,3 GA:1,2,3 OP:1,2,3 64:1,2,3 CS:1,2,3 MISRA:1,2,3
+        LOG target_${PROJECT_NAME}.err)
 
 #####################################

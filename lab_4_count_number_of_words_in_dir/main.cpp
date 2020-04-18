@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     if (infile.empty() || out_by_a_filename.empty() or out_by_n_filename.empty() || threads < 1) {
         std::cerr << "Error: Config file is empty or missing some values!" << std::endl;
-        exit(23);
+        return 23;
     }
     std::ofstream outfile_alpha;
     std::ofstream outfile_number;
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     if (!boost::filesystem::exists(infile) || !boost::filesystem::exists(out_by_a_filename) ||
         !boost::filesystem::exists(out_by_n_filename)) {
         std::cerr << "Error: File or Directory '" << infile << "' do not exist (or can not be created)!" << std::endl;
-        exit(21);
+        return 21;
     }
 
 
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     } else {
         if (!boost::filesystem::is_regular_file(infile)) {
             std::cerr << "Invalid file given " << infile << "!" << std::endl;
-            exit(22);
+            return 22;
         } else if (boost::filesystem::is_empty(infile)) {
             std::cerr << "Empty file given. Nothing to count!" << std::endl;
         } else {
@@ -84,7 +84,6 @@ int main(int argc, char *argv[]) {
         parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
         file_loader_thread.join();
     } else {
-        std::vector<std::string> data;
         linear_count(files_list, out_by_a_filename, out_by_n_filename);
     }
     auto finish_time = get_current_time_fenced();

@@ -22,7 +22,7 @@ static inline std::string get_extension(const std::string &filename) {
     return filename.substr(filename.find_last_of('.') + 1);
 }
 
-static inline bool is_text_file(std::string filename) {
+static inline bool is_text_file(const std::string &filename) {
     return "txt" == get_extension(filename);
 }
 
