@@ -18,21 +18,27 @@ int main() {
 //    std::cout << "Total file num: " << count << std::endl;
 
 
-    std::string input_filename = "file.tar";
-    static const std::vector<std::string> supported_formats = {"tar", "gz", "pax", "cpio", "zip", "mtree", "shar", "ar",
-                                                               "raw", "xar", "lha", "lzh", "rar", "7z"};
-    std::string extension = input_filename.substr(input_filename.find_last_of('.') + 1);
-    if (extension == "txt") {
-        std::cout << "OK txt" << std::endl;
-    } else if ([extension]() {
-        for (const auto &el : supported_formats)
-            if (extension == el)
-                return true;
-        return false;
-    }()) {
-        std::cout << "OK archive " << extension << std::endl;
-    } else {
-        std::cerr << "Warning: File '" << input_filename << "' passed as it has a not supported format!" << std::endl;
-    }
+//    std::string input_filename = "file.tar";
+//    static const std::vector<std::string> supported_formats = {"tar", "gz", "pax", "cpio", "zip", "mtree", "shar", "ar",
+//                                                               "raw", "xar", "lha", "lzh", "rar", "7z"};
+//    std::string extension = input_filename.substr(input_filename.find_last_of('.') + 1);
+//    if (extension == "txt") {
+//        std::cout << "OK txt" << std::endl;
+//    } else if ([extension]() {
+//        for (const auto &el : supported_formats)
+//            if (extension == el)
+//                return true;
+//        return false;
+//    }()) {
+//        std::cout << "OK archive " << extension << std::endl;
+//    } else {
+//        std::cerr << "Warning: File '" << input_filename << "' passed as it has a not supported format!" << std::endl;
+//    }
+
+    std::map<std::string, int> map{};
+    map["1"] = 11;
+    map["2"] += 3;
+    std::cout << "map[\"1\"] = " << map["1"] << std::endl;
+    std::cout << "map[\"2\"] = " << map["2"] << std::endl;
     return 0;
 }

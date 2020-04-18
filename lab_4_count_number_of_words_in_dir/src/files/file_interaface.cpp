@@ -1,14 +1,14 @@
 //
 // Created by fenix on 4/6/20.
 //
+#include "../../includes/files/file_interface.h"
 #include <boost/filesystem.hpp>
 #include <iostream>
 #include <sstream>
-#include "../../includes/files/file_interface.h"
-#include "../../includes/merging/map_helpers.h"
+#include "../../includes/counting/map_helpers.h"
 
-void print(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
-           const std::string &output_filename_n) {
+void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
+                       const std::string &output_filename_n) {
     std::ofstream outfile_alpha;
     std::ofstream outfile_number;
     outfile_alpha.open(output_filename_a);
@@ -40,4 +40,19 @@ std::string read_binary_file(const std::string &filename) {
     std::ostringstream ss{};
     ss << raw_file.rdbuf();
     return ss.str();
+}
+
+// WARNING: do not list empty files!!!
+void list_all_files_from(const std::string &dir_path, std::vector<std::string> *res) {
+    for (const auto &file : boost::filesystem::recursive_directory_iterator(dir_path)) {
+        if (boost::filesystem::is_regular_file(file) && !boost::filesystem::is_empty(file)) {
+            res->emplace_back(file.path().string());
+        } else {
+            if (boost::filesystem::is_directory(file)) {
+                list_all_files_from(file.path().string(), res);
+            } else {
+                std::cerr << "Warning directory contain not valid or empty files! They are not counted!" << std::endl;
+            }
+        }
+    }
 }

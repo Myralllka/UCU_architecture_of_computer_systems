@@ -74,7 +74,8 @@ void archive_t::extract_all(T *tqueue) {
 
         if (archive_entry_size(entry) > 0) {
 #ifdef DEBUG_INFO
-            std::cout << "Unarchive entry: " << "(size: " << archive_entry_size(entry) << ")" << std::endl;
+//            std::cout << "Unarchive entry: " << "(size: " << archive_entry_size(entry) << ")" << std::endl;
+            std::cout << "e" << std::flush;
 #endif
             filesize = archive_entry_size(entry);
             std::string output(filesize, char{});

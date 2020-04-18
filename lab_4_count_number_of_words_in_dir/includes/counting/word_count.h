@@ -10,6 +10,8 @@
 
 void count_words(std::string tmp_str, std::map<std::string, size_t> *result_map);
 
-void alternative_word_count(std::string element, std::map<std::string, size_t> *map_of_words);
+void alternative_word_count(std::string str, std::map<std::string, size_t> *map_of_words);
+
+void fast_count_words(const std::string &str, std::map<std::string, size_t> *result_map);
 
 #endif //COUNT_NUMBER_OF_ALL_WORDS_WORD_COUNT_H

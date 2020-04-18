@@ -43,7 +43,7 @@ public:
     bool unpublish(bool if_last_send = true, T to_back_data = T{}) {
         std::lock_guard<std::mutex> lg(pub_mux);
         if (publishers == 1 && if_last_send) {
-            push_back(to_back_data);
+            t_queue<T>::emplace_back(std::move(to_back_data));
         }
         publishers -= 1;
         return publishers == 0;

@@ -64,10 +64,11 @@ public:
 
     std::vector<T> pop_front_n(uint8_t n) {
         std::unique_lock<std::mutex> lg(mut);
-        std::vector<T> res(n);
+        std::vector<T> res{};
         data_received_notify.wait(lg, [this, n]() { return queue.size() >= n; });
         for (uint8_t i = 0; i < n; ++i) {
             res.emplace(res.begin() + i, std::move(queue.front()));
+//            res.emplace_back(std::move(queue.front()));
             queue.pop_front();
         }
         return res;

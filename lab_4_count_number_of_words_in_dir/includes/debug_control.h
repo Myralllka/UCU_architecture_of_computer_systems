@@ -7,4 +7,15 @@
 
 #define DEBUG_INFO
 
+/* ////////  Work for parallel program /////////
+ * txt - for loaded files                     //
+ * '*' - file to be unarchived                //
+ * 'e' - archive entry to be processed        //
+ * '.' - one data entry is indexed            //
+ * '+' - two maps to be merged                //
+ * 'U' - one unachive thread is finished      //
+ * 'C' - one indexing thread is finished      //
+ * 'M' - one merge thread is finished         //
+ */////////////////////////////////////////////
+
 #endif //COUNT_NUMBER_OF_ALL_WORDS_DEBUG_CONTROL_H

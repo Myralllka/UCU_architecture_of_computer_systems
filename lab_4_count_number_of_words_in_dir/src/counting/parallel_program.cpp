@@ -3,55 +3,124 @@
 //
 
 #include "../../includes/counting/parallel_program.h"
-#include "../../includes/merging/merge_maps.h"
+#include "../../includes/counting/map_helpers.h"
 #include "../../includes/speed_tester.h"
 #include "../../includes/counting/word_count.h"
-#include "../../includes/files/file_interface.h"
 #include <vector>
 #include <thread>
+
 
 #include "../../includes/debug_control.h"
 
 //#define PACKET_SIZE 10000
 
-static void count_thread(t_queue<file_packet> *data_q, t_queue<std::map<std::string, size_t>> *map_queue) {
-    std::map<std::string, size_t> result_map{};
-//    auto analyzing_time = get_current_time_fenced();
-    std::string content;
-    std::vector<std::string> words;
+// publish data for threads (POISON PILL == "" EMPTY STRING)
 
-    content = data_q->pop_front().use_as_one(data_q);
-    while (!(content = data_q->pop_front().use_as_one(data_q)).empty()) {
+static void unarchive_thread(t_queue<file_packet> *file_q, tqueue_radio<std::string> *data_q) {
+    data_q->publish();
+    file_packet packet;
+
+    while (!(packet = file_q->pop_front()).empty()) {
+#ifdef DEBUG_INFO
+        std::cout << "*" << std::flush;
+#endif
+        if (packet.archived) {
+            archive_t tmp_archive{std::move(packet.content)};
+            tmp_archive.extract_all(data_q);
+        } else {
+            data_q->emplace_back(std::move(packet.content));
+        }
+    }
+
+    file_q->emplace_back(file_packet{});
+    data_q->unpublish(); // IF LAST SEND A POISON PILL!!!
+#ifdef DEBUG_INFO
+    std::cout << "U" << std::flush;
+#endif
+}
+
+static void count_thread(tqueue_radio<std::string> *data_q, tqueue_radio<std::map<std::string, size_t>> *map_queue) {
+    map_queue->publish();
+    data_q->subscribe();
+    std::map<std::string, size_t> result_map{};
+    std::string content;
+
+    while (!(content = data_q->pop_front()).empty()) {
 #ifdef DEBUG_INFO
         std::cout << "." << std::flush;
 #endif
-        count_words(std::move(content), &result_map);
+        fast_count_words(content, &result_map);
     }
+    data_q->emplace_back("");
+    data_q->unsubscribe();
 
-//    std::cout << "j: " << to_us(get_current_time_fenced() - analyzing_time) << "\tsize: " << data_q.size() <<std::endl;
-    data_q->emplace_back(file_packet{});
+    map_queue->unpublish(); // IF LAST SEND A POISON PILL!!!
     map_queue->emplace_back(std::move(result_map));
-    map_queue->emplace_back(std::map<std::string, size_t>{}); // POISON PILL
+#ifdef DEBUG_INFO
+    std::cout << "C" << std::flush;
+#endif
 }
 
-void parallel_count(t_queue<file_packet> &data_queue,
+static void merge_maps_thread(tqueue_radio<std::map<std::string, size_t>> *queue) {
+    queue->subscribe();
+    std::vector<std::map<std::string, size_t>> merge_group;
+    while (!(merge_group = queue->pop_front_n(2))[0].empty() && !merge_group[1].empty()) {
+#ifdef DEBUG_INFO
+        std::cout << "+" << std::flush;
+#endif
+        for (auto &element : merge_group[1]) {
+            merge_group[0][element.first] += merge_group[1][element.first];
+        }
+        queue->emplace_front(std::move(merge_group[0]));
+    }
+    if (merge_group[1].empty()) {
+        queue->emplace_front(std::move((merge_group[0])));
+    } else {
+        queue->emplace_front(std::move(merge_group[1]));
+    }
+    queue->emplace_back(std::map<std::string, size_t>{});
+    queue->unsubscribe();
+#ifdef DEBUG_INFO
+    std::cout << "M" << std::flush;
+#endif
+}
+
+void parallel_count(t_queue<file_packet> *loader_queue,
                     const std::string &output_filename_a, const std::string &output_filename_n,
                     const uint8_t number_of_threads) {
     std::vector<std::thread> vector_of_threads{};
-    std::map<std::string, size_t> result_map;
-    t_queue<std::map<std::string, size_t>> map_queue;
+
+    tqueue_radio<std::string> data_queue;
+    tqueue_radio<std::map<std::string, size_t>> map_queue;
+
     std::vector<std::string> words;
+    std::map<std::string, size_t> result_map;
 
 //    size_t data_portion_len = PACKET_SIZE;
     auto analyzing_time = get_current_time_fenced();
-    for (size_t i = 0; i < number_of_threads - 1; i++) {
+
+    /////////////////////////// UNARCHIVE ///////////////////////////
+//    for (uint8_t i = 0; i < number_of_threads; i++) {
+    for (uint8_t i = 0; i < 1; i++) {
+        vector_of_threads.emplace_back(unarchive_thread, loader_queue, &data_queue);
+    }
+    /////////////////////////////////////////////////////////////////
+
+    ///////////////////////////   COUNT   ///////////////////////////
+    for (uint8_t i = 0; i < number_of_threads; i++) {
         vector_of_threads.emplace_back(count_thread, &data_queue, &map_queue);
     }
+    /////////////////////////////////////////////////////////////////
 
     merge_maps_thread(&map_queue);
     for (auto &t: vector_of_threads) {
         t.join();
     }
+#ifdef DEBUG_INFO
+    std::cout << "Analyzing: " << to_s(get_current_time_fenced() - analyzing_time) << std::endl;
+#else
     std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
-    print(map_queue.pop_front(), output_filename_a, output_filename_n);
+#endif
+
+    dump_map_to_files(map_queue.pop_front(), output_filename_a, output_filename_n);
 }
