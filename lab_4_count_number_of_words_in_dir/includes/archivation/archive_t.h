@@ -5,13 +5,12 @@
 #ifndef COUNT_NUMBER_OF_ALL_WORDS_ARCHIVE_T_H
 #define COUNT_NUMBER_OF_ALL_WORDS_ARCHIVE_T_H
 
+#include "../files/file_interface.h"
 #include <archive.h>
 #include <archive_entry.h>
 #include <string>
 #include <vector>
 #include <iostream>
-#include "../files/file_interface.h"
-
 #include "../code_control.h"
 #include "../queues/tqueue.h"
 

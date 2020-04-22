@@ -5,12 +5,12 @@
 #ifndef COUNT_NUMBER_OF_ALL_WORDS_FILE_INTERFACE_H
 #define COUNT_NUMBER_OF_ALL_WORDS_FILE_INTERFACE_H
 
+//#include "../../includes/archivation/archive_t.h"
 #include <string>
 #include <map>
 #include <algorithm>
 #include <boost/filesystem.hpp>
-#include "../../includes/archivation/archive_t.h"
-
+#include <iostream>
 #include "../code_control.h"
 
 void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,

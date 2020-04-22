@@ -7,7 +7,7 @@
 #include <vector>
 #include <thread>
 #include <boost/locale.hpp>
-
+#include "../../includes/archivation/archive_t.h"
 #include "../../includes/code_control.h"
 
 #define MAP_PACKET_SIZE 10000
