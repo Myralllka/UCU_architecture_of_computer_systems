@@ -3,18 +3,16 @@
 //
 
 #include "../../includes/counting/parallel_program.h"
-#include "../../includes/counting/map_helpers.h"
-#include "../../includes/speed_tester.h"
 #include "../../includes/counting/word_count.h"
 #include <vector>
 #include <thread>
 #include <boost/locale.hpp>
 
 
-#include "../../includes/debug_control.h"
+#include "../../includes/code_control.h"
 
 #define MAP_PACKET_SIZE 10000
-#define MAX_DATA_QUEUE_SIZE 10
+#define MAX_DATA_QUEUE_SIZE_PER_THREAD 5
 #define MAX_MAP_QUEUE_SIZE 10
 
 static void unarchive_thread(t_queue<file_packet> *file_q, tqueue_radio<std::string> *data_q) {
@@ -59,12 +57,14 @@ static void count_thread(tqueue_radio<std::string> *data_q, tqueue_radio<std::ma
 
         fast_count_words(content, &result_map);
 
+#ifdef ENABLE_MAX_COUNTING_BUFFER
         ///////////////////// PUBLISH FULL MAP ////////////////////////////
         if (result_map.size() > MAP_PACKET_SIZE) {
             map_queue->emplace_back(std::move(result_map));
             result_map = std::map<std::string, size_t>{};
         }
         ///////////////////////////////////////////////////////////////////
+#endif
     }
 
     ///////////////////////// FORWARD POISON PILL //////////////////////////
@@ -114,10 +114,8 @@ void parallel_count(t_queue<file_packet> *loader_queue,
                     const uint8_t number_of_threads) {
     std::vector<std::thread> vector_of_threads{};
 
-    tqueue_radio<std::string> data_queue{MAX_DATA_QUEUE_SIZE};
+    tqueue_radio<std::string> data_queue{static_cast<size_t> (number_of_threads) * MAX_DATA_QUEUE_SIZE_PER_THREAD};
     tqueue_radio<std::map<std::string, size_t>> map_queue{MAX_MAP_QUEUE_SIZE};
-
-    auto analyzing_time = get_current_time_fenced();
 
     /////////////////////////// UNARCHIVE ///////////////////////////
     vector_of_threads.emplace_back(unarchive_thread, loader_queue, &data_queue);
@@ -132,12 +130,6 @@ void parallel_count(t_queue<file_packet> *loader_queue,
     for (auto &t: vector_of_threads) {
         t.join();
     }
-
-#ifdef DEBUG_INFO
-    std::cout << "Analyzing: " << to_s(get_current_time_fenced() - analyzing_time) << std::endl;
-#else
-    std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
-#endif
 
     dump_map_to_files(map_queue.pop_front(), output_filename_a, output_filename_n);
 }

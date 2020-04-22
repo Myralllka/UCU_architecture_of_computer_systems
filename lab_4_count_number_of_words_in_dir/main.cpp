@@ -6,15 +6,17 @@
 #include "includes/exceptions/parser_exeption.h"
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
+#include <optional>
 #include "includes/speed_tester.h"
 #include "includes/files/file_interface.h"
 
-#include "includes/debug_control.h"
+#include "includes/code_control.h"
 
 #define MAX_LOAD_QUEUE_SIZE 10
 
 int main(int argc, char *argv[]) {
     auto start_time = get_current_time_fenced();
+
     //  ##################### Program Parameter Parsing ######################
     std::string filename = "config.dat";
     if (argc == 2) {
@@ -80,7 +82,7 @@ int main(int argc, char *argv[]) {
 
     //  ##############  Load, Unarchive and Count words in Text ####################
     if (threads > 1) {
-        t_queue<file_packet> packet_queue{MAX_LOAD_QUEUE_SIZE};
+        t_queue<file_packet> packet_queue{static_cast<size_t>(threads) * MAX_LOAD_QUEUE_SIZE};
         std::thread file_loader_thread{read_files_thread<std::vector<std::string>, t_queue<file_packet>>,
                                        std::ref(files_list), &packet_queue};
         parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
@@ -88,7 +90,7 @@ int main(int argc, char *argv[]) {
     } else {
         linear_count(files_list, out_by_a_filename, out_by_n_filename);
     }
-    auto finish_time = get_current_time_fenced();
+    const auto finish_time = get_current_time_fenced();
 
 #ifdef DEBUG_INFO
     std::cout << "Total: " << to_s(finish_time - start_time) << '.' << to_s(finish_time - start_time) << std::endl;

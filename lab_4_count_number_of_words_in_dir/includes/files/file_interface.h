@@ -11,7 +11,7 @@
 #include <boost/filesystem.hpp>
 #include "../../includes/archivation/archive_t.h"
 
-#include "../../includes/debug_control.h"
+#include "../code_control.h"
 
 void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
                        const std::string &output_filename_n);
@@ -40,10 +40,10 @@ struct file_packet {
     bool archived;
     std::string content;
 
-    file_packet(std::string content = "", bool compressed = false) : archived(compressed),
-                                                                     content(std::move(content)) {}
+    explicit file_packet(std::string content = "", bool compressed = false) : archived(compressed),
+                                                                              content(std::move(content)) {}
 
-    bool empty() const { return content.empty(); }
+    [[nodiscard]] bool empty() const { return content.empty(); }
 };
 
 template<class T>

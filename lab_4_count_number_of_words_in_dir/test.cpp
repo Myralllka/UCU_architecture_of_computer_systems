@@ -3,6 +3,9 @@
 //
 #include <boost/filesystem.hpp>
 #include <iostream>
+#include "includes/archivation/archive_t.h"
+#include <string>
+#include <vector>
 
 
 int main() {
@@ -35,10 +38,16 @@ int main() {
 //        std::cerr << "Warning: File '" << input_filename << "' passed as it has a not supported format!" << std::endl;
 //    }
 
-    std::map<std::string, int> map{};
-    map["1"] = 11;
-    map["2"] += 3;
-    std::cout << "map[\"1\"] = " << map["1"] << std::endl;
-    std::cout << "map[\"2\"] = " << map["2"] << std::endl;
+//    std::map<std::string, int> map{};
+//    map["1"] = 11;
+//    map["2"] += 3;
+//    std::cout << "map[\"1\"] = " << map["1"] << std::endl;
+//    std::cout << "map[\"2\"] = " << map["2"] << std::endl;
+
+    archive_t a{};
+    a.load_file("archives/dir.zip");
+    std::vector<std::string> vector{};
+    a.extract_all(&vector);
+    std::cout << "Final vector size: " << vector.size() << std::endl;
     return 0;
 }

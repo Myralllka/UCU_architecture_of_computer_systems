@@ -9,11 +9,11 @@
 #include <archive_entry.h>
 #include <string>
 #include <vector>
-#include <ibase.h>
-#include "../queues/tqueue.h"
-#include "../exceptions/not_implemented_err.h"
+#include <iostream>
 
-#include "../debug_control.h"
+#include "../code_control.h"
+
+#define MAX_TEXT_FILE_SIZE 100000000
 
 class archive_t {
     struct archive *archive_obj = nullptr;
@@ -33,7 +33,7 @@ public:
     const archive_t &operator=(const archive_t &archive) = delete;
 
     template<class T>
-    static void extract_to(std::string file_name, T *tqueue);
+    static void extract_to(const std::string &file_name, T *tqueue);
 
     void load_file(const std::string &file_name);
 
@@ -52,7 +52,7 @@ void archive_t::extract_all(T *tqueue) {
     la_int64_t filesize;
 
     // read from buffer, not from the file
-    if ((status = archive_read_open_memory(archive_obj, buffer.c_str(), buffer.size()))) {
+    if (archive_read_open_memory(archive_obj, buffer.c_str(), buffer.size())) {
         std::cerr << "Error: Can not open archive_obj form memory! " << archive_error_string(archive_obj) << std::endl;
         return;
     }
@@ -71,12 +71,11 @@ void archive_t::extract_all(T *tqueue) {
         }
 
 
-        if (archive_entry_size(entry) > 0) {
+        if ((filesize = archive_entry_size(entry)) > 0 && filesize <= MAX_TEXT_FILE_SIZE) {
 #ifdef DEBUG_INFO
 //            std::cout << "Unarchive entry: " << "(size: " << archive_entry_size(entry) << ")" << std::endl;
             std::cout << "e" << std::flush;
 #endif
-            filesize = archive_entry_size(entry);
             std::string output(filesize, char{});
 
             // write exactly to the other output buffer
@@ -96,7 +95,7 @@ void archive_t::extract_all(T *tqueue) {
 }
 
 template<class T>
-void archive_t::extract_to(std::string file_name, T *tqueue) {
+void archive_t::extract_to(const std::string &file_name, T *tqueue) {
     archive_t tmp_archive{};
     tmp_archive.load_file(file_name);
     tmp_archive.extract_all(tqueue);

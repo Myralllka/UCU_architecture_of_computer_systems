@@ -2,8 +2,8 @@
 // Created by fenix on 4/18/20.
 //
 
-#ifndef COUNT_NUMBER_OF_ALL_WORDS_DEBUG_CONTROL_H
-#define COUNT_NUMBER_OF_ALL_WORDS_DEBUG_CONTROL_H
+#ifndef COUNT_NUMBER_OF_ALL_WORDS_CODE_CONTROL_H
+#define COUNT_NUMBER_OF_ALL_WORDS_CODE_CONTROL_H
 
 #define DEBUG_INFO
 
@@ -18,4 +18,6 @@
  * 'M' - one merge thread is finished         //
  */////////////////////////////////////////////
 
-#endif //COUNT_NUMBER_OF_ALL_WORDS_DEBUG_CONTROL_H
+#define ENABLE_MAX_COUNTING_BUFFER
+
+#endif //COUNT_NUMBER_OF_ALL_WORDS_CODE_CONTROL_H

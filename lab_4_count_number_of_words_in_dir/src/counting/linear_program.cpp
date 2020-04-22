@@ -1,40 +1,30 @@
 //
 // Created by myralllka on 3/25/20.
 //
-#include "../../includes/speed_tester.h"
 #include "../../includes/files/file_interface.h"
 #include "../../includes/counting/word_count.h"
-#include <iostream>
 #include <map>
 #include <string>
 #include <algorithm>
+#include <boost/locale.hpp>
 
 void linear_count(const std::vector<std::string> &file_names, const std::string &output_filename_a,
                   const std::string &output_filename_n) {
     std::map<std::string, size_t> map_of_words;
-    std::chrono::duration<int32_t, std::ratio<1, 1000000000>> load_time{};
-
-    auto analyzing_time = get_current_time_fenced();
     std::vector<file_packet> file_buf{};
-    for (const std::string &file_n : file_names) {
-        //////////////// FILE LOAD and UNARCHIVE /////////////
-        auto start_load = get_current_time_fenced();
-        read_input_file_gen(file_n, &file_buf); // generic method to load all files
-        load_time += get_current_time_fenced() - start_load;
-        //////////////////////////////////////////////////////
 
-        for (const auto &file : file_buf) {
-            fast_count_words(file.content, &map_of_words);
+    for (const std::string &file_n : file_names) {
+        read_input_file_gen(file_n, &file_buf); // generic method to load all files
+        for (auto &file : file_buf) {
+            std::string content{std::move(file.content)};
+            /////////////////////// NORMALIZE CONTENT /////////////////////////
+            content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
+            content.erase(std::remove_if(content.begin(), content.end(),
+                                         [](const unsigned &c) { return !isspace(c) && !isalpha(c); }), content.end());
+            ///////////////////////////////////////////////////////////////////
+            fast_count_words(content, &map_of_words);
         }
         file_buf.clear();
     }
-#ifdef DEBUG_INFO
-    std::cout << "Loading: " << to_s(load_time) << std::endl;
-    std::cout << "Analyzing: " << to_s(get_current_time_fenced() - analyzing_time) << std::endl;
-#else
-    std::cout << "Loading: " << to_us(load_time) << std::endl;
-    std::cout << "Analyzing: " << to_us(get_current_time_fenced() - analyzing_time) << std::endl;
-#endif
-
     dump_map_to_files(map_of_words, output_filename_a, output_filename_n);
 }
