@@ -25,30 +25,34 @@ def build(d, r):
     os.system("make >> ../build_logs.txt")
     os.chdir("../")
     os.system("rm build_logs.txt")
+    print("builded")
 
 
 def run(n, conf):
-    durations = list()
-    analyzing = list()
-    loadings = list()
-    print("..running program")
+    os.system("./cmake-build-debug/count_number_of_all_words ./{} >> durations.txt".format(conf))
+    # durations = list()
+    # analyzing = list()
+    # loadings = list()
+    # print("..running program")
     # os.chdir("cmake-build-debug")
-    for _ in range(n):
-        print("...running {} time".format(_ + 1))
-        os.system("./cmake-build-debug/count_number_of_all_words ./{} >> durations.txt".format(conf))
-        with open("durations.txt", 'r') as dur_file:
-            analyzing.append(float(re.findall(r"Analyzing: \d+", dur_file.read())[-1].split()[1]))
-        with open("durations.txt", 'r') as dur_file:
-            durations.append(float(re.findall(r"Total: \d+", dur_file.read())[-1].split()[1]))
-        with open("durations.txt", 'r') as dur_file:
-            loadings.append(float(re.findall(r"Loading: \d+", dur_file.read())[-1].split()[1]))
-    os.system("rm durations.txt")
-    print("> minimum total runtime {} us\n> minimum total analyzing {} us, \n> minimum total loading {} us"
-          .format(min(durations), min(analyzing), min(loadings)))
+    # for _ in range(n):
+    #     print("...running {} time".format(_ + 1))
+    #     os.system("./cmake-build-debug/count_number_of_all_words ./{} >> durations.txt".format(conf))
+    #     with open("durations.txt", 'r') as dur_file:
+    #         analyzing.append(float(re.findall(r"Analyzing: \d+", dur_file.read())[-1].split()[1]))
+    #     with open("durations.txt", 'r') as dur_file:
+    #         durations.append(float(re.findall(r"Total: \d+", dur_file.read())[-1].split()[1]))
+    #     with open("durations.txt", 'r') as dur_file:
+    #         loadings.append(float(re.findall(r"Loading: \d+", dur_file.read())[-1].split()[1]))
+    # os.system("rm durations.txt")
+    # print("> minimum total runtime {} us\n> minimum total analyzing {} us, \n> minimum total loading {} us"
+    #       .format(min(durations), min(analyzing), min(loadings)))
 
 
 def check_results(config_file):
     print("..checking results. running program in one thread for etalon results...")
+    # print(config_file)
+    # os.system("pwd")
     with open("./{}".format(config_file), 'r') as main_config:
         tmp = main_config.readlines()
         # print(tmp)
@@ -71,11 +75,15 @@ threads = 1""".format(infile))
         os.system("mkdir -p error")
         os.system("cp {} ./error/res_a.txt".format(outA))
         os.system("cp ././test_res_a.txt ./error/./test_res_a.txt")
+    else:
+        print ("files by alpha are the same")
     if os.system("cmp {} ./test_res_n.txt".format(outN)):
         print("different results sorted by number! see error folder")
         os.system("mkdir -p error")
         os.system("cp {} ./error/res_n.txt".format(outN))
         os.system("cp ././test_res_n.txt ./error/./test_res_n.txt")
+    else:
+        print("files by number are the same")
     os.system("rm test_config.conf")
     os.system("rm ./test_res_a.txt")
     os.system("rm ./test_res_n.txt")
