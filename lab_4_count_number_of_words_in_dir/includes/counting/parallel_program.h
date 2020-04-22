@@ -10,6 +10,7 @@
 #include <map>
 #include "../queues/tqueue.h"
 #include "../../includes/queues/tqueue_radio.h"
+#include "../files/file_packet.h"
 #include "../files/file_interface.h"
 
 void parallel_count(t_queue<file_packet> *loader_queue, const std::string &output_filename_a,

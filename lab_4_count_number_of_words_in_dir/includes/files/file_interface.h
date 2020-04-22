@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <boost/filesystem.hpp>
 #include <iostream>
+#include "file_packet.h"
+
 #include "../code_control.h"
 
 void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
@@ -36,15 +38,10 @@ static inline bool is_archive_file(const std::string &filename) {
     return false;
 }
 
-struct file_packet {
-    bool archived;
-    std::string content;
-
-    explicit file_packet(std::string content = "", bool compressed = false) : archived(compressed),
-                                                                              content(std::move(content)) {}
-
-    [[nodiscard]] bool empty() const { return content.empty(); }
-};
+static inline bool is_of_allowed_size(const std::string &filename) {
+    auto file_size = boost::filesystem::file_size(filename);
+    return file_size > 0 && file_size < MAX_TEXT_FILE_SIZE;
+}
 
 template<class T>
 void read_input_file_gen(const std::string &input_filename, T *data_struct) {
@@ -53,7 +50,12 @@ void read_input_file_gen(const std::string &input_filename, T *data_struct) {
 #endif
 
     if (is_text_file(input_filename)) {
-        data_struct->emplace_back(file_packet{read_binary_file(input_filename)});
+        if (is_of_allowed_size(input_filename)) {
+            data_struct->emplace_back(file_packet{read_binary_file(input_filename)});
+        } else {
+            std::cerr << "Warning: text file '" << input_filename << "' is missed as it is empty or lager than "
+                      << MAX_TEXT_FILE_SIZE << "!" << std::endl;
+        }
     } else if (is_archive_file(input_filename)) {
         data_struct->emplace_back(file_packet{read_binary_file(input_filename), true});
     } else {
