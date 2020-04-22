@@ -15,6 +15,9 @@ endif ()
 set(CMAKE_BUILD_TYPE Debug)
 find_package(Threads REQUIRED)
 find_package(LibArchive 3.0.0)
+
+set(Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
+set(Boost_USE_MULTITHREAD ON)  # enable maltreating
 find_package(Boost COMPONENTS filesystem program_options system locale REQUIRED)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 

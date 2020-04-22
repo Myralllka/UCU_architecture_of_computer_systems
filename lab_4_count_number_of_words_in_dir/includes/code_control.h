@@ -11,6 +11,7 @@
  * txt - for loaded files                     //
  * '*' - file to be unarchived                //
  * 'e' - archive entry to be processed        //
+ * 'b' - publish a archive entry (recursive a)//
  * '.' - one data entry is indexed            //
  * '+' - two maps to be merged                //
  * 'U' - one unachive thread is finished      //

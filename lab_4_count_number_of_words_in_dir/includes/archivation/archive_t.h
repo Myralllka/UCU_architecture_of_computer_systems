@@ -10,8 +10,10 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "../files/file_interface.h"
 
 #include "../code_control.h"
+#include "../queues/tqueue.h"
 
 #define MAX_TEXT_FILE_SIZE 100000000
 
@@ -38,7 +40,7 @@ public:
     void load_file(const std::string &file_name);
 
     template<class T>
-    void extract_all(T *tqueue);
+    void extract_all(T *tqueue, t_queue<file_packet> *source);
 
 private:
     void init_archive();
@@ -46,10 +48,11 @@ private:
 
 
 template<class T>
-void archive_t::extract_all(T *tqueue) {
+void archive_t::extract_all(T *tqueue, t_queue<file_packet> *source) {
     struct archive_entry *entry;
     int status;
     la_int64_t filesize;
+    std::string entry_path{};
 
     // read from buffer, not from the file
     if (archive_read_open_memory(archive_obj, buffer.c_str(), buffer.size())) {
@@ -59,6 +62,11 @@ void archive_t::extract_all(T *tqueue) {
 
     while ((status = archive_read_next_header(archive_obj, &entry)) != ARCHIVE_EOF && status != ARCHIVE_FATAL) {
         processed_f++;
+        entry_path = archive_entry_pathname(entry);
+        if (!is_text_file(entry_path) || !is_archive_file(entry_path)) {
+            std::cerr << "Warning: archive contain not supported formats. File " << entry_path << " is passed!"
+                      << std::endl;
+        }
 
         if (status < ARCHIVE_OK) {
             if (status < ARCHIVE_WARN) {
@@ -81,7 +89,14 @@ void archive_t::extract_all(T *tqueue) {
             // write exactly to the other output buffer
             status = archive_read_data(archive_obj, &output[0], output.size());
             if (status >= ARCHIVE_WARN) {
-                tqueue->emplace_back(std::move(output));
+                if (is_text_file(entry_path)) {
+                    tqueue->emplace_back(std::move(output));
+                } else {
+                    source->emplace_front_force(file_packet{std::move(output), true});
+#ifdef DEBUG_INFO
+                    std::cout << "b" << std::flush;
+#endif
+                }
             } else {
                 std::cerr << archive_error_string(archive_obj) << std::endl;
             }

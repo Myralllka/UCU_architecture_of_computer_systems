@@ -8,7 +8,6 @@
 #include <thread>
 #include <boost/locale.hpp>
 
-
 #include "../../includes/code_control.h"
 
 #define MAP_PACKET_SIZE 10000
@@ -25,7 +24,7 @@ static void unarchive_thread(t_queue<file_packet> *file_q, tqueue_radio<std::str
 #endif
         if (packet.archived) {
             archive_t tmp_archive{std::move(packet.content)};
-            tmp_archive.extract_all(data_q);
+            tmp_archive.extract_all(data_q, file_q);
         } else {
             data_q->emplace_back(std::move(packet.content));
         }
@@ -89,18 +88,18 @@ static void merge_maps_thread(tqueue_radio<std::map<std::string, size_t>> *queue
 #ifdef DEBUG_INFO
         std::cout << "+" << std::flush;
 #endif
-        for (auto &element : merge_group[1]) {
+        for (auto &element : merge_group[1])
             merge_group[0][element.first] += merge_group[1][element.first];
-        }
+
         queue->emplace_front(std::move(merge_group[0]));
     }
 
 
-    if (merge_group[1].empty()) {
+    if (merge_group[1].empty())
         queue->emplace_front(std::move((merge_group[0])));
-    } else {
+    else
         queue->emplace_front(std::move(merge_group[1]));
-    }
+
 
     queue->emplace_back(std::map<std::string, size_t>{}); // PILL
     queue->unsubscribe();
@@ -127,9 +126,8 @@ void parallel_count(t_queue<file_packet> *loader_queue,
     /////////////////////////////////////////////////////////////////
 
     merge_maps_thread(&map_queue);
-    for (auto &t: vector_of_threads) {
+    for (auto &t: vector_of_threads)
         t.join();
-    }
 
     dump_map_to_files(map_queue.pop_front(), output_filename_a, output_filename_n);
 }

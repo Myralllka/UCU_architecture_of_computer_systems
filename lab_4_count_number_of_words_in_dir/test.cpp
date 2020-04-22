@@ -47,7 +47,8 @@ int main() {
     archive_t a{};
     a.load_file("archives/dir.zip");
     std::vector<std::string> vector{};
-    a.extract_all(&vector);
+    t_queue<file_packet> source{};
+    a.extract_all(&vector, &source);
     std::cout << "Final vector size: " << vector.size() << std::endl;
     return 0;
 }

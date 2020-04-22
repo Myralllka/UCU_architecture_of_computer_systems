@@ -103,16 +103,16 @@ if __name__ == "__main__":
         config_file = sys.argv[1]
         arguments = ' '.join(sys.argv)
         n = 1
-        if re.search("-n \d+", arguments) is not None:
-            n = int(re.search("-n \d+", arguments).group(0)[2:])
+        if re.search(r"-n \d+", arguments) is not None:
+            n = int(re.search(r"-n \d+", arguments).group(0)[2:])
         debug, release = False, False
-        if re.search("-d", arguments) is not None:
+        if re.search(r"-d", arguments) is not None:
             debug = True
-        if re.search("-o", arguments) is not None:
+        if re.search(r"-o", arguments) is not None:
             release = True
-        if re.search("-b", arguments) is not None:
+        if re.search(r"-b", arguments) is not None:
             build(debug, release)
-        if re.search("-h", arguments) is not None:
+        if re.search(r"-h", arguments) is not None:
             heelp()
         run(n, config_file)
         check_results(config_file)

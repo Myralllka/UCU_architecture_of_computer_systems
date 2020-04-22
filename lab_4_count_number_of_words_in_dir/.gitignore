@@ -5,5 +5,5 @@ docs/
 sample_1/
 .idea
 res*
-#venv
+venv
 perf*

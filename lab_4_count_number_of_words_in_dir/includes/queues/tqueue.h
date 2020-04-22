@@ -59,10 +59,18 @@ public:
         data_published_notify.notify_one();
     }
 
-    void emplace_front(T d) {
+    void emplace_front(T &&d) {
         {
             std::unique_lock<std::mutex> lg(mut);
             data_received_notify.wait(lg, [this]() { return queue.size() + 1 <= max_size || max_size == 0; });
+            queue.emplace_front(d);
+        }
+        data_published_notify.notify_one();
+    }
+
+    void emplace_front_force(T &&d) {
+        {
+            std::unique_lock<std::mutex> lg(mut);
             queue.emplace_front(d);
         }
         data_published_notify.notify_one();
