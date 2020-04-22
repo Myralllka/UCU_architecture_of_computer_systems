@@ -13,6 +13,7 @@
 #define MAP_PACKET_SIZE 10000
 #define MAX_DATA_QUEUE_SIZE_PER_THREAD 5
 #define MAX_MAP_QUEUE_SIZE 10
+#define MERGE_THREADS 1
 
 static void unarchive_thread(t_queue<file_packet> *file_q, tqueue_radio<std::string> *data_q) {
     data_q->publish();
@@ -125,7 +126,10 @@ void parallel_count(t_queue<file_packet> *loader_queue,
         vector_of_threads.emplace_back(count_thread, &data_queue, &map_queue);
     /////////////////////////////////////////////////////////////////
 
-    merge_maps_thread(&map_queue);
+    for (uint8_t i = 0; i < MERGE_THREADS; i++)
+        vector_of_threads.emplace_back(merge_maps_thread, &map_queue);
+//    merge_maps_thread(&map_queue);
+
     for (auto &t: vector_of_threads)
         t.join();
 
