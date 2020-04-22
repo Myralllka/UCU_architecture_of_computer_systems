@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include "../../includes/counting/map_helpers.h"
+#include "../../includes/files/file_packet.h"
 
 void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
                        const std::string &output_filename_n) {

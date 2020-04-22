@@ -11,10 +11,11 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "../files/file_packet.h"
+
 #include "../code_control.h"
 #include "../queues/tqueue.h"
 
-#define MAX_TEXT_FILE_SIZE 100000000
 
 class archive_t {
     struct archive *archive_obj = nullptr;
@@ -33,21 +34,21 @@ public:
 
     const archive_t &operator=(const archive_t &archive) = delete;
 
-    template<class T>
-    static void extract_to(const std::string &file_name, T *tqueue);
-
     void load_file(const std::string &file_name);
 
-    template<class T>
-    void extract_all(T *tqueue, t_queue<file_packet> *source);
+    template<class T, class S>
+    static void extract_to(std::string data, T *tqueue,  S *source);
+
+    template<class T, class S>
+    void extract_all(T *tqueue, S *source);
 
 private:
     void init_archive();
 };
 
 
-template<class T>
-void archive_t::extract_all(T *tqueue, t_queue<file_packet> *source) {
+template<class T, class S>
+void archive_t::extract_all(T *tqueue, S *source) {
     struct archive_entry *entry;
     int status;
     la_int64_t filesize;
@@ -61,11 +62,6 @@ void archive_t::extract_all(T *tqueue, t_queue<file_packet> *source) {
 
     while ((status = archive_read_next_header(archive_obj, &entry)) != ARCHIVE_EOF && status != ARCHIVE_FATAL) {
         processed_f++;
-        entry_path = archive_entry_pathname(entry);
-        if (!is_text_file(entry_path) || !is_archive_file(entry_path)) {
-            std::cerr << "Warning: archive contain not supported formats. File " << entry_path << " is passed!"
-                      << std::endl;
-        }
 
         if (status < ARCHIVE_OK) {
             if (status < ARCHIVE_WARN) {
@@ -77,9 +73,18 @@ void archive_t::extract_all(T *tqueue, t_queue<file_packet> *source) {
                       << std::endl;
         }
 
+        entry_path = archive_entry_pathname(entry);
+        filesize = archive_entry_size(entry);
 
-        if ((filesize = archive_entry_size(entry)) > 0 && filesize <= MAX_TEXT_FILE_SIZE) {
+        if (filesize == 0) // check for dirs
+            continue;
+        if (!is_text_file(entry_path) && !is_archive_file(entry_path))
+            std::cerr << "Warning: archive contain not supported formats. File " << entry_path << " is passed!"
+                      << std::endl;
+
+        if (filesize <= MAX_TEXT_FILE_SIZE) {
 #ifdef DEBUG_INFO
+            std::cout << "Unarchive entry: " << entry_path << std::endl;
 //            std::cout << "Unarchive entry: " << "(size: " << archive_entry_size(entry) << ")" << std::endl;
             std::cout << "e" << std::flush;
 #endif
@@ -91,10 +96,15 @@ void archive_t::extract_all(T *tqueue, t_queue<file_packet> *source) {
                 if (is_text_file(entry_path)) {
                     tqueue->emplace_back(std::move(output));
                 } else {
-                    source->emplace_front_force(file_packet{std::move(output), true});
+                    if (source != nullptr) {
+                        source->emplace_front_force(file_packet{std::move(output), true});
 #ifdef DEBUG_INFO
-                    std::cout << "b" << std::flush;
+                        std::cout << "b" << std::flush;
 #endif
+                    } else {
+                        std::cerr << "Warning no place to return recursive archives! Archive " << entry_path
+                                  << " is passed!" << std::endl;
+                    }
                 }
             } else {
                 std::cerr << archive_error_string(archive_obj) << std::endl;
@@ -108,11 +118,10 @@ void archive_t::extract_all(T *tqueue, t_queue<file_packet> *source) {
     }
 }
 
-template<class T>
-void archive_t::extract_to(const std::string &file_name, T *tqueue) {
-    archive_t tmp_archive{};
-    tmp_archive.load_file(file_name);
-    tmp_archive.extract_all(tqueue);
+template<class T, class S>
+void archive_t::extract_to(std::string data, T *tqueue,  S *source) {
+    archive_t tmp_archive{std::move(data)};
+    tmp_archive.extract_all(tqueue, source);
 }
 
 #endif //COUNT_NUMBER_OF_ALL_WORDS_ARCHIVE_T_H
