@@ -7,8 +7,8 @@ pub struct Config {
     pub infile: String,
     pub out_by_a: String,
     pub out_by_n: String,
-    pub threads: i32,
-    pub n_grams: i32,
+    pub threads: usize,
+    pub n_grams: usize,
 }
 
 pub fn make_config_file() {
@@ -37,7 +37,7 @@ pub fn read_config_file(filename: String) -> Config {
     result
 }
 
-fn build_conf(infile: String, out_by_a: String, out_by_n: String, threads: i32, n_grams: i32) -> Config {
+fn build_conf(infile: String, out_by_a: String, out_by_n: String, threads: usize, n_grams: usize) -> Config {
     match path_exists(&infile) {
         true => println!("input file exists, continuing..."),
         false => { panic!("input file does not exists!") }
