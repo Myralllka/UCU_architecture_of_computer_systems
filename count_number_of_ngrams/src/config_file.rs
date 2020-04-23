@@ -1,5 +1,3 @@
-#![allow(unused_variables)]
-#![allow(dead_code)]
 extern crate ini;
 
 use ini::Ini;
