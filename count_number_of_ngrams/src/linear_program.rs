@@ -5,26 +5,25 @@ extern crate time;
 use time::PreciseTime;
 use unicode_normalization::UnicodeNormalization;
 
-pub fn count_n_grams(buffer: &mut Vec<String>) -> BTreeMap<String, usize> {
+pub fn count_n_grams(buffer: &mut Vec<String>, n_grams :&usize, result: &mut BTreeMap<String, usize>) {
     // # Input
     // Vector of Strings from each file.
     // # Output
     // BTreeMap, which is easy to print in sorted order
     let start = PreciseTime::now();
-    let mut result: BTreeMap<String, usize> = BTreeMap::new();
     for entry in buffer.iter_mut() {
+        let entry = entry.replace(&['(', ')', ',', '.', ';', ':'][..], "").nfc().collect::<String>().to_lowercase();
         for word in entry.split(is_whitespace).filter(is_not_empty) {
-            let tmp = word.replace(&['(', ')', ',', '.', ';', ':'][..], "").nfc().collect::<String>();
-            if let Some(count) = result.get_mut(&tmp) {
+            // let tmp = word.replace(&['(', ')', ',', '.', ';', ':'][..], "").nfc().collect::<String>();
+            if let Some(count) = result.get_mut(word) {
                 *count += 1;
                 continue;
             }
-            result.insert(tmp.to_string(), 1);
+            result.insert(word.to_string(), 1);
         }
     }
     let end = PreciseTime::now();
     println!("Analyzing: {}", start.to(end));
-    result
 }
 
 #[inline]
