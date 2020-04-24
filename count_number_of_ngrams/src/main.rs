@@ -40,27 +40,24 @@ fn main() -> io::Result<()> {
     //#################################################
     let mut result: BTreeMap<String, usize> = BTreeMap::new();
     linear_program::count_n_grams(&mut data, &config.n_grams, &mut result);
-
-    print(&result, &config);
-
+    print(&result, &config)?;
     let end = PreciseTime::now();
     println!("General: {}", start.to(end));
 //    println!("{:?}", v);
     Ok(())
 }
 
-fn print(map: &BTreeMap<String, usize>, config:&Config) -> io::Result<()> {
+fn print(map: &BTreeMap<String, usize>, config: &Config) -> io::Result<()> {
     let mut file_a = File::create(&config.out_by_a)?;
     let mut file_n = File::create(&config.out_by_n)?;
     for (key, value) in map.iter() {
         // let mut st = format!("{}\t{}", key, value).as_bytes();
-        file_a.write_all(format!("{}\t{}", key, value).as_bytes())?;
+        file_a.write_all(format!("{}\t{}\n", key, value).as_bytes())?;
     }
     let mut v = Vec::from_iter(map);
-    v.sort_by(|(_, a), (_, b)| b.cmp(&a));
-    for element in v.iter(){
-        println!("{}", format!("{}\t{}", element[0], element[1]));
+    v.sort_by(|(_, &a), (_, &b)| b.cmp(&a));
+    for &element in v.iter() {
+        file_n.write_all(format!("{}\t{}\n", element.0, element.1).as_bytes())?;
     }
-
     Ok(())
 }
