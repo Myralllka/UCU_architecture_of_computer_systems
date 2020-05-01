@@ -25,7 +25,7 @@ static void unarchive_thread(t_queue<file_packet> *file_q, tqueue_radio<std::str
 #endif
         if (packet.archived) {
             archive_t tmp_archive{std::move(packet.content)};
-            tmp_archive.extract_all(data_q, file_q);
+            tmp_archive.extract_all(data_q);
         } else {
             data_q->emplace_back(std::move(packet.content));
         }
