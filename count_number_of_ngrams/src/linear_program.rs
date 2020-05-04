@@ -5,7 +5,7 @@ extern crate time;
 use time::PreciseTime;
 use unicode_normalization::UnicodeNormalization;
 
-pub fn count_n_grams(buffer: &mut Vec<String>, n_grams :&usize, result: &mut BTreeMap<String, usize>) {
+pub fn count_number_of_words(buffer: &mut Vec<String>, n_grams :&usize, result: &mut BTreeMap<String, usize>) {
     // # Input
     // Vector of Strings from each file.
     // # Output

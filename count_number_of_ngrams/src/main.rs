@@ -1,6 +1,7 @@
 #![allow(unused_variables)]
 #![allow(dead_code)]
 extern crate ini;
+extern crate time;
 
 use config_file::*;
 use std::fs::File;
@@ -9,17 +10,13 @@ use std::io;
 use std::io::{Read, Write};
 use std::collections::BTreeMap;
 use std::iter::FromIterator;
-
-mod config_file;
-mod linear_program;
-
-extern crate time;
-
 use time::PreciseTime;
 use std::str;
 
-//extern crate tar;
-//extern crate libarchive;
+mod config_file;
+mod linear_program;
+mod linear_ngrams;
+
 //use libarchive3_sys::ffi;
 
 fn main() -> io::Result<()> {
@@ -39,11 +36,10 @@ fn main() -> io::Result<()> {
     data.push(tmp.to_string());
     //#################################################
     let mut result: BTreeMap<String, usize> = BTreeMap::new();
-    linear_program::count_n_grams(&mut data, &config.n_grams, &mut result);
+    linear_ngrams::count_n_grams(&mut data, &config.n_grams, &mut result);
     print(&result, &config)?;
     let end = PreciseTime::now();
     println!("General: {}", start.to(end));
-//    println!("{:?}", v);
     Ok(())
 }
 

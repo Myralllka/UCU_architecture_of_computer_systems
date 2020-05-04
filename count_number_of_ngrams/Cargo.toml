@@ -11,9 +11,6 @@ config = "0.9"
 serde = { version = "1.0", features = ["derive"] }
 rand = "0.7.3"
 rust-ini = "0.15"
-tar = "0.4"
-libarchive = "0.1.1"
-libarchive3-sys = "0.1.2"
 unicode-normalization = "0.1.8"
 time = "0.1"
 
