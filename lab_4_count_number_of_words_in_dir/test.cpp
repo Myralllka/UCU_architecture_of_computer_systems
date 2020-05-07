@@ -6,6 +6,7 @@
 #include "includes/archivation/archive_t.h"
 #include <string>
 #include <vector>
+#include "includes/counting/visualization.h"
 
 
 int main() {
@@ -44,11 +45,20 @@ int main() {
 //    std::cout << "map[\"1\"] = " << map["1"] << std::endl;
 //    std::cout << "map[\"2\"] = " << map["2"] << std::endl;
 
-    archive_t a{};
-    a.load_file("archives/dir.zip");
-    std::vector<std::string> vector{};
-    t_queue<file_packet> source{};
-    a.extract_all(&vector, &source);
-    std::cout << "Final vector size: " << vector.size() << std::endl;
+//    archive_t a{};
+//    a.load_file("archives/dir.zip");
+//    std::vector<std::string> vector{};
+//    t_queue<file_packet> source{};
+//    a.extract_all(&vector, &source);
+//    std::cout << "Final vector size: " << vector.size() << std::endl;
+
+//    for (long i = 0; i < 10000000; ++i) {
+//        std::cout << static_cast<double>(i) / 10000000.0 << std::endl;
+//        printProgress(static_cast<double>(i) / 10000000.0);
+//    }
+    auto timenow =
+            std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    std::cout << ctime(&timenow) << std::endl;
     return 0;
 }

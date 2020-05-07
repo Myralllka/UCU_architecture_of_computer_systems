@@ -6,7 +6,6 @@
 #include "includes/exceptions/parser_exeption.h"
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
-#include <optional>
 #include "includes/speed_tester.h"
 #include "includes/files/file_interface.h"
 
@@ -14,7 +13,18 @@
 
 #define MAX_LOAD_QUEUE_SIZE 10
 
+#ifdef START_INFO
+
+#include <chrono>
+
+#endif
+
 int main(int argc, char *argv[]) {
+#ifdef START_INFO
+    auto timenow =
+            std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::cout << ctime(&timenow) << std::endl;
+#endif
     auto start_time = get_current_time_fenced();
 
     //  ##################### Program Parameter Parsing ######################

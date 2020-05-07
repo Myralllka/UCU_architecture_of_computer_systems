@@ -13,10 +13,10 @@
 template<typename T>
 class tqueue_radio : public t_queue<T> {
     uint32_t publishers = 0;
-    std::mutex pub_mux;
+    mutable std::mutex pub_mux;
 
     uint32_t subscribers = 0;
-    std::mutex sub_mux;
+    mutable std::mutex sub_mux;
 
 public:
     explicit tqueue_radio(size_t max_size) : t_queue<T>(max_size) {}
