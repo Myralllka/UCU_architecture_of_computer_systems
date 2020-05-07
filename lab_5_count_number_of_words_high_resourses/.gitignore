@@ -1,0 +1,9 @@
+.idea/
+cmake-build-debug/
+archives/archive2*
+docs/
+sample_1/
+.idea
+res*
+venv
+perf*

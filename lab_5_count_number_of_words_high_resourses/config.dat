@@ -1,0 +1,4 @@
+infile = /mnt/iso
+out_by_a = res_a2.txt
+out_by_n = res_n2.txt
+threads = 8
