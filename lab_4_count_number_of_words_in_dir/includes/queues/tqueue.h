@@ -54,7 +54,7 @@ public:
         {
             std::unique_lock<std::mutex> lg(mut);
             data_received_notify.wait(lg, [this]() { return queue.size() + 1 <= max_size || max_size == 0; });
-            queue.emplace_back(d);
+            queue.emplace_back(std::forward<T>(d));
         }
         data_published_notify.notify_one();
     }
@@ -63,7 +63,7 @@ public:
         {
             std::unique_lock<std::mutex> lg(mut);
             data_received_notify.wait(lg, [this]() { return queue.size() + 1 <= max_size || max_size == 0; });
-            queue.emplace_front(d);
+            queue.emplace_front(std::forward<T>(d));
         }
         data_published_notify.notify_one();
     }
@@ -71,7 +71,7 @@ public:
     void emplace_front_force(T &&d) {
         {
             std::unique_lock<std::mutex> lg(mut);
-            queue.emplace_front(d);
+            queue.emplace_front(std::forward<T>(d));
         }
         data_published_notify.notify_one();
     }
@@ -131,6 +131,10 @@ public:
     size_t get_size() const {
         std::lock_guard<std::mutex> lg(mut);
         return queue.size();
+    }
+
+    size_t get_max_size() const {
+        return max_size;
     }
 };
 

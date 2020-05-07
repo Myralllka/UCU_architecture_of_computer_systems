@@ -20,6 +20,9 @@
  */////////////////////////////////////////////
 
 #define ENABLE_MAX_COUNTING_BUFFER
+//#define VISUAL_PIPELINE
+#define START_INFO
+#define PROGRESS_BAR
 
 #define MAX_TEXT_FILE_SIZE 100000000
 

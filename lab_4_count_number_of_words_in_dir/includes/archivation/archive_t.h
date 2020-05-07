@@ -36,19 +36,19 @@ public:
 
     void load_file(const std::string &file_name);
 
-    template<class T, class S>
-    static void extract_to(std::string data, T *tqueue,  S *source);
+    template<class T>
+    static void extract_to(std::string data, T *tqueue);
 
-    template<class T, class S>
-    void extract_all(T *tqueue, S *source);
+    template<class T>
+    void extract_all(T *tqueue);
 
 private:
     void init_archive();
 };
 
 
-template<class T, class S>
-void archive_t::extract_all(T *tqueue, S *source) {
+template<class T>
+void archive_t::extract_all(T *tqueue) {
     struct archive_entry *entry;
     int status;
     la_int64_t filesize;
@@ -78,14 +78,15 @@ void archive_t::extract_all(T *tqueue, S *source) {
 
         if (filesize == 0) // check for dirs
             continue;
-        if (!is_text_file(entry_path) && !is_archive_file(entry_path))
-            std::cerr << "Warning: archive contain not supported formats. File " << entry_path << " is passed!"
+        if (!is_text_file(entry_path)) {
+            std::cerr << "Warning: archive contain not supported files. File " << entry_path << " is passed!"
                       << std::endl;
+            continue;
+        }
 
         if (filesize <= MAX_TEXT_FILE_SIZE) {
 #ifdef DEBUG_INFO
             std::cout << "Unarchive entry: " << entry_path << std::endl;
-//            std::cout << "Unarchive entry: " << "(size: " << archive_entry_size(entry) << ")" << std::endl;
             std::cout << "e" << std::flush;
 #endif
             std::string output(filesize, char{});
@@ -93,19 +94,7 @@ void archive_t::extract_all(T *tqueue, S *source) {
             // write exactly to the other output buffer
             status = archive_read_data(archive_obj, &output[0], output.size());
             if (status >= ARCHIVE_WARN) {
-                if (is_text_file(entry_path)) {
-                    tqueue->emplace_back(std::move(output));
-                } else {
-                    if (source != nullptr) {
-                        source->emplace_front_force(file_packet{std::move(output), true});
-#ifdef DEBUG_INFO
-                        std::cout << "b" << std::flush;
-#endif
-                    } else {
-                        std::cerr << "Warning no place to return recursive archives! Archive " << entry_path
-                                  << " is passed!" << std::endl;
-                    }
-                }
+                tqueue->emplace_back(std::move(output));
             } else {
                 std::cerr << archive_error_string(archive_obj) << std::endl;
             }
@@ -118,10 +107,10 @@ void archive_t::extract_all(T *tqueue, S *source) {
     }
 }
 
-template<class T, class S>
-void archive_t::extract_to(std::string data, T *tqueue,  S *source) {
+template<class T>
+void archive_t::extract_to(std::string data, T *tqueue) {
     archive_t tmp_archive{std::move(data)};
-    tmp_archive.extract_all(tqueue, source);
+    tmp_archive.extract_all(tqueue);
 }
 
 #endif //COUNT_NUMBER_OF_ALL_WORDS_ARCHIVE_T_H

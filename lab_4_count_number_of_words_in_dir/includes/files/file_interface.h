@@ -5,7 +5,6 @@
 #ifndef COUNT_NUMBER_OF_ALL_WORDS_FILE_INTERFACE_H
 #define COUNT_NUMBER_OF_ALL_WORDS_FILE_INTERFACE_H
 
-//#include "../../includes/archivation/archive_t.h"
 #include <string>
 #include <map>
 #include <algorithm>
@@ -25,7 +24,8 @@ static inline std::string get_extension(const std::string &filename) {
 }
 
 static inline bool is_text_file(const std::string &filename) {
-    return "txt" == get_extension(filename);
+    std::string tmp_ext = get_extension(filename);
+    return "txt" == tmp_ext || "TXT" == tmp_ext;
 }
 
 static inline bool is_archive_file(const std::string &filename) {
