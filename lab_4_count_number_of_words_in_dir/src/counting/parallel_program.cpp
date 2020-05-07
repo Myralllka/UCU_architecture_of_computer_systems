@@ -76,14 +76,10 @@ static void count_thread(tqueue_radio<std::string> *data_q, tqueue_radio<std::ma
 //        print_size("\n----Count data_queue:\t", data_q);
 //        print_size("\n----Count map_queue:\t", map_queue);
 #endif
-        /////////////////////// NORMALIZE CONTENT /////////////////////////
         content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
-        content.erase(std::remove_if(content.begin(), content.end(),
-                                     [](const unsigned &c) { return !isspace(c) && !isalpha(c); }), content.end());
-        ///////////////////////////////////////////////////////////////////
-
         fast_count_words(content, &result_map);
-
+        content.clear();
+        
 #ifdef ENABLE_MAX_COUNTING_BUFFER
         ///////////////////// PUBLISH FULL MAP ////////////////////////////
         if (result_map.size() > MAP_PACKET_SIZE) {

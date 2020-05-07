@@ -31,12 +31,9 @@ void linear_count(const std::vector<std::string> &file_names, const std::string 
             std::string content{std::move(file_buf.front())};
             file_buf.pop_front();
 
-            /////////////////////// NORMALIZE CONTENT /////////////////////////
             content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
-            content.erase(std::remove_if(content.begin(), content.end(),
-                                         [](const unsigned &c) { return !isspace(c) && !isalpha(c); }), content.end());
-            ///////////////////////////////////////////////////////////////////
             fast_count_words(content, &map_of_words);
+            content.clear();
         }
     }
     dump_map_to_files(map_of_words, output_filename_a, output_filename_n);
