@@ -3,25 +3,23 @@ pub mod linear_n_grams {
     use std::collections::BTreeMap;
     use unicode_normalization::UnicodeNormalization;
 
-    use super::super::super::my_collections::MTree;
+    use super::super::super::my_collections::Node;
 
     extern crate unicode_normalization;
     extern crate time;
 
-    pub fn count_n_grams(buffer: &mut Vec<String>, n_garms: &usize, result: &mut MTree) {
+    // pub fn count_n_grams(buffer: &mut Vec<String>, n_garms: &usize, mut result: &mut MTree) {
+    pub fn count_n_grams(buffer: &mut Vec<String>, n_garms: &usize, mut result: &mut BTreeMap<&str, Node>) {
         let start = PreciseTime::now();
-        let mut tree = MTree::new();
+        // let mut head: &MTree = result;
+        result.insert(&"", Node::new());
+        let mut head = result.get("").unwrap();
         for entry in buffer.iter_mut() {
-            let entry = entry.replace(&['(', ')', ',', '.', ';', ':'][..], "").nfc().collect::<String>().to_lowercase();
             for word in entry.split(is_whitespace).filter(is_not_empty) {
-                let tmp = word.replace(&['(', ')', ',', ';', ':'][..], "").nfc().collect::<String>();
-                println!("{:?}", tmp);
-                // if let Some(count) = result.get_mut(current_word.trim()) {
-                //     *count += 1;
-                //     continue;
-                // }
-                // result.insert(current_word.to_string(), 1);
-                // prev_word = (&word).to_string();
+                let mut tmp = word.replace(&['(', ')', ',', ';', ':'][..], "").nfc().collect::<String>().to_lowercase();
+                head.update(&tmp.clone());
+                // result = result.child(tmp.clone().as_str());
+                // if is_dot(tmp.chars().last().unwrap()) {} else {}
             }
         }
         let end = PreciseTime::now();
@@ -61,6 +59,11 @@ pub mod linear_n_grams {
     #[inline]
     fn is_not_empty(s: &&str) -> bool {
         !s.is_empty()
+    }
+
+    #[inline]
+    fn is_dot(c: char) -> bool {
+        c == '.'
     }
 
     #[inline]

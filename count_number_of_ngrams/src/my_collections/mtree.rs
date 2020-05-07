@@ -1,36 +1,46 @@
 use std::collections::BTreeMap;
-use super::Node;
+use std::fs::read_to_string;
 
-#[derive(Clone, Hash)]
-pub struct MTree {
-    value: Node,
-    children: BTreeMap<String, MTree>,
+#[derive(Clone)]
+pub struct Node {
+    value: &'static str,
+    counter: usize,
+    tree: BTreeMap<&'static str, Node>,
 }
 
-impl MTree {
-    pub fn new() -> MTree {
-        MTree {
-            value: Node::new(),
-            children: BTreeMap::<String, MTree>::new(),
+impl Node {
+    pub fn new() -> Node {
+        Node {
+            value: &"",
+            counter: 0,
+            // tree: BTreeMap::<&'a str, Node<'a>>::new(),
+            tree: BTreeMap::new()
         }
     }
 
-    pub fn from(v: &'static str) -> MTree {
-        MTree {
-            value: Node::from(v),
-            children: BTreeMap::<String, MTree>::new(),
+    pub fn from(v: &'static str) -> Node {
+        Node {
+            value: v,
+            counter: 0,
+            tree: BTreeMap::new()
+            // tree: BTreeMap::<&str, Node<'a>>::new(),
         }
     }
 
-    pub fn get_children(self) -> BTreeMap<String, MTree> {
-        self.children
-    }
-
-    pub fn inc(self, value: &str) {
-        self.children[value].value.inc();
-    }
-
-    // pub fn update(self, value:&str) {
-        // self.children[value].value.inc();
+    // pub fn get_tree(self) -> auto {
+    //     &self.tree.keys()
     // }
+    pub fn get(self, val:&str) -> &Node {
+        self.tree.get(val).unwrap()
+    }
+
+    pub fn inc(&mut self) {
+        self.counter += 1
+    }
+
+    pub fn update(&mut self, value: &'static str) {
+        if self.tree.get(value).is_none() {
+            println!("here!")
+        }
+    }
 }

@@ -1,6 +1,6 @@
 .idea/
 cmake-build-debug/
-archives/archive2*
+archives/
 docs/
 sample_1/
 .idea

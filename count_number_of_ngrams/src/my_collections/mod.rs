@@ -1,5 +1,3 @@
 mod mtree;
-mod node;
 
-pub use self::mtree::MTree as MTree;
-pub use self::node::Node as Node;
+pub use self::mtree::Node as Node;

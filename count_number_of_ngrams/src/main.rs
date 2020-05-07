@@ -1,18 +1,20 @@
 #![allow(unused_variables)]
 #![allow(dead_code)]
+#![allow(unused_mut)]
 extern crate ini;
 extern crate time;
 
 use config_file::*;
 use std::fs::File;
 use std::io;
-use std::io::{Read, Write};
-use std::collections::BTreeMap;
-use std::iter::FromIterator;
+// use std::io::{Read, Write};
+use std::io::Read;
+// use std::collections::BTreeMap;
+// use std::iter::FromIterator;
 use time::PreciseTime;
 use std::str;
-use crate::my_collections::MTree;
 use crate::my_collections::Node;
+use std::collections::BTreeMap;
 
 mod config_file;
 mod algorithms;
@@ -36,17 +38,18 @@ fn main() -> io::Result<()> {
     // let mut result: BTreeMap<String, usize> = BTreeMap::new();
     // algorithms::count_n_grams(&mut data, &config.n_grams, &mut result);
     //#################################################
-    let mut result: MTree = MTree::new();
+    // let mut result: MTree = MTree::new();
+    let mut result: BTreeMap<&str, Node> = BTreeMap::<&str, Node>::new();
     algorithms::count_n_grams(&mut data, &config.n_grams, &mut result);
     let end = PreciseTime::now();
-    print(&result, &config)?;
+    // print(&result, &config)?;
     println!("General: {}", start.to(end));
     Ok(())
 }
 
-fn print(tree: &MTree, config: &Config) -> io::Result<()> {
-    let mut file_a = File::create(&config.out_by_a)?;
-    let mut file_n = File::create(&config.out_by_n)?;
+// fn print(tree: &MTree, config: &Config) -> io::Result<()> {
+    // let mut file_a = File::create(&config.out_by_a)?;
+    // let mut file_n = File::create(&config.out_by_n)?;
 
     // for (key, value) in map.iter() {
     //     file_a.write_all(format!("{}\t{}\n", key, value).as_bytes())?;
@@ -56,8 +59,8 @@ fn print(tree: &MTree, config: &Config) -> io::Result<()> {
     // for &element in v.iter() {
     //     file_n.write_all(format!("{}\t{}\n", element.0, element.1).as_bytes())?;
     // }
-    Ok(())
-}
+    // Ok(())
+// }
 
 // fn print(map: &BTreeMap<String, usize>, config: &Config) -> io::Result<()> {
 //     let mut file_a = File::create(&config.out_by_a)?;

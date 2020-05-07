@@ -5,7 +5,7 @@
 #ifndef COUNT_NUMBER_OF_ALL_WORDS_CODE_CONTROL_H
 #define COUNT_NUMBER_OF_ALL_WORDS_CODE_CONTROL_H
 
-//#define DEBUG_INFO
+#define DEBUG_INFO
 
 /* ////////  Work for parallel program /////////
  * txt - for loaded files                     //
