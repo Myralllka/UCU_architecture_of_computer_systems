@@ -9,15 +9,15 @@ pub mod linear_n_grams {
     extern crate time;
 
     // pub fn count_n_grams(buffer: &mut Vec<String>, n_garms: &usize, mut result: &mut MTree) {
-    pub fn count_n_grams(buffer: &mut Vec<String>, n_garms: &usize, mut result: &mut BTreeMap<&str, Node>) {
+    pub fn count_n_grams(buffer: &mut Vec<String>, n_garms: &usize, mut result: &mut BTreeMap<&str, Node<&str>>) {
         let start = PreciseTime::now();
         // let mut head: &MTree = result;
-        result.insert(&"", Node::new());
+        result.insert(&"", Node::from(" "));
         let mut head = result.get("").unwrap();
         for entry in buffer.iter_mut() {
             for word in entry.split(is_whitespace).filter(is_not_empty) {
                 let mut tmp = word.replace(&['(', ')', ',', ';', ':'][..], "").nfc().collect::<String>().to_lowercase();
-                head.update(&tmp.clone());
+                head.update(tmp.clone());
                 // result = result.child(tmp.clone().as_str());
                 // if is_dot(tmp.chars().last().unwrap()) {} else {}
             }

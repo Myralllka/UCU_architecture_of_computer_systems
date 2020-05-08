@@ -39,7 +39,7 @@ fn main() -> io::Result<()> {
     // algorithms::count_n_grams(&mut data, &config.n_grams, &mut result);
     //#################################################
     // let mut result: MTree = MTree::new();
-    let mut result: BTreeMap<&str, Node> = BTreeMap::<&str, Node>::new();
+    let mut result: BTreeMap<&str, Node<&str>> = BTreeMap::<&str, Node<&str>>::new();
     algorithms::count_n_grams(&mut data, &config.n_grams, &mut result);
     let end = PreciseTime::now();
     // print(&result, &config)?;
