@@ -1,21 +1,18 @@
 #include <iostream>
 #include <chrono>
-#include "includes/files/config_file.h"
-#include "includes/counting/linear_program.h"
-#include "includes/counting/parallel_program.h"
-#include "includes/exceptions/parser_exeption.h"
 #include <boost/locale.hpp>
+
 #include <boost/filesystem.hpp>
-#include "includes/speed_tester.h"
 #include "includes/files/file_interface.h"
+#include "includes/files/config_file.h"
+#include "includes/speed_tester.h"
+//#include "includes/counting/linear_program.h"
 
 #include "includes/code_control.h"
 
 #define MAX_LOAD_QUEUE_SIZE 10
 
 #ifdef START_INFO
-
-#include <chrono>
 
 #endif
 
@@ -51,8 +48,20 @@ int main(int argc, char *argv[]) {
     const std::string out_by_n_filename = config.get_out_by_n();
     const uint8_t threads = config.get_number_of_threads();
 
-    if (infile.empty() || out_by_a_filename.empty() or out_by_n_filename.empty() || threads < 1) {
-        std::cerr << "Error: Config file is empty or missing some values!" << std::endl;
+    if (infile.empty()) {
+        std::cerr << "Error: Config file is empty or missing input filename!" << std::endl;
+        return 23;
+    }
+    if (out_by_a_filename.empty()) {
+        std::cerr << "Error: Config file is empty or missing output by alpha filename!" << std::endl;
+        return 23;
+    }
+    if (out_by_n_filename.empty()) {
+        std::cerr << "Error: Config file is empty or missing output by number filename!" << std::endl;
+        return 23;
+    }
+    if (threads < 1) {
+        std::cerr << "Error: Config file is empty, missing or incorrect threadsnumber!" << std::endl;
         return 23;
     }
     std::ofstream outfile_alpha;
@@ -62,15 +71,15 @@ int main(int argc, char *argv[]) {
     outfile_alpha.close();
     outfile_number.close();
 
-    if (!boost::filesystem::exists(infile) || !boost::filesystem::exists(out_by_a_filename) ||
-        !boost::filesystem::exists(out_by_n_filename)) {
-        std::cerr << "Error: File or Directory '" << infile << "' do not exist (or can not be created)!" << std::endl;
-        return 21;
+    for (auto &name:std::vector<std::string>{infile, out_by_a_filename, out_by_n_filename}) {
+        if (!boost::filesystem::exists(name)) {
+            std::cerr << "Error: File or Directory '" << name << "' do not exist (or can not be created)!" << std::endl;
+            return 21;
+        }
     }
 
-
     //  #####################  Generate List Files to Process ######################
-    std::vector<std::string> files_list;
+    std::vector <std::string> files_list;
     if (boost::filesystem::is_directory(infile)) {
         // WARNING: do not list empty files!!!
         list_all_files_from(infile, &files_list);
@@ -91,15 +100,15 @@ int main(int argc, char *argv[]) {
     std::locale::global(loc);
 
     //  ##############  Load, Unarchive and Count words in Text ####################
-    if (threads > 1) {
-        t_queue<file_packet> packet_queue{static_cast<size_t>(threads) * MAX_LOAD_QUEUE_SIZE};
-        std::thread file_loader_thread{read_files_thread<std::vector<std::string>, t_queue<file_packet>>,
-                                       std::ref(files_list), &packet_queue};
-        parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
-        file_loader_thread.join();
-    } else {
-        linear_count(files_list, out_by_a_filename, out_by_n_filename);
-    }
+//    if (threads > 1) {
+//        t_queue <file_packet> packet_queue{static_cast<size_t>(threads) * MAX_LOAD_QUEUE_SIZE};
+//        std::thread file_loader_thread{read_files_thread < std::vector < std::string > , t_queue < file_packet >> ,
+//                                       std::ref(files_list), &packet_queue};
+//        parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
+//        file_loader_thread.join();
+//    } else {
+//        linear_count(files_list, out_by_a_filename, out_by_n_filename);
+//    }
     const auto finish_time = get_current_time_fenced();
 
 #ifdef DEBUG_INFO

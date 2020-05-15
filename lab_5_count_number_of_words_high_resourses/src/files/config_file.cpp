@@ -7,7 +7,7 @@
 #include <string>
 #include <iostream>
 #include "../../includes/files/config_file.h"
-#include "../../includes/exceptions/parser_exeption.h"
+#include "../../includes/exeptions/parser_exeption.h"
 
 
 namespace po = boost::program_options;
