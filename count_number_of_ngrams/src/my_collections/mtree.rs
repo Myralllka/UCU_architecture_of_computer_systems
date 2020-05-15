@@ -11,7 +11,7 @@ pub struct Node<T> {
 impl<T> Node<T> {
 
     pub fn new() -> Node<T> {
-        Node {
+        Node<T> {
 
         }
     }
