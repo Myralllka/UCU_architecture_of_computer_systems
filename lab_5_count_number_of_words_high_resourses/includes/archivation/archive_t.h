@@ -11,12 +11,24 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <deque>
+
 #include "../files/file_packet.h"
-
 #include "../code_control.h"
-#include "tbb/concurrent_queue.h"
-//#include "../queues/tqueue.h"
 
+template<typename Base, typename T>
+inline bool instance_of(const T *) {
+    return std::is_base_of<Base, T>::value;
+}
+
+template<class T>
+void push(T *tq, std::string out){
+    tq->emplace_back(std::move(out));
+}
+
+void push(tbb::concurrent_queue<std::string, tbb::cache_aligned_allocator<std::string>> *tq, std::string out){
+    tq->push(std::move(out));
+}
 
 class archive_t {
     struct archive *archive_obj = nullptr;
@@ -95,7 +107,8 @@ void archive_t::extract_all(T *tqueue) {
             // write exactly to the other output buffer
             status = archive_read_data(archive_obj, &output[0], output.size());
             if (status >= ARCHIVE_WARN) {
-                tqueue->emplace_back(std::move(output));
+                push(tqueue, std::move(output));
+//                tqueue->emplace_back(std::move(output));
             } else {
                 std::cerr << archive_error_string(archive_obj) << std::endl;
             }

@@ -11,8 +11,9 @@
 #include <algorithm>
 #include <boost/filesystem.hpp>
 #include <iostream>
+#include <deque>
 #include "file_packet.h"
-
+#include "tbb/concurrent_queue.h"
 #include "../code_control.h"
 
 void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
@@ -44,20 +45,29 @@ static inline bool is_of_allowed_size(const std::string &filename) {
 }
 
 template<class T>
-void read_input_file_gen(const std::string &input_filename, T *data_struct) {
-#ifdef DEBUG_INFO
-    std::cout << "load file: " << input_filename << std::endl;
-#endif
+void push_(T *tq, file_packet out){
+    tq->emplace_back(out);
+}
 
+template<>
+void push_(tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> *tq, file_packet out){
+    tq->push(out);
+}
+
+
+template<class T>
+void read_input_file_gen(const std::string &input_filename, T *data_struct) {
     if (is_text_file(input_filename)) {
         if (is_of_allowed_size(input_filename)) {
-            data_struct->emplace_back(file_packet{read_binary_file(input_filename)});
+            push_(data_struct, file_packet{read_binary_file(input_filename)});
+//            data_struct->emplace_back(file_packet{read_binary_file(input_filename)});
         } else {
             std::cerr << "Warning: text file '" << input_filename << "' is missed as it is empty or lager than "
                       << MAX_TEXT_FILE_SIZE << "!" << std::endl;
         }
     } else if (is_archive_file(input_filename)) {
-        data_struct->emplace_back(file_packet{read_binary_file(input_filename), true});
+        push_(data_struct, file_packet{read_binary_file(input_filename), true});
+//        data_struct->emplace_back(file_packet{read_binary_file(input_filename), true});
     } else {
         std::cerr << "Warning: File '" << input_filename << "' passed as it has a not supported format!" << std::endl;
     }

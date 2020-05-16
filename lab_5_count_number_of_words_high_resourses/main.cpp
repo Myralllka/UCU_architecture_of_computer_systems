@@ -3,25 +3,16 @@
 #include <boost/locale.hpp>
 
 #include <boost/filesystem.hpp>
+#include <thread>
 #include "includes/files/file_interface.h"
 #include "includes/files/config_file.h"
 #include "includes/speed_tester.h"
-//#include "includes/counting/linear_program.h"
-
-#include "includes/code_control.h"
-
-#define MAX_LOAD_QUEUE_SIZE 10
-
-#ifdef START_INFO
-
-#endif
+#include "includes/counting/linear_program.h"
+#include "includes/counting/parallel_program.h"
+//#include "includes/code_control.h"
+#include "tbb/concurrent_queue.h"
 
 int main(int argc, char *argv[]) {
-#ifdef START_INFO
-    auto timenow =
-            std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::cout << ctime(&timenow) << std::endl;
-#endif
     auto start_time = get_current_time_fenced();
 
     //  ##################### Program Parameter Parsing ######################
@@ -79,7 +70,7 @@ int main(int argc, char *argv[]) {
     }
 
     //  #####################  Generate List Files to Process ######################
-    std::vector <std::string> files_list;
+    std::vector<std::string> files_list;
     if (boost::filesystem::is_directory(infile)) {
         // WARNING: do not list empty files!!!
         list_all_files_from(infile, &files_list);
@@ -100,21 +91,20 @@ int main(int argc, char *argv[]) {
     std::locale::global(loc);
 
     //  ##############  Load, Unarchive and Count words in Text ####################
-//    if (threads > 1) {
+    if (threads > 1) {
+        tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> packet_queue;
 //        t_queue <file_packet> packet_queue{static_cast<size_t>(threads) * MAX_LOAD_QUEUE_SIZE};
 //        std::thread file_loader_thread{read_files_thread < std::vector < std::string > , t_queue < file_packet >> ,
 //                                       std::ref(files_list), &packet_queue};
-//        parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
-//        file_loader_thread.join();
-//    } else {
-//        linear_count(files_list, out_by_a_filename, out_by_n_filename);
-//    }
+        std::thread file_loader_thread{
+                read_files_thread<std::vector<std::string>, tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>>>,
+                std::ref(files_list), &packet_queue};
+        parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
+        file_loader_thread.join();
+    } else {
+        linear_count(files_list, out_by_a_filename, out_by_n_filename);
+    }
     const auto finish_time = get_current_time_fenced();
-
-#ifdef DEBUG_INFO
-    std::cout << "Total: " << to_s(finish_time - start_time) << '.' << to_s(finish_time - start_time) << std::endl;
-#else
     std::cout << "Total: " << to_us(finish_time - start_time) << std::endl;
-#endif
     return 0;
 }
