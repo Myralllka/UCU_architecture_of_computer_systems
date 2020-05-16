@@ -40,7 +40,6 @@ static void counting(tbb::concurrent_queue<file_packet, tbb::cache_aligned_alloc
     file_packet packet;
     std::deque<std::string> data_q;
     std::map<std::string, size_t> map_of_words{};
-//    std::string content;
     while (file_q->try_pop(packet)) {
         if (packet.archived) {
             archive_t tmp_archive{std::move(packet.content)};
@@ -54,13 +53,10 @@ static void counting(tbb::concurrent_queue<file_packet, tbb::cache_aligned_alloc
             content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
             ba::ssegment_index map(ba::word, content.begin(), content.end());
             map.rule(ba::word_any);
-            for (auto it = map.begin(), e = map.end(); it != e; ++it)
-                map_of_words[*it] += 1;
+            for (auto a = map.begin(), e = map.end(); a != e; ++a)
+                map_of_words[*a] += 1;
             content.clear();
         }
-    std::cout << "SIZE" << std::endl;
-    std::cout << map_of_words.size() << std::endl;
-    print_map(map_of_words);
     map_q->push(map_of_words);
 }
 
