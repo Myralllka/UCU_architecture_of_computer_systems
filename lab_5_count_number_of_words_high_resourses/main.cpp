@@ -1,15 +1,13 @@
 #include <iostream>
 #include <chrono>
 #include <boost/locale.hpp>
-
 #include <boost/filesystem.hpp>
 #include <thread>
+
 #include "includes/files/file_interface.h"
 #include "includes/files/config_file.h"
 #include "includes/speed_tester.h"
-#include "includes/counting/linear_program.h"
 #include "includes/counting/parallel_program.h"
-//#include "includes/code_control.h"
 #include "tbb/concurrent_queue.h"
 
 int main(int argc, char *argv[]) {
@@ -93,16 +91,13 @@ int main(int argc, char *argv[]) {
     //  ##############  Load, Unarchive and Count words in Text ####################
     if (threads > 1) {
         tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> packet_queue;
-//        t_queue <file_packet> packet_queue{static_cast<size_t>(threads) * MAX_LOAD_QUEUE_SIZE};
-//        std::thread file_loader_thread{read_files_thread < std::vector < std::string > , t_queue < file_packet >> ,
-//                                       std::ref(files_list), &packet_queue};
         std::thread file_loader_thread{
                 read_files_thread<std::vector<std::string>, tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>>>,
                 std::ref(files_list), &packet_queue};
-        parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
         file_loader_thread.join();
+        parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
     } else {
-        linear_count(files_list, out_by_a_filename, out_by_n_filename);
+//        linear_count(files_list, out_by_a_filename, out_by_n_filename);
     }
     const auto finish_time = get_current_time_fenced();
     std::cout << "Total: " << to_us(finish_time - start_time) << std::endl;

@@ -10,77 +10,66 @@
 #include "../../includes/code_control.h"
 
 #define MAP_PACKET_SIZE 10000
-#define MAX_DATA_QUEUE_SIZE_PER_THREAD 1
-#define MAX_MAP_QUEUE_SIZE 10
-#define MERGE_THREADS 1
+#define MAX_DATA_QUEUE_SIZE_PER_THREAD 10
+#define MAX_MAP_QUEUE_SIZE 100
 #define UNARCHIVE_THREADS 1
 
 #include "tbb/concurrent_queue.h"
 
-static void unarchive_thread(tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> *file_q,
-                             tbb::concurrent_queue<std::string, tbb::cache_aligned_allocator<std::string>> *data_q) {
-//    data_q->publish();
-    file_packet packet;
+namespace ba = boost::locale::boundary;
 
-    while (!file_q->try_pop(packet)) {
-        if (packet.archived) {
-            archive_t tmp_archive{std::move(packet.content)};
-            tmp_archive.extract_all(data_q);
-        } else {
-            data_q->push(std::move(packet.content));
+void merge_maps(tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> &queue, uint8_t num_of_threads) {
+    for (; num_of_threads > 1; num_of_threads--) {
+        std::map<std::string, size_t> map1, map2;
+        queue.pop(map1);
+        queue.pop(map2);
+        for (auto &element:map1) {
+            map2[element.first] += map1[element.first];
         }
+        queue.push(std::move(map2));
     }
-
-    file_q->push(file_packet{}); // forward poison pill
-//    data_q->unpublish(); // IF LAST SEND A POISON PILL!!!
-
 }
 
-//static void merge_maps_thread(tqueue_radio<std::map<std::string, size_t>> *queue) {
-//    queue->subscribe();
-//    std::vector<std::map<std::string, size_t>> merge_group;
-//    while (!(merge_group = queue->pop_front_n(2))[0].empty() && !merge_group[1].empty()) {
-//        for (auto &element : merge_group[1])
-//            merge_group[0][element.first] += merge_group[1][element.first];
-//
-//        queue->emplace_front_force(std::move(merge_group[0]));
-//    }
-//
-//
-//    if (merge_group[1].empty())
-//        queue->emplace_front(std::move((merge_group[0])));
-//    else
-//        queue->emplace_front(std::move(merge_group[1]));
-//
-//
-//    queue->emplace_back(std::map<std::string, size_t>{}); // PILL
-//    queue->unsubscribe();
-//}
-//
+static void counting(tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> *file_q,
+                     tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> *map_q) {
+    file_packet packet;
+//    tbb::concurrent_bounded_queue<std::string, tbb::cache_aligned_allocator<std::string>> data_q;
+    std::map<std::string, size_t> map_of_words{};
+    std::string content;
+//    data_q.set_capacity(MAX_DATA_QUEUE_SIZE_PER_THREAD);
+    while (file_q->try_pop(packet)) {
+        if (packet.archived) {
+            archive_t tmp_archive{std::move(packet.content)};
+            tmp_archive.extract_all(&file_q);
+        } else {
+            content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(packet.content)));
+            ba::ssegment_index map(ba::word, content.begin(), content.end());
+            map.rule(ba::word_any);
+            for (auto it = map.begin(), e = map.end(); it != e; ++it)
+                map_of_words[*it] += 1;
+            content.clear();
+        }
+    }
+    map_q->push(map_of_words);
+}
+
 void parallel_count(tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> *loader_queue,
                     const std::string &output_filename_a, const std::string &output_filename_n,
                     const uint8_t number_of_threads) {
     std::vector<std::thread> vector_of_threads{};
-//
-//    tqueue_radio<std::string> data_queue{static_cast<size_t> (number_of_threads) * MAX_DATA_QUEUE_SIZE_PER_THREAD};
-//    tqueue_radio<std::map<std::string, size_t>> map_queue{MAX_MAP_QUEUE_SIZE};
-//
-//    /////////////////////////// UNARCHIVE ///////////////////////////
-//    for (uint8_t i = 0; i < UNARCHIVE_THREADS; i++)
-//        vector_of_threads.emplace_back(unarchive_thread, loader_queue, &data_queue);
-//    /////////////////////////////////////////////////////////////////
-//
-//    ///////////////////////////   COUNT   ///////////////////////////
-//    for (uint8_t i = 0; i < number_of_threads; i++)
-//        vector_of_threads.emplace_back(count_thread, &data_queue, &map_queue);
-//    /////////////////////////////////////////////////////////////////
-//
-//    for (uint8_t i = 0; i < MERGE_THREADS; i++)
-//        vector_of_threads.emplace_back(merge_maps_thread, &map_queue);
-//
-//    for (auto &t: vector_of_threads)
-//        t.join();
-//
-//
-//    dump_map_to_files(map_queue.pop_front(), output_filename_a, output_filename_n);
+    tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> map_queue;
+    std::map<std::string, size_t> result;
+//    map_queue.set_capacity(MAX_MAP_QUEUE_SIZE);
+    /////////////////////////// UNARCHIVE & COUNT ///////////////////
+    for (uint8_t i = 0; i < UNARCHIVE_THREADS; i++)
+        vector_of_threads.emplace_back(counting, loader_queue, &map_queue);
+    /////////////////////////////////////////////////////////////////
+    merge_maps(map_queue, number_of_threads);
+
+    for (auto &t: vector_of_threads)
+        t.join();
+    /////////////////////////////////////////////////////////////////
+    map_queue.pop(result);
+    dump_map_to_files(result, output_filename_a, output_filename_n);
 }
+
