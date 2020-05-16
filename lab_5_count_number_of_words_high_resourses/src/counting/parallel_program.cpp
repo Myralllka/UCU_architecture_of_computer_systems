@@ -7,16 +7,19 @@
 #include <thread>
 #include <boost/locale.hpp>
 #include "../../includes/archivation/archive_t.h"
-#include "../../includes/code_control.h"
 
-#define MAP_PACKET_SIZE 10000
 #define MAX_DATA_QUEUE_SIZE_PER_THREAD 10
-#define MAX_MAP_QUEUE_SIZE 100
-#define UNARCHIVE_THREADS 1
+//#define MAX_MAP_QUEUE_SIZE 100
 
 #include "tbb/concurrent_queue.h"
 
 namespace ba = boost::locale::boundary;
+
+inline void print_map(const std::map<std::string, size_t> &map) {
+    for (auto &pair:map) {
+        std::cout << pair.first << "\t" << pair.second << std::endl;
+    }
+}
 
 void merge_maps(tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> &queue, uint8_t num_of_threads) {
     for (; num_of_threads > 1; num_of_threads--) {
@@ -33,23 +36,32 @@ void merge_maps(tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb
 static void counting(tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> *file_q,
                      tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> *map_q) {
     file_packet packet;
-//    tbb::concurrent_bounded_queue<std::string, tbb::cache_aligned_allocator<std::string>> data_q;
+    std::deque<std::string> data_q;
     std::map<std::string, size_t> map_of_words{};
-    std::string content;
-//    data_q.set_capacity(MAX_DATA_QUEUE_SIZE_PER_THREAD);
+//    std::string content;
     while (file_q->try_pop(packet)) {
         if (packet.archived) {
             archive_t tmp_archive{std::move(packet.content)};
-            tmp_archive.extract_all(&file_q);
+            tmp_archive.extract_all(&data_q);
         } else {
-            content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(packet.content)));
-            ba::ssegment_index map(ba::word, content.begin(), content.end());
-            map.rule(ba::word_any);
-            for (auto it = map.begin(), e = map.end(); it != e; ++it)
-                map_of_words[*it] += 1;
-            content.clear();
+            data_q.push_back(packet.content);
         }
     }
+    std::cout << "SIZE" << std::endl;
+    std::cout << data_q.size() << std::endl;
+    for (auto it = data_q.begin(); it!=data_q.end(); ++it)
+        std::cout << ' ' << *it;
+    for (auto &content:data_q) {
+        content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(packet.content)));
+        ba::ssegment_index map(ba::word, content.begin(), content.end());
+        map.rule(ba::word_any);
+        for (auto it = map.begin(), e = map.end(); it != e; ++it)
+            map_of_words[*it] += 1;
+        content.clear();
+    }
+    std::cout << "SIZE" << std::endl;
+    std::cout << map_of_words.size() << std::endl;
+    print_map(map_of_words);
     map_q->push(map_of_words);
 }
 
@@ -61,7 +73,7 @@ void parallel_count(tbb::concurrent_queue<file_packet, tbb::cache_aligned_alloca
     std::map<std::string, size_t> result;
 //    map_queue.set_capacity(MAX_MAP_QUEUE_SIZE);
     /////////////////////////// UNARCHIVE & COUNT ///////////////////
-    for (uint8_t i = 0; i < UNARCHIVE_THREADS; i++)
+    for (uint8_t i = 0; i < number_of_threads; i++)
         vector_of_threads.emplace_back(counting, loader_queue, &map_queue);
     /////////////////////////////////////////////////////////////////
     merge_maps(map_queue, number_of_threads);

@@ -93,7 +93,7 @@ void archive_t::extract_all(T *tqueue) {
             // write exactly to the other output buffer
             status = archive_read_data(archive_obj, &output[0], output.size());
             if (status >= ARCHIVE_WARN) {
-                tqueue->push(std::move(output));
+                tqueue->emplace_back(std::move(output));
             } else {
                 std::cerr << archive_error_string(archive_obj) << std::endl;
             }
