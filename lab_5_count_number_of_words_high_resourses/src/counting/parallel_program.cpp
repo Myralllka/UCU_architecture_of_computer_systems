@@ -21,7 +21,9 @@ inline void print_map(const std::map<std::string, size_t> &map) {
     }
 }
 
-void merge_maps(tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> &queue, uint8_t num_of_threads) {
+void merge_maps(
+        tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> &queue,
+        uint8_t num_of_threads) {
     for (; num_of_threads > 1; num_of_threads--) {
         std::map<std::string, size_t> map1, map2;
         queue.pop(map1);
@@ -47,18 +49,15 @@ static void counting(tbb::concurrent_queue<file_packet, tbb::cache_aligned_alloc
             data_q.push_back(packet.content);
         }
     }
-    std::cout << "SIZE" << std::endl;
-    std::cout << data_q.size() << std::endl;
-    for (auto it = data_q.begin(); it!=data_q.end(); ++it)
-        std::cout << ' ' << *it;
-    for (auto &content:data_q) {
-        content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(packet.content)));
-        ba::ssegment_index map(ba::word, content.begin(), content.end());
-        map.rule(ba::word_any);
-        for (auto it = map.begin(), e = map.end(); it != e; ++it)
-            map_of_words[*it] += 1;
-        content.clear();
-    }
+    for (auto it = data_q.begin(); it != data_q.end(); ++it)
+        for (auto &content:data_q) {
+            content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
+            ba::ssegment_index map(ba::word, content.begin(), content.end());
+            map.rule(ba::word_any);
+            for (auto it = map.begin(), e = map.end(); it != e; ++it)
+                map_of_words[*it] += 1;
+            content.clear();
+        }
     std::cout << "SIZE" << std::endl;
     std::cout << map_of_words.size() << std::endl;
     print_map(map_of_words);
