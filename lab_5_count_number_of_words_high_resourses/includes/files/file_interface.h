@@ -44,30 +44,18 @@ static inline bool is_of_allowed_size(const std::string &filename) {
     return file_size > 0 && file_size < MAX_TEXT_FILE_SIZE;
 }
 
-template<class T>
-void push_(T *tq, file_packet out){
-    tq->emplace_back(out);
-}
-
-template<>
-void push_(tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> *tq, file_packet out){
-    tq->push(out);
-}
-
 
 template<class T>
 void read_input_file_gen(const std::string &input_filename, T *data_struct) {
     if (is_text_file(input_filename)) {
         if (is_of_allowed_size(input_filename)) {
-            push_(data_struct, file_packet{read_binary_file(input_filename)});
-//            data_struct->emplace_back(file_packet{read_binary_file(input_filename)});
+            data_struct->push(file_packet{read_binary_file(input_filename)});
         } else {
             std::cerr << "Warning: text file '" << input_filename << "' is missed as it is empty or lager than "
                       << MAX_TEXT_FILE_SIZE << "!" << std::endl;
         }
     } else if (is_archive_file(input_filename)) {
-        push_(data_struct, file_packet{read_binary_file(input_filename), true});
-//        data_struct->emplace_back(file_packet{read_binary_file(input_filename), true});
+        data_struct->push(file_packet{read_binary_file(input_filename), true});
     } else {
         std::cerr << "Warning: File '" << input_filename << "' passed as it has a not supported format!" << std::endl;
     }
