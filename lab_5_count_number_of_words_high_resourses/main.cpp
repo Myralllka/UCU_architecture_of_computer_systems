@@ -9,6 +9,7 @@
 #include "includes/speed_tester.h"
 #include "includes/counting/parallel_program.h"
 #include "tbb/concurrent_queue.h"
+#include "includes/counting/linear_program.h"
 
 int main(int argc, char *argv[]) {
     auto start_time = get_current_time_fenced();
@@ -96,7 +97,7 @@ int main(int argc, char *argv[]) {
         parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
         file_loader_thread.join();
     } else {
-//        linear_count(files_list, out_by_a_filename, out_by_n_filename);
+        linear_count(files_list, out_by_a_filename, out_by_n_filename);
     }
     const auto finish_time = get_current_time_fenced();
     std::cout << "Total: " << to_us(finish_time - start_time) << std::endl;
