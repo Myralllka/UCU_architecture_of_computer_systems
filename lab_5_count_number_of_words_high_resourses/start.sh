@@ -55,13 +55,13 @@ mkdir -p ./res;
 pushd ./cmake-build-debug  > /dev/null || exit 1
 #mkdir -p tmp;
 
-if [ "$comp" = true -o ! -e count_number_of_all_words ]; then
+if [[ "$comp" = true || ! -e count_number_of_all_words ]]; then
   echo Compiling...
   cmake -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles" ..;
   make;
 fi;
 
-if [ ! -z "$threads" ]; then
+if [[ ! -z "$threads" ]]; then
   sed -i "s/threads...*/threads = $threads/g" ../config.dat;
 else
   sed -i "s/threads...*/threads = 1/g" ../config.dat;
