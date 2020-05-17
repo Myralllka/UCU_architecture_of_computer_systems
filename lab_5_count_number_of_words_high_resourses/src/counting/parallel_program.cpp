@@ -26,15 +26,15 @@ void merge_maps(
     }
 }
 
-static void counting(tbb::concurrent_bounded_queue<file_packet> *file_q,
-                     tbb::concurrent_bounded_queue<std::map<std::string, size_t>> *map_q) {
+static void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
+                     tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q) {
     file_packet packet;
     std::deque<std::string> data_q;
     std::map<std::string, size_t> map_of_words{};
     while (true) {
-        while (!file_q->try_pop(packet)){}
+        while (!file_q.try_pop(packet)){}
         if (packet.empty()) {
-            file_q->push(file_packet());
+            file_q.push(file_packet());
             break;
         }
         if (packet.archived) {
@@ -53,10 +53,10 @@ static void counting(tbb::concurrent_bounded_queue<file_packet> *file_q,
                 map_of_words[*a] += 1;
             content.clear();
         }
-    map_q->push(map_of_words);
+    map_q.push(std::move(map_of_words));
 }
 
-void parallel_count(tbb::concurrent_bounded_queue<file_packet> *loader_queue,
+void parallel_count(tbb::concurrent_bounded_queue<file_packet> &loader_queue,
                     const std::string &output_filename_a, const std::string &output_filename_n,
                     const uint8_t number_of_threads) {
     std::vector<std::thread> vector_of_threads{};
@@ -64,7 +64,7 @@ void parallel_count(tbb::concurrent_bounded_queue<file_packet> *loader_queue,
     std::map<std::string, size_t> result;
     /////////////////////////// UNARCHIVE & COUNT ///////////////////
     for (uint8_t i = 0; i < number_of_threads; i++)
-        vector_of_threads.emplace_back(counting, loader_queue, &map_queue);
+        vector_of_threads.emplace_back(counting, std::ref(loader_queue), std::ref(map_queue));
     /////////////////////////////////////////////////////////////////
     merge_maps(map_queue, number_of_threads);
 
