@@ -10,7 +10,7 @@
 #include "includes/counting/parallel_program.h"
 #include "tbb/concurrent_queue.h"
 #include "includes/counting/linear_program.h"
-#define QUEUE_CAPACITY 2
+#define QUEUE_CAPACITY 30
 int main(int argc, char *argv[]) {
     auto start_time = get_current_time_fenced();
 

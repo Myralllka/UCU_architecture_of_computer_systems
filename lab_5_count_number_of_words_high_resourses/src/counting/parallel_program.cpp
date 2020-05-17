@@ -52,7 +52,7 @@ static void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
         //////////////////////////////////////////////////////
 
         //////////////// INDEX EXTRACTED /////////////////////
-        while (data_q.empty()) {
+        while (!data_q.empty()) {
             tmp_content = std::move(data_q.front());
             data_q.pop_front();
             ba::ssegment_index map(ba::word, tmp_content.begin(), tmp_content.end());
