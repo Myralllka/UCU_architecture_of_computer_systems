@@ -37,7 +37,6 @@ void linear_count(const std::vector<std::string> &file_names, const std::string 
     std::deque<std::string> file_buf{};
 
     for (const std::string &file_n : file_names) {
-        std::cout << "FILE #####################" << file_n << std::endl;
         read_input_file_gen(file_n, archive_buf); // generic method to load all files
         if (!archive_buf.empty()) {
             if (archive_buf.data.archived) {
