@@ -40,21 +40,19 @@ static void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
             archive_t tmp_archive{std::move(packet.content)};
             tmp_archive.extract_all(data_q);
         } else {
-            data_q.push_back(packet.content);
+            data_q.emplace_back(std::move(packet.content));
         }
     }
-    for (auto it = data_q.begin(); it != data_q.end(); ++it)
-        for (auto &content:data_q) {
-            content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
-            ba::ssegment_index map(ba::word, content.begin(), content.end());
-            map.rule(ba::word_any);
-            for (auto a = map.begin(), e = map.end(); a != e; ++a)
-                map_of_words[*a] += 1;
-            content.clear();
+
+    for (auto &content:data_q) {
+        ba::ssegment_index map(ba::word, content.begin(), content.end());
+        map.rule(ba::word_any);
+        for(std::string word:map) {
+            word = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(word)));
+            map_of_words[word] += 1;
         }
-    std::cout << "-----------------------------------" << std::endl;
-    std::cout << ((sizeof(size_t)+sizeof(std::string))* map_of_words.size())+sizeof(map_of_words) << std::endl;
-    std::cout << "-----------------------------------" << std::endl;
+        content.clear();
+    }
     map_q.push(std::move(map_of_words));
 }
 

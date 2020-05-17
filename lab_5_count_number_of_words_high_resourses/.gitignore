@@ -3,7 +3,6 @@ cmake-build-debug/
 archives/
 docs/
 sample_1/
-.idea
 res*
 venv
 perf*

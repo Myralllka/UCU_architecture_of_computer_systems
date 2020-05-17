@@ -15,23 +15,36 @@ namespace ba = boost::locale::boundary;
 void linear_count(const std::vector<std::string> &file_names, const std::string &output_filename_a,
                   const std::string &output_filename_n) {
     std::map<std::string, size_t> map_of_words;
-    class : public std::deque<file_packet> {
-    public:
-        void push( file_packet&& source ) {
-            std::deque<file_packet>::emplace_back(std::move(source));
+    struct {
+        file_packet data{};
+
+        void push(file_packet &&source) {
+            data = source;
+            is_empty = false;
         }
+
+        [[nodiscard]] bool empty() const { return is_empty; }
+
+        void clear() {
+            data.content.clear();
+            is_empty = true;
+        }
+
+    private:
+        bool is_empty = true;
     } archive_buf{};
+
     std::deque<std::string> file_buf{};
 
     for (const std::string &file_n : file_names) {
         read_input_file_gen(file_n, archive_buf); // generic method to load all files
-        while (!archive_buf.empty()) {
-            if (archive_buf.front().archived) {
-                archive_t::extract_to(std::move(archive_buf.front().content), file_buf);
+        if (!archive_buf.empty()) {
+            if (archive_buf.data.archived) {
+                archive_t::extract_to(std::move(archive_buf.data.content), file_buf);
             } else {
-                file_buf.emplace_back(std::move(archive_buf.front().content));
+                file_buf.emplace_back(std::move(archive_buf.data.content));
             }
-            archive_buf.pop_front();
+            archive_buf.clear();
         }
 
         while (!file_buf.empty()) {
