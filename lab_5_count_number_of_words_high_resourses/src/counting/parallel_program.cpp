@@ -10,6 +10,7 @@
 
 #include "tbb/concurrent_queue.h"
 
+#define DATAQ_CAPACITY 3
 namespace ba = boost::locale::boundary;
 
 void merge_maps(
@@ -42,16 +43,17 @@ static void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
         } else {
             data_q.emplace_back(std::move(packet.content));
         }
-    }
-
-    for (auto &content:data_q) {
-        ba::ssegment_index map(ba::word, content.begin(), content.end());
-        map.rule(ba::word_any);
-        for(std::string word:map) {
-            word = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(word)));
-            map_of_words[word] += 1;
+        if (data_q.size() > DATAQ_CAPACITY) {
+            for (auto &content:data_q) {
+                ba::ssegment_index map(ba::word, content.begin(), content.end());
+                map.rule(ba::word_any);
+                for(std::string word:map) {
+                    word = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(word)));
+                    map_of_words[word] += 1;
+                }
+                content.clear();
+            }
         }
-        content.clear();
     }
     map_q.push(std::move(map_of_words));
 }
