@@ -13,8 +13,7 @@
 namespace ba = boost::locale::boundary;
 
 void merge_maps(
-        tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &queue,
-        uint8_t num_of_threads) {
+        tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &queue, uint8_t num_of_threads) {
     for (; num_of_threads > 1; num_of_threads--) {
         std::map<std::string, size_t> map1, map2;
         queue.pop(map1);
@@ -32,14 +31,14 @@ static void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
     std::deque<std::string> data_q;
     std::map<std::string, size_t> map_of_words{};
     while (true) {
-        while (!file_q.try_pop(packet)){}
+        while (!file_q.try_pop(packet)) {}
         if (packet.empty()) {
             file_q.push(file_packet());
             break;
         }
         if (packet.archived) {
             archive_t tmp_archive{std::move(packet.content)};
-            tmp_archive.extract_all(&data_q);
+            tmp_archive.extract_all(data_q);
         } else {
             data_q.push_back(packet.content);
         }
@@ -53,6 +52,9 @@ static void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
                 map_of_words[*a] += 1;
             content.clear();
         }
+    std::cout << "-----------------------------------" << std::endl;
+    std::cout << ((sizeof(size_t)+sizeof(std::string))* map_of_words.size())+sizeof(map_of_words) << std::endl;
+    std::cout << "-----------------------------------" << std::endl;
     map_q.push(std::move(map_of_words));
 }
 

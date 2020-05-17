@@ -36,10 +36,10 @@ public:
     void load_file(const std::string &file_name);
 
     template<class T>
-    static void extract_to(std::string data, T *tqueue);
+    static void extract_to(std::string data, T &tqueue);
 
     template<class T>
-    void extract_all(T *tqueue);
+    void extract_all(T &tqueue);
 
 private:
     void init_archive();
@@ -47,7 +47,7 @@ private:
 
 
 template<class T>
-void archive_t::extract_all(T *tqueue) {
+void archive_t::extract_all(T &tqueue) {
     struct archive_entry *entry;
     int status;
     la_int64_t filesize;
@@ -89,7 +89,7 @@ void archive_t::extract_all(T *tqueue) {
             // write exactly to the other output buffer
             status = archive_read_data(archive_obj, &output[0], output.size());
             if (status >= ARCHIVE_WARN) {
-                tqueue->emplace_back(std::move(output));
+                tqueue.emplace_back(std::move(output));
             } else {
                 std::cerr << archive_error_string(archive_obj) << std::endl;
             }
@@ -103,7 +103,7 @@ void archive_t::extract_all(T *tqueue) {
 }
 
 template<class T>
-void archive_t::extract_to(std::string data, T *tqueue) {
+void archive_t::extract_to(std::string data, T &tqueue) {
     archive_t tmp_archive{std::move(data)};
     tmp_archive.extract_all(tqueue);
 }

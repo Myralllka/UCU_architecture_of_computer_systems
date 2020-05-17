@@ -27,7 +27,7 @@ void linear_count(const std::vector<std::string> &file_names, const std::string 
         read_input_file_gen(file_n, archive_buf); // generic method to load all files
         while (!archive_buf.empty()) {
             if (archive_buf.front().archived) {
-                archive_t::extract_to(std::move(archive_buf.front().content), &file_buf);
+                archive_t::extract_to(std::move(archive_buf.front().content), file_buf);
             } else {
                 file_buf.emplace_back(std::move(archive_buf.front().content));
             }
