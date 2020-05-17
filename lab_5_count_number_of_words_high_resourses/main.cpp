@@ -90,10 +90,11 @@ int main(int argc, char *argv[]) {
 
     //  ##############  Load, Unarchive and Count words in Text ####################
     if (threads > 1) {
-        tbb::concurrent_queue<file_packet> packet_queue;
-        std::thread file_loader_thread{read_files_thread<std::vector<std::string>, tbb::concurrent_queue<file_packet>>, std::ref(files_list), &packet_queue};
-        file_loader_thread.join();
+        tbb::concurrent_bounded_queue<file_packet> packet_queue;
+        packet_queue.set_capacity(1);
+        std::thread file_loader_thread{read_files_thread<std::vector<std::string>, tbb::concurrent_bounded_queue<file_packet>>, std::ref(files_list), &packet_queue};
         parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
+        file_loader_thread.join();
     } else {
 //        linear_count(files_list, out_by_a_filename, out_by_n_filename);
     }

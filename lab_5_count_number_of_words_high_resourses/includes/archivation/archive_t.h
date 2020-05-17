@@ -84,10 +84,6 @@ void archive_t::extract_all(T *tqueue) {
         }
 
         if (filesize <= MAX_TEXT_FILE_SIZE) {
-#ifdef DEBUG_INFO
-            std::cout << "Unarchive entry: " << entry_path << std::endl;
-            std::cout << "e" << std::flush;
-#endif
             std::string output(filesize, char{});
 
             // write exactly to the other output buffer

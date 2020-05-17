@@ -8,21 +8,12 @@
 #include <boost/locale.hpp>
 #include "../../includes/archivation/archive_t.h"
 
-#define MAX_DATA_QUEUE_SIZE_PER_THREAD 10
-//#define MAX_MAP_QUEUE_SIZE 100
-
 #include "tbb/concurrent_queue.h"
 
 namespace ba = boost::locale::boundary;
 
-inline void print_map(const std::map<std::string, size_t> &map) {
-    for (auto &pair:map) {
-        std::cout << pair.first << "\t" << pair.second << std::endl;
-    }
-}
-
 void merge_maps(
-        tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> &queue,
+        tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &queue,
         uint8_t num_of_threads) {
     for (; num_of_threads > 1; num_of_threads--) {
         std::map<std::string, size_t> map1, map2;
@@ -35,12 +26,17 @@ void merge_maps(
     }
 }
 
-static void counting(tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> *file_q,
-                     tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> *map_q) {
+static void counting(tbb::concurrent_bounded_queue<file_packet> *file_q,
+                     tbb::concurrent_bounded_queue<std::map<std::string, size_t>> *map_q) {
     file_packet packet;
     std::deque<std::string> data_q;
     std::map<std::string, size_t> map_of_words{};
-    while (file_q->try_pop(packet)) {
+    while (true) {
+        while (!file_q->try_pop(packet)){}
+        if (packet.empty()) {
+            file_q->push(file_packet());
+            break;
+        }
         if (packet.archived) {
             archive_t tmp_archive{std::move(packet.content)};
             tmp_archive.extract_all(&data_q);
@@ -60,13 +56,12 @@ static void counting(tbb::concurrent_queue<file_packet, tbb::cache_aligned_alloc
     map_q->push(map_of_words);
 }
 
-void parallel_count(tbb::concurrent_queue<file_packet, tbb::cache_aligned_allocator<file_packet>> *loader_queue,
+void parallel_count(tbb::concurrent_bounded_queue<file_packet> *loader_queue,
                     const std::string &output_filename_a, const std::string &output_filename_n,
                     const uint8_t number_of_threads) {
     std::vector<std::thread> vector_of_threads{};
-    tbb::concurrent_bounded_queue<std::map<std::string, size_t>, tbb::cache_aligned_allocator<std::map<std::string, size_t>>> map_queue;
+    tbb::concurrent_bounded_queue<std::map<std::string, size_t>> map_queue;
     std::map<std::string, size_t> result;
-//    map_queue.set_capacity(MAX_MAP_QUEUE_SIZE);
     /////////////////////////// UNARCHIVE & COUNT ///////////////////
     for (uint8_t i = 0; i < number_of_threads; i++)
         vector_of_threads.emplace_back(counting, loader_queue, &map_queue);
