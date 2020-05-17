@@ -31,29 +31,39 @@ static void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
     file_packet packet;
     std::deque<std::string> data_q;
     std::map<std::string, size_t> map_of_words{};
+    std::string tmp_content;
+
     while (true) {
         while (!file_q.try_pop(packet)) {}
+        ////////////////// POISON PILL ///////////////////////
         if (packet.empty()) {
             file_q.push(file_packet());
             break;
         }
+        //////////////////////////////////////////////////////
+
+        //////////////// LOAD FILE ///////////////////////////
         if (packet.archived) {
             archive_t tmp_archive{std::move(packet.content)};
             tmp_archive.extract_all(data_q);
         } else {
             data_q.emplace_back(std::move(packet.content));
         }
-        if (data_q.size() > DATAQ_CAPACITY) {
-            for (auto &content:data_q) {
-                ba::ssegment_index map(ba::word, content.begin(), content.end());
-                map.rule(ba::word_any);
-                for(std::string word:map) {
-                    word = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(word)));
-                    map_of_words[word] += 1;
-                }
-                content.clear();
+        //////////////////////////////////////////////////////
+
+        //////////////// INDEX EXTRACTED /////////////////////
+        while (data_q.empty()) {
+            tmp_content = std::move(data_q.front());
+            data_q.pop_front();
+            ba::ssegment_index map(ba::word, tmp_content.begin(), tmp_content.end());
+            map.rule(ba::word_any);
+            for(std::string word:map) {
+                word = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(word)));
+                map_of_words[word] += 1;
             }
+            tmp_content.clear();
         }
+        //////////////////////////////////////////////////////
     }
     map_q.push(std::move(map_of_words));
 }
