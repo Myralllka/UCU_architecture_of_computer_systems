@@ -47,7 +47,7 @@ void read_files_thread(const S &file_list, T *data_struct) {
         count++;
 #endif
     }
-    data_struct->push_back(file_packet{});
+    data_struct->emplace_back(file_packet{});
 
 #ifdef PROGRESS_BAR
     print_progress = false;
