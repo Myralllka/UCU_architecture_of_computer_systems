@@ -13,10 +13,11 @@
 #include "../../includes/code_control.h"
 #include "tbb/concurrent_queue.h"
 
-void parallel_count(tbb::concurrent_bounded_queue<file_packet> &loader_queue,
-                    const std::string &output_filename_a,
-                    const std::string &output_filename_n, const uint8_t number_of_threads);
+void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
+                     tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q);
 
+void merge_maps(
+        tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &queue, uint8_t num_of_threads);
 
 template<class S, class T>
 void read_files_thread(const S &file_list, T &data_struct) {
