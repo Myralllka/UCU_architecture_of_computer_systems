@@ -7,7 +7,6 @@
 
 #include "tqueue.h"
 #include <cstdint>
-#include <set>
 #include <atomic>
 
 template<typename T>

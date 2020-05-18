@@ -27,3 +27,15 @@ void fast_count_words(const std::string &str, std::map<std::string, size_t> *res
                        }
                    });
 }
+
+
+void count_words(const std::string &&str, std::map<std::string, size_t> *result_map) {
+    using namespace boost::locale::boundary;
+    // Create mapping of str for token iterator using global locale.
+    ssegment_index words_index(word, str.begin(), str.end());
+    // Define a rule
+    words_index.rule(word_any);
+    // Print all "words" -- chunks of word boundary
+    for (ssegment_index::iterator it = words_index.begin(), e = words_index.end(); it != e; ++it)
+        (*result_map)[*it] += 1;;
+}

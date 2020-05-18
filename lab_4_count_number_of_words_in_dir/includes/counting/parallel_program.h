@@ -42,8 +42,6 @@ void read_files_thread(const S &file_list, T *data_struct) {
 #endif
     size_t f_size = 0;
     for (const auto &file_name : file_list) {
-        if ((f_size = boost::filesystem::file_size(file_name) / 1000000) > 0)
-            std::cout << "File size: " << f_size << std::endl;
         read_input_file_gen(file_name, data_struct);
 #ifdef PROGRESS_BAR
         count++;

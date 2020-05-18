@@ -21,8 +21,7 @@
 
 int main(int argc, char *argv[]) {
 #ifdef START_INFO
-    auto timenow =
-            std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::cout << ctime(&timenow) << std::endl;
 #endif
     auto start_time = get_current_time_fenced();

@@ -32,7 +32,7 @@ void linear_count(const std::vector<std::string> &file_names, const std::string 
             file_buf.pop_front();
 
             content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
-            fast_count_words(content, &map_of_words);
+            count_words(std::move(content), &map_of_words);
             content.clear();
         }
     }
