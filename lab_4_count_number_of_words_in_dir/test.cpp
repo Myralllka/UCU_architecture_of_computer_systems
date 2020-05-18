@@ -56,9 +56,9 @@ int main() {
 //        std::cout << static_cast<double>(i) / 10000000.0 << std::endl;
 //        printProgress(static_cast<double>(i) / 10000000.0);
 //    }
-    auto timenow =
-            std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    std::cout << ctime(&timenow) << std::endl;
+//    auto time_now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+//
+//    std::cout << ctime(&time_now) << std::endl;
     return 0;
 }

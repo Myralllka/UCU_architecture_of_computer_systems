@@ -5,6 +5,7 @@
 #ifndef COUNT_NUMBER_OF_ALL_WORDS_LINEAR_PROGRAM_H
 #define COUNT_NUMBER_OF_ALL_WORDS_LINEAR_PROGRAM_H
 
+#include <vector>
 #include <string>
 
 void linear_count(const std::vector<std::string> &data, const std::string &output_filename_a,
