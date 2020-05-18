@@ -18,7 +18,7 @@ class tqueue_radio : public t_queue<T> {
     mutable std::mutex sub_mux;
 
 public:
-    explicit tqueue_radio(size_t max_size) : t_queue<T>(max_size) {}
+    explicit tqueue_radio(size_t max_size = 0) : t_queue<T>(max_size) {}
 
     ~tqueue_radio() = default;
 

@@ -1,9 +1,8 @@
 #include <iostream>
-#include <chrono>
 #include "includes/files/config_file.h"
 #include "includes/counting/linear_program.h"
 #include "includes/counting/parallel_program.h"
-#include "includes/exceptions/parser_exeption.h"
+#include "includes/files/parser_exeption.h"
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
 #include "includes/speed_tester.h"
@@ -11,7 +10,6 @@
 
 #include "includes/code_control.h"
 
-#define MAX_LOAD_QUEUE_SIZE 10
 
 #ifdef START_INFO
 
@@ -19,10 +17,17 @@
 
 #endif
 
+#ifdef DEBUG_INFO
+
+#include "includes/speed_tester.h"
+#include <iostream>
+
+#endif
+
 int main(int argc, char *argv[]) {
 #ifdef START_INFO
-    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::cout << ctime(&timenow) << std::endl;
+    auto time_now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::cout << ctime(&time_now) << std::endl;
 #endif
     auto start_time = get_current_time_fenced();
 
@@ -67,7 +72,6 @@ int main(int argc, char *argv[]) {
         return 21;
     }
 
-
     //  #####################  Generate List Files to Process ######################
     std::vector<std::string> files_list;
     if (boost::filesystem::is_directory(infile)) {
@@ -79,6 +83,7 @@ int main(int argc, char *argv[]) {
             return 22;
         } else if (boost::filesystem::is_empty(infile)) {
             std::cerr << "Empty file given. Nothing to count!" << std::endl;
+            return 23;
         } else {
             files_list.push_back(infile);
         }
@@ -90,21 +95,18 @@ int main(int argc, char *argv[]) {
     std::locale::global(loc);
 
     //  ##############  Load, Unarchive and Count words in Text ####################
-    if (threads > 1) {
-        t_queue<file_packet> packet_queue{static_cast<size_t>(threads) * MAX_LOAD_QUEUE_SIZE};
-        std::thread file_loader_thread{read_files_thread<std::vector<std::string>, t_queue<file_packet>>,
-                                       std::ref(files_list), &packet_queue};
-        parallel_count(&packet_queue, out_by_a_filename, out_by_n_filename, threads);
-        file_loader_thread.join();
-    } else {
-        linear_count(files_list, out_by_a_filename, out_by_n_filename);
-    }
-    const auto finish_time = get_current_time_fenced();
+    std::map<std::string, size_t> res_map;
+    if (threads > 1)
+        res_map = parallel_count(files_list, threads);
+    else
+        res_map = linear_count(files_list);
 
+    const auto finish_time = get_current_time_fenced();
 #ifdef DEBUG_INFO
     std::cout << "Total: " << to_s(finish_time - start_time) << '.' << to_s(finish_time - start_time) << std::endl;
 #else
     std::cout << "Total: " << to_us(finish_time - start_time) << std::endl;
 #endif
+    dump_map_to_files(res_map, out_by_a_filename, out_by_n_filename); // sort and dump wod maps to files
     return 0;
 }

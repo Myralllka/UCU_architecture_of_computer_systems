@@ -14,7 +14,7 @@ archive_t::archive_t() {
 }
 
 archive_t::~archive_t() {
-    archive_read_close(archive_obj); // TODO: archive_obj can be not open
+    archive_read_close(archive_obj);
     archive_read_free(archive_obj);
 }
 

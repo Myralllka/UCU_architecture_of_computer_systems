@@ -7,12 +7,15 @@
 
 #include <string>
 #include <map>
-#include <algorithm>
 #include <boost/filesystem.hpp>
 #include <iostream>
 #include "file_packet.h"
 
 #include "../code_control.h"
+
+#ifdef DEBUG_INFO
+#include <iostream>
+#endif
 
 void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
                        const std::string &output_filename_n);

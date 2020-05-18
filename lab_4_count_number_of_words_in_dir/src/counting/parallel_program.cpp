@@ -10,17 +10,16 @@
 #include "../../includes/archivation/archive_t.h"
 #include "../../includes/code_control.h"
 
-#define MAP_PACKET_SIZE 10000
-#define MAX_DATA_QUEUE_SIZE_PER_THREAD 1
-#define MAX_MAP_QUEUE_SIZE 10
-#define MERGE_THREADS 1
-#define UNARCHIVE_THREADS 1
-
-namespace ba = boost::locale::boundary;
-
 #ifdef VISUAL_PIPELINE
-
 #include "../../includes/counting/visualization.h"
+#include <thread>
+#include "../../includes/queues/tqueue_radio.h"
+#include "../../includes/queues/tqueue.h"
+#include <map>
+#include <string>
+#include "../../includes/files/file_packet.h"
+#include <cinttypes>
+
 
 static void visual_pipeline(volatile bool *cond,
                             t_queue<file_packet> *file_q,
@@ -34,8 +33,54 @@ static void visual_pipeline(volatile bool *cond,
     }
     std::cout << "END VISUAL" << std::endl;
 }
-
 #endif
+
+#ifdef PROGRESS_BAR
+#include "../../includes/counting/visualization.h"
+#include <thread>
+#include <iostream>
+#include <atomic>
+#endif
+
+#ifdef DEBUG_INFO
+#include <iostream>
+#endif
+
+#define MERGE_THREADS 2
+
+#define MAX_DATA_QUEUE_SIZE_PER_THREAD 3
+#define MAX_LOAD_QUEUE_SIZE 10
+
+namespace ba = boost::locale::boundary;
+
+
+static void read_files_thread(const std::vector<std::string> &file_list, t_queue<file_packet> *data_struct) {
+#ifdef PROGRESS_BAR
+    std::atomic_uint64_t caunt{0};
+    volatile bool print_progress = true;
+    std::thread visual_t{[](const volatile bool *caunt, std::atomic_uint64_t *num, size_t max_num) {
+        while (*caunt) {
+            printProgress(static_cast<double>(num->load()) / max_num);
+            using namespace std::chrono_literals;
+            std::this_thread::sleep_for(1.0s);
+        }
+    }, &print_progress, &caunt, file_list.size()};
+#endif
+
+    for (const auto &file_name : file_list) {
+        read_input_file_gen(file_name, data_struct);
+
+#ifdef PROGRESS_BAR
+        caunt++;
+#endif
+    }
+    data_struct->emplace_back(file_packet{});
+
+#ifdef PROGRESS_BAR
+    print_progress = false;
+    visual_t.join();
+#endif
+}
 
 static void count_thread(t_queue<file_packet> *file_q,
                          tqueue_radio<std::map<std::string, size_t>> *map_q) {
@@ -108,24 +153,26 @@ static void merge_maps_thread(tqueue_radio<std::map<std::string, size_t>> *queue
 #endif
 }
 
-void parallel_count(t_queue<file_packet> *loader_queue,
-                    const std::string &output_filename_a, const std::string &output_filename_n,
-                    const uint8_t number_of_threads) {
+std::map<std::string, size_t> parallel_count(const std::vector<std::string> &file_list,
+                                             const uint8_t number_of_threads) {
     std::vector<std::thread> vector_of_threads{};
-    tqueue_radio<std::map<std::string, size_t>> map_queue{MAX_MAP_QUEUE_SIZE};
+
+    t_queue<file_packet> loader_queue{MAX_LOAD_QUEUE_SIZE};
+    tqueue_radio<std::string> data_queue{static_cast<size_t> (number_of_threads) * MAX_DATA_QUEUE_SIZE_PER_THREAD};
+    tqueue_radio<std::map<std::string, size_t>> map_queue{};
 
 #ifdef VISUAL_PIPELINE
     volatile bool cond = true;
     std::thread visual_t{visual_pipeline, &cond, loader_queue, &data_queue, &map_queue};
 #endif
 
-    ///////////////////////////   COUNT   ///////////////////////////
     for (uint8_t i = 0; i < number_of_threads; i++)
-        vector_of_threads.emplace_back(count_thread, loader_queue, &map_queue);
-    /////////////////////////////////////////////////////////////////
+        vector_of_threads.emplace_back(count_thread, &loader_queue, &map_queue);
 
     for (uint8_t i = 0; i < MERGE_THREADS; i++)
         vector_of_threads.emplace_back(merge_maps_thread, &map_queue);
+
+    read_files_thread(file_list, &loader_queue);
 
     for (auto &t: vector_of_threads)
         t.join();
@@ -135,5 +182,5 @@ void parallel_count(t_queue<file_packet> *loader_queue,
     visual_t.join();
 #endif
 
-    dump_map_to_files(map_queue.pop_front(), output_filename_a, output_filename_n);
+    return map_queue.pop_front();
 }

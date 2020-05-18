@@ -6,21 +6,19 @@
 #include "../../includes/archivation/archive_t.h"
 #include <map>
 #include <string>
-#include <algorithm>
 #include <boost/locale.hpp>
 #include <deque>
 
-void linear_count(const std::vector<std::string> &file_names, const std::string &output_filename_a,
-                  const std::string &output_filename_n) {
-    std::map<std::string, size_t> map_of_words;
-    std::deque<file_packet>  archive_buf{};
+std::map<std::string, size_t> linear_count(const std::vector<std::string> &file_names) {
+    std::map<std::string, size_t> map_of_words{};
+    std::deque<file_packet> archive_buf{};
     std::deque<std::string> file_buf{};
 
     for (const std::string &file_n : file_names) {
         read_input_file_gen(file_n, &archive_buf); // generic method to load all files
         while (!archive_buf.empty()) {
             if (archive_buf.front().archived) {
-                    archive_t::extract_to(std::move(archive_buf.front().content), &file_buf);
+                archive_t::extract_to(std::move(archive_buf.front().content), &file_buf);
             } else {
                 file_buf.emplace_back(std::move(archive_buf.front().content));
             }
@@ -36,5 +34,5 @@ void linear_count(const std::vector<std::string> &file_names, const std::string 
             content.clear();
         }
     }
-    dump_map_to_files(map_of_words, output_filename_a, output_filename_n);
+    return map_of_words;
 }

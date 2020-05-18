@@ -21,16 +21,29 @@ set(Boost_USE_MULTITHREAD ON)  # enable maltreating
 find_package(Boost COMPONENTS filesystem program_options system locale REQUIRED)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
-file(GLOB_RECURSE SRC "includes/*.h" "src/*.cpp")
+set(SRC
+        includes/code_control.h
+        includes/archivation/archive_t.h src/archivation/archive_t.cpp
+
+        includes/counting/linear_program.h src/counting/linear_program.cpp
+        includes/counting/parallel_program.h src/counting/parallel_program.cpp
+        includes/counting/word_count.h src/counting/word_count.cpp
+        includes/counting/map_helpers.h
+        includes/counting/visualization.h src/counting/visualization.cpp
+
+        includes/files/config_file.h src/files/config_file.cpp
+        includes/files/parser_exeption.h
+        includes/files/file_interface.h src/files/file_interaface.cpp
+        includes/files/file_packet.h
+
+        includes/queues/tqueue.h
+        includes/queues/tqueue_radio.h
+        )
+
 add_executable(count_number_of_all_words main.cpp ${SRC})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${Boost_LIBRARIES})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${LibArchive_LIBRARIES})
-
-add_executable(test test.cpp ${SRC})
-TARGET_LINK_LIBRARIES(test LINK_PUBLIC ${CMAKE_THREAD_LIBS_INIT})
-TARGET_LINK_LIBRARIES(test LINK_PUBLIC ${Boost_LIBRARIES})
-TARGET_LINK_LIBRARIES(test LINK_PUBLIC ${LibArchive_LIBRARIES})
 
 #####################################
 ## create own target for library
