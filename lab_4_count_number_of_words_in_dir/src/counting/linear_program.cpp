@@ -31,7 +31,6 @@ std::map<std::string, size_t> linear_count(const std::vector<std::string> &file_
 
             content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
             count_words(std::move(content), &map_of_words);
-            content.clear();
         }
     }
     return map_of_words;
