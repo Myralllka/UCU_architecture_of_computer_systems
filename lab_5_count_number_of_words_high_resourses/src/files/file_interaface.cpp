@@ -3,6 +3,7 @@
 //
 #include "../../includes/files/file_interface.h"
 #include <boost/filesystem.hpp>
+#include <filesystem>
 #include <iostream>
 #include <sstream>
 #include "../../includes/counting/map_helpers.h"
@@ -51,16 +52,12 @@ std::string read_binary_file(const std::string &filename) {
 }
 
 // WARNING: do not list empty files!!!
-void list_all_files_from(const std::string &dir_path, std::vector<std::string> *res) {
-    for (const auto &file : boost::filesystem::recursive_directory_iterator(dir_path)) {
-        if (boost::filesystem::is_regular_file(file) && !boost::filesystem::is_empty(file)) {
-            res->emplace_back(file.path().string());
+void list_all_files_from(const std::string &dir_path, std::vector<std::string> &res) {
+    for (const auto &file : std::filesystem::recursive_directory_iterator(dir_path)) {
+        if (std::filesystem::is_regular_file(file) && !std::filesystem::is_empty(file)) {
+            res.emplace_back(file.path().string());
         } else {
-            if (boost::filesystem::is_directory(file)) {
-                list_all_files_from(file.path().string(), res);
-            } else {
-                std::cerr << "Warning directory contain not valid or empty files! They are not counted!" << std::endl;
-            }
+            std::cerr << "Warning directory contain not valid or empty files! They are not counted!" << std::endl;
         }
     }
 }

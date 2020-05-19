@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 17)
 #endif ()
 # TBB
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/FindTBB/")
-#set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Release)
 #set(CMAKE_BUILD_TYPE Debug)
 find_package(Threads REQUIRED)
 find_package(LibArchive 3.0.0)
@@ -29,10 +29,6 @@ TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${CMAKE_THREAD_LIBS_
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${Boost_LIBRARIES})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC ${LibArchive_LIBRARIES})
 TARGET_LINK_LIBRARIES(count_number_of_all_words LINK_PUBLIC tbb)
-#add_executable(test test.cpp ${SRC})
-#TARGET_LINK_LIBRARIES(test LINK_PUBLIC ${CMAKE_THREAD_LIBS_INIT})
-#TARGET_LINK_LIBRARIES(test LINK_PUBLIC ${Boost_LIBRARIES})
-#TARGET_LINK_LIBRARIES(test LINK_PUBLIC ${LibArchive_LIBRARIES})
 
 #####################################
 ## create own target for library

@@ -62,6 +62,6 @@ void read_input_file_gen(const std::string &input_filename, T &data_struct) {
 }
 
 // WARNING: do not list empty files!!!
-void list_all_files_from(const std::string &dir_path, std::vector<std::string> *res);
+void list_all_files_from(const std::string &dir_path, std::vector<std::string> &res);
 
 #endif //COUNT_NUMBER_OF_ALL_WORDS_FILE_INTERFACE_H

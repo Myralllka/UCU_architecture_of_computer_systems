@@ -14,7 +14,7 @@
 #include "tbb/concurrent_queue.h"
 
 void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
-                     tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q);
+              tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q);
 
 void merge_maps(
         tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &queue, uint8_t num_of_threads);

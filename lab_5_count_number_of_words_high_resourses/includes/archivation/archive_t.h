@@ -61,7 +61,6 @@ void archive_t::extract_all(T &tqueue) {
 
     while ((status = archive_read_next_header(archive_obj, &entry)) != ARCHIVE_EOF && status != ARCHIVE_FATAL) {
         processed_f++;
-
         if (status < ARCHIVE_OK) {
             if (status < ARCHIVE_WARN) {
                 std::cerr << "Error: Serious archive_obj damage! " << archive_error_string(archive_obj) << std::endl;
@@ -71,21 +70,16 @@ void archive_t::extract_all(T &tqueue) {
             std::cerr << "Warning: Some bad blocks in the archive_obj! " << archive_error_string(archive_obj)
                       << std::endl;
         }
-
         entry_path = archive_entry_pathname(entry);
         filesize = archive_entry_size(entry);
-
         if (filesize == 0) // check for dirs
             continue;
         if (!is_text_file(entry_path)) {
-            std::cerr << "Warning: archive contain not supported files. File " << entry_path << " is passed!"
-                      << std::endl;
+            std::cerr << "Warning: archive contain not supported files. File " << entry_path << " is passed!" << std::endl;
             continue;
         }
-
         if (filesize <= MAX_TEXT_FILE_SIZE) {
             std::string output(filesize, char{});
-
             // write exactly to the other output buffer
             status = archive_read_data(archive_obj, &output[0], output.size());
             if (status >= ARCHIVE_WARN) {
@@ -95,7 +89,6 @@ void archive_t::extract_all(T &tqueue) {
             }
         }
     }
-
     if (status == ARCHIVE_FATAL) {
         failed_f++;
         std::cerr << "Error: Fatal archive_obj damage! " << archive_error_string(archive_obj) << std::endl;

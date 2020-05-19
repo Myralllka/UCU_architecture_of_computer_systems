@@ -1,7 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <boost/locale.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <thread>
 
 #include "includes/files/file_interface.h"
@@ -11,7 +11,7 @@
 #include "tbb/concurrent_queue.h"
 #include "includes/counting/linear_program.h"
 
-#define QUEUE_CAPACITY 16
+#define QUEUE_CAPACITY 8
 
 int main(int argc, char *argv[]) {
     auto start_time = get_current_time_fenced();
@@ -72,14 +72,14 @@ int main(int argc, char *argv[]) {
 
     //  #####################  Generate List Files to Process ######################
     std::vector<std::string> files_list;
-    if (boost::filesystem::is_directory(infile)) {
+    if (std::filesystem::is_directory(infile)) {
         // WARNING: do not list empty files!!!
-        list_all_files_from(infile, &files_list);
+        list_all_files_from(infile, files_list);
     } else {
-        if (!boost::filesystem::is_regular_file(infile)) {
+        if (!std::filesystem::is_regular_file(infile)) {
             std::cerr << "Invalid file given " << infile << "!" << std::endl;
             return 22;
-        } else if (boost::filesystem::is_empty(infile)) {
+        } else if (std::filesystem::is_empty(infile)) {
             std::cerr << "Empty file given. Nothing to count!" << std::endl;
         } else {
             files_list.push_back(infile);
@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
     std::locale::global(loc);
 
     //  ##############  Load, Unarchive and Count words in Text ####################
+    std::cout << "counting" << std::endl;
     if (threads > 1) {
         tbb::concurrent_bounded_queue<file_packet> packet_queue;
         packet_queue.set_capacity(QUEUE_CAPACITY);

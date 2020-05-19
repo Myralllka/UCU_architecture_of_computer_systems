@@ -1,4 +1,4 @@
-infile = ../lab_5_count_number_of_words_high_resourses/archives/smallarchive
+infile = ../lab_5_count_number_of_words_high_resourses/archives/archive
 out_by_a = res_a1.txt
 out_by_n = res_n1.txt
 threads = 8
