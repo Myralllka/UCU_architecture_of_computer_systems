@@ -104,12 +104,11 @@ static void count_thread(t_queue<file_packet> *file_q,
         while (!data_q.empty()) {
             tmp_content = std::move(data_q.front());
             data_q.pop_front();
+            tmp_content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(tmp_content)));
             ba::ssegment_index map(ba::word, tmp_content.begin(), tmp_content.end());
             map.rule(ba::word_any);
-            for (std::string word:map) {
-                word = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(word)));
-                map_of_words[word] += 1;
-            }
+            for (auto it = map.begin(), e = map.end(); it != e; ++it)
+                map_of_words[*it] += 1;
             tmp_content.clear();
         }
 #ifdef DEBUG_INFO
