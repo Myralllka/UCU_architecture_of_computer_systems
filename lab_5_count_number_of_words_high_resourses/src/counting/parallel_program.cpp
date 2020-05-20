@@ -50,9 +50,9 @@ void counting(tbb::concurrent_bounded_queue<file_packet> &file_q,
             data_q.pop_front();
             tmp_content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(tmp_content)));
             ba::ssegment_index map(ba::word, tmp_content.begin(), tmp_content.end());
-            map.rule(ba::word_any);
+            map.rule(ba::word_letters);
             for (auto it = map.begin(), e = map.end(); it != e; ++it)
-                map_of_words[*it] += 1;
+                ++map_of_words[*it];
             tmp_content.clear();
         }
     }
