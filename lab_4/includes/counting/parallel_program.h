@@ -13,11 +13,9 @@
 #include "../../includes/code_control.h"
 #include "../../includes/queues/tqueue.h"
 
-void counting(t_queue<file_packet> &file_q,
-              t_queue<std::map<std::string, size_t>> &map_q);
+void counting(t_queue<file_packet> &file_q, t_queue<std::map<std::string, size_t>> &map_q);
 
-void merge_maps(
-        t_queue<std::map<std::string, size_t>> &queue, uint8_t num_of_threads);
+void merge_maps(t_queue<std::map<std::string, size_t>> &queue);
 
 template<class S, class T>
 void read_files_thread(const S &file_list, T &data_struct) {

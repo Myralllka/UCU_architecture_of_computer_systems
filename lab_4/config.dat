@@ -1,4 +1,5 @@
-infile = /mnt/iso/
-out_by_a = result_alpha.txt
-out_by_n = result_number.txt
+infile = /mnt/iso
+out_by_a = resultA.txt
+out_by_n = resultN.txt
 threads = 8
+map_threads = 8

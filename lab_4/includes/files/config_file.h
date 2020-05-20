@@ -26,6 +26,8 @@ public:
 
     size_t get_number_of_threads() const { return threads; }
 
+    size_t get_number_of_map_threads() const { return map_threads; }
+
 private:
     void init_opt_description();
 
@@ -36,6 +38,7 @@ private:
     std::string out_by_a;
     std::string out_by_n;
     size_t threads = 0;
+    size_t map_threads = 0;
 
     boost::program_options::options_description opt_conf{"Config File Options"};
     boost::program_options::variables_map var_map{};

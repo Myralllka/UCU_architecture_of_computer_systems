@@ -3,7 +3,6 @@
 //
 
 #include "../../includes/archivation/archive_t.h"
-//#include "../../includes/files/file_interface.h"
 
 archive_t::archive_t(std::string buffer) : buffer(std::move(buffer)) {
     init_archive();

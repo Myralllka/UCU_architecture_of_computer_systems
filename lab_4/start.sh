@@ -24,11 +24,6 @@ while true; do
       debug=true;
       shift
     ;;
-#    --build-graph)
-#      echo "Building graph..."
-#      graph=true;
-#      shift
-#    ;;
     -h|--help)
       echo "Usage: ./start.sh [options]
   Options:
@@ -63,8 +58,8 @@ fi;
 
 if [[ ! -z "$threads" ]]; then
   sed -i "s/threads...*/threads = $threads/g" ../config.dat;
-else
-  sed -i "s/threads...*/threads = 1/g" ../config.dat;
+#else
+#  sed -i "s/threads...*/threads = 1/g" ../config.dat;
 fi
 popd > /dev/null
 ./cmake-build-debug/count_number_of_all_words "$config_filename"

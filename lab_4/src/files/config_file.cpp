@@ -18,10 +18,11 @@ ConfigFileOpt::ConfigFileOpt() {
 
 void ConfigFileOpt::init_opt_description() {
     opt_conf.add_options()
-            ("infile", po::value<std::string>(&input_file), "absolute precision")
-            ("out_by_a", po::value<std::string>(&out_by_a), "relative precision")
-            ("out_by_n", po::value<std::string>(&out_by_n), "parallel execution flows number")
-            ("threads", po::value<size_t>(&threads), "initial number of intervals to integrate");
+            ("infile", po::value<std::string>(&input_file), "input filename")
+            ("out_by_a", po::value<std::string>(&out_by_a), "output by alpha filename")
+            ("out_by_n", po::value<std::string>(&out_by_n), "output by number filename")
+            ("threads", po::value<size_t>(&threads), "initial number of threads")
+            ("map_threads", po::value<size_t>(&map_threads), "initial number of map threads");
 }
 
 void ConfigFileOpt::parse(const std::string &file_name) {

@@ -11,7 +11,7 @@
 #include "includes/counting/linear_program.h"
 #include "includes/queues/tqueue.h"
 
-#define QUEUE_CAPACITY 16
+#include "../code_control.h"
 
 int main(int argc, char *argv[]) {
     auto start_time = get_current_time_fenced();
@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
     const std::string out_by_a_filename = config.get_out_by_a();
     const std::string out_by_n_filename = config.get_out_by_n();
     const uint8_t threads = config.get_number_of_threads();
+    const uint8_t map_threads = config.get_number_of_map_threads();
 
     if (infile.empty()) {
         std::cerr << "Error: Config file is empty or missing input filename!" << std::endl;
@@ -92,24 +93,32 @@ int main(int argc, char *argv[]) {
     std::locale::global(loc);
 
     //  ##############  Load, Unarchive and Count words in Text ####################
-    std::cout << "counting" << std::endl;
     if (threads > 1) {
         t_queue<file_packet> packet_queue(QUEUE_CAPACITY);
         std::vector<std::thread> vector_of_threads{};
-        t_queue<std::map<std::string, size_t>> map_queue(threads);
+        std::vector<std::thread> vector_of_map_threads{};
+        vector_of_map_threads.reserve(map_threads);
+        t_queue<std::map<std::string, size_t>> map_queue(threads + 1);
+        map_queue.emplace_back(std::map<std::string, size_t>{}); // outer poisson pill
         std::map<std::string, size_t> result;
-        for (uint8_t i = 0; i < threads; i++)
+        for (uint8_t i = 0; i < threads; i++) {
             vector_of_threads.emplace_back(counting, std::ref(packet_queue), std::ref(map_queue));
+        }
         read_files_thread<std::vector<std::string>>(std::ref(files_list), packet_queue);
-        for (auto &t: vector_of_threads)
-            t.join();
-        merge_maps(map_queue, threads);
+        for (auto &t: vector_of_threads) t.join();
+//        std::cout << "merging..." << std::endl;
+        for (int i = 0; i < map_threads; i++) {
+            vector_of_map_threads.emplace_back(merge_maps, std::ref(map_queue));
+        }
+        for (auto &t: vector_of_map_threads) t.join();
         result = map_queue.pop_front();
+        const auto finish_time = get_current_time_fenced();
+        std::cout << "Total: " << to_us(finish_time - start_time) << std::endl;
         dump_map_to_files(result, out_by_a_filename, out_by_n_filename);
     } else {
         linear_count(files_list, out_by_a_filename, out_by_n_filename);
+        const auto finish_time = get_current_time_fenced();
+        std::cout << "Total: " << to_us(finish_time - start_time) << std::endl;
     }
-    const auto finish_time = get_current_time_fenced();
-    std::cout << "Total: " << to_us(finish_time - start_time) << std::endl;
     return 0;
 }

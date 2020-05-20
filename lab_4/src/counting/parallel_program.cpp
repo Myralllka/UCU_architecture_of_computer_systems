@@ -8,26 +8,23 @@
 
 #include "../../includes/archivation/archive_t.h"
 #include "../../includes/counting/parallel_program.h"
-#include "../../includes/code_control.h"
-
 
 namespace ba = boost::locale::boundary;
 
-void merge_maps(
-        t_queue<std::map<std::string, size_t>> &queue, uint8_t num_of_threads) {
-    std::map<std::string, size_t> tmp_map, res_map{};
-    for (uint8_t map_id = 0; map_id < num_of_threads; ++map_id) {
-        tmp_map = queue.pop_front();
-        for (const auto &element : tmp_map) {
-            res_map[element.first] += tmp_map[element.first];
+void merge_maps(t_queue<std::map<std::string, size_t>> &queue) {
+    std::vector<std::map<std::string, size_t>> map_pair;
+    while ((!(map_pair = queue.pop_front_n(2))[0].empty() && !map_pair[1].empty())) {
+        for (auto &element : map_pair[1]) {
+            map_pair[0][element.first] += map_pair[1][element.first];
         }
-        tmp_map.clear();
+        queue.emplace_front_force(std::move(map_pair[0]));
     }
-    queue.emplace_back(std::move(res_map));
+    queue.emplace_front(std::move(map_pair[1].empty() ? map_pair[0] : map_pair[1]));
+    queue.emplace_back(std::map<std::string, size_t>{}); // PILL
 }
 
 void counting(t_queue<file_packet> &file_q,
-                     t_queue<std::map<std::string, size_t>> &map_q) {
+              t_queue<std::map<std::string, size_t>> &map_q) {
     file_packet packet;
     std::deque<std::string> data_q;
     std::map<std::string, size_t> map_of_words{};
@@ -56,6 +53,6 @@ void counting(t_queue<file_packet> &file_q,
             tmp_content.clear();
         }
     }
-    map_q.emplace_back(std::move(map_of_words));
+    map_q.emplace_front(std::move(map_of_words));
 }
 
