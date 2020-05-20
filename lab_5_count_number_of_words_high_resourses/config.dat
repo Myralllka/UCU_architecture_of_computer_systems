@@ -1,4 +1,4 @@
 infile = /mnt/iso/
-out_by_a = res_as.txt
-out_by_n = res_ns.txt
+out_by_a = result_alpha.txt
+out_by_n = result_number.txt
 threads = 8

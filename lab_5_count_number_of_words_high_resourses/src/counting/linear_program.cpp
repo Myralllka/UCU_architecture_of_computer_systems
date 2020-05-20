@@ -52,9 +52,9 @@ void linear_count(const std::vector<std::string> &file_names, const std::string 
             file_buf.pop_front();
             content = boost::locale::to_lower(boost::locale::fold_case(boost::locale::normalize(content)));
             ba::ssegment_index map(ba::word, content.begin(), content.end());
-            map.rule(ba::word_any);
+            map.rule(ba::word_letters);
             for (auto it = map.begin(), e = map.end(); it != e; ++it)
-                map_of_words[*it] += 1;
+                ++map_of_words[*it];
             content.clear();
         }
     }
