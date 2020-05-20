@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 17)
 #endif ()
 # TBB
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../CMake/FindTBB/")
-set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Release)
 #set(CMAKE_BUILD_TYPE Debug)
 find_package(Threads REQUIRED)
 find_package(LibArchive 3.0.0)
