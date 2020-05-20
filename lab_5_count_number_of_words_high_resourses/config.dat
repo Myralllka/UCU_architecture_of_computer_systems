@@ -1,4 +1,4 @@
-infile = /mnt/iso/
+infile = ../lab_4/archives/archive
 out_by_a = result_alpha.txt
 out_by_n = result_number.txt
 threads = 8

@@ -3,7 +3,7 @@
     Task: Parallel counting + parallel merging.
     Authors: Morhunenko Mykola & Yuriy Pasichnyk
 # Usage
-from `count_number_of_all_words/`
+from `lab_4/`
 ```$shell
 ./start.sh [config filename] [parameters]
 ```
