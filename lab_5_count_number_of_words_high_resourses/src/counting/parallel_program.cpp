@@ -2,14 +2,13 @@
 // Created by solia on 4/5/20.
 //
 
-#include "../../includes/counting/parallel_program.h"
 #include <vector>
 #include <thread>
 #include <boost/locale.hpp>
-#include "../../includes/archivation/archive_t.h"
-#include "../../includes/code_control.h"
-
 #include "tbb/concurrent_queue.h"
+#include "tbb/parallel_do.h"
+#include "../../includes/archivation/archive_t.h"
+#include "../../includes/counting/parallel_program.h"
 
 namespace ba = boost::locale::boundary;
 

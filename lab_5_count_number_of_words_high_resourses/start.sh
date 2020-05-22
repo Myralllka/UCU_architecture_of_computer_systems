@@ -15,20 +15,6 @@ while true; do
       config_filename=$2
       shift 2
     ;;
-    -n|--number)
-      test -z "${OPTARG//[0-9]}"  || (echo "$1 is not a number" >&2 && exit 1)
-      n=$2
-      shift 2
-      ;;
-    -d|--debug)
-      debug=true;
-      shift
-    ;;
-#    --build-graph)
-#      echo "Building graph..."
-#      graph=true;
-#      shift
-#    ;;
     -h|--help)
       echo "Usage: ./start.sh [options]
   Options:
@@ -63,8 +49,6 @@ fi;
 
 if [[ ! -z "$threads" ]]; then
   sed -i "s/threads...*/threads = $threads/g" ../config.dat;
-else
-  sed -i "s/threads...*/threads = 1/g" ../config.dat;
 fi
-popd > /dev/null
+popd > /dev/null || exit 1
 ./cmake-build-debug/count_number_of_all_words "$config_filename"

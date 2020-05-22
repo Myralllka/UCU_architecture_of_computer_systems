@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-void linear_count(const std::vector<std::string> &data, const std::string &output_filename_a,
-                  const std::string &output_filename_n);
+void linear_count(const std::vector<std::string> &data,
+                  tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q);
 //
 //#endif //COUNT_NUMBER_OF_ALL_WORDS_LINEAR_PROGRAM_H
