@@ -7,13 +7,6 @@
 #include <iostream>
 #include <sstream>
 #include "../../includes/counting/map_helpers.h"
-#include "../../includes/files/file_packet.h"
-
-//template<class T>
-//void push_(T *tq, file_packet out){
-//    tq->emplace_back(out);
-//}
-
 
 
 void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
@@ -56,8 +49,9 @@ void list_all_files_from(const std::string &dir_path, std::vector<std::string> &
     for (const auto &file : std::filesystem::recursive_directory_iterator(dir_path)) {
         if (std::filesystem::is_regular_file(file) && !std::filesystem::is_empty(file)) {
             res.emplace_back(file.path().string());
-        } else {
-            std::cerr << "Warning directory contain not valid or empty files! They are not counted!" << std::endl;
+        } else if (!std::filesystem::is_directory(file)) {
+            std::cerr << "Warning directory contain not valid or empty files! '" << file.path().string()
+                      << "' Is not counted!" << std::endl;
         }
     }
 }
