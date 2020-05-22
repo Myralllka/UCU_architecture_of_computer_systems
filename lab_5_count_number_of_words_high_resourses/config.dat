@@ -1,4 +1,4 @@
-infile = archives/smallarchive
-out_by_a = result_a.txt
-out_by_n = result_n.txt
-threads = 8
+infile = archives/test.zip
+out_by_a = res/result_a.txt
+out_by_n = res/result_n.txt
+threads = 1

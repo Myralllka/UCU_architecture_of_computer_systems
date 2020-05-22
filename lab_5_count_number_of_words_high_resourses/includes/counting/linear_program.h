@@ -10,5 +10,9 @@
 
 void linear_count(const std::vector<std::string> &data,
                   tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q);
+
+void linear_count(const std::vector<std::string> &data,
+                  std::map<std::string, size_t> &map_q);
+
 //
 //#endif //COUNT_NUMBER_OF_ALL_WORDS_LINEAR_PROGRAM_H

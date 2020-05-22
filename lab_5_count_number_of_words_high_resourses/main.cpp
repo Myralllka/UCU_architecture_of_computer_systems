@@ -3,6 +3,7 @@
 #include <boost/locale.hpp>
 #include <filesystem>
 #include <thread>
+#include <queue>
 
 #include "includes/files/file_interface.h"
 #include "includes/files/config_file.h"
@@ -10,6 +11,7 @@
 #include "includes/counting/parallel_program.h"
 #include "tbb/concurrent_queue.h"
 #include "includes/counting/linear_program.h"
+#include "includes/counting/tbb_countiong_pipeline.h"
 
 #define QUEUE_CAPACITY 16
 
@@ -94,24 +96,26 @@ int main(int argc, char *argv[]) {
     //  ##############  Load, Unarchive and Count words in Text ####################
     std::cout << "counting" << std::endl;
     std::map<std::string, size_t> result;
-    tbb::concurrent_bounded_queue<std::map<std::string, size_t>> map_queue;
+//    tbb::concurrent_bounded_queue<std::map<std::string, size_t>> map_queue;
+    std::map<std::string, size_t> map_queue{};
     if (threads > 1) {
-        tbb::concurrent_bounded_queue<file_packet> packet_queue;
-        packet_queue.set_capacity(QUEUE_CAPACITY);
-        std::vector<std::thread> vector_of_threads{};
-        for (uint8_t i = 0; i < threads; i++)
-            vector_of_threads.emplace_back(counting, std::ref(packet_queue), std::ref(map_queue));
-        counting(packet_queue, map_queue);
-        read_files_thread<std::vector<std::string>>(std::ref(files_list), packet_queue);
-        for (auto &t: vector_of_threads)
-            t.join();
-        merge_maps(map_queue, threads);
+//        tbb::concurrent_bounded_queue<file_packet> packet_queue;
+//        packet_queue.set_capacity(QUEUE_CAPACITY);
+//        std::vector<std::thread> vector_of_threads{};
+//        for (uint8_t i = 0; i < threads; i++) {
+//            vector_of_threads.emplace_back(counting, std::ref(packet_queue), std::ref(map_queue));
+//        }
+//        read_files_thread<std::vector<std::string>>(std::ref(files_list), packet_queue);
+//        for (auto &t: vector_of_threads)
+//            t.join();
+//        merge_maps(map_queue, threads);
+        map_queue = std::move(tbb_count_words(files_list));
     } else {
         linear_count(files_list, map_queue);
     }
     const auto finish_time = get_current_time_fenced();
     std::cout << "Total: " << to_us(finish_time - start_time) << std::endl;
-    map_queue.pop(result);
+//    map_queue.pop(result);
     dump_map_to_files(result, out_by_a_filename, out_by_n_filename);
     return 0;
 }

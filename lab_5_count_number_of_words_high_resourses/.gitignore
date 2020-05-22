@@ -6,3 +6,5 @@ sample_1/
 res*
 venv
 perf*
+config.dat
+test.cpp

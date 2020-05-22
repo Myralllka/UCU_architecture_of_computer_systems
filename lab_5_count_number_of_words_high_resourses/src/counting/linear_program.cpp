@@ -12,8 +12,9 @@
 
 namespace ba = boost::locale::boundary;
 
-void linear_count(const std::vector<std::string> &file_names,
-                  tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q) {
+//void linear_count(const std::vector<std::string> &file_names,
+//                  tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q) {
+void linear_count(const std::vector<std::string> &file_names, std::map<std::string, size_t> &map_q) {
     std::map<std::string, size_t> map_of_words;
     struct {
         file_packet data{};
@@ -58,5 +59,6 @@ void linear_count(const std::vector<std::string> &file_names,
             content.clear();
         }
     }
-    map_q.push(std::move(map_of_words));
+//    map_q.push(std::move(map_of_words));
+    map_q = std::move(map_of_words);
 }

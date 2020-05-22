@@ -10,6 +10,8 @@
 #include "../../includes/archivation/archive_t.h"
 #include "../../includes/counting/parallel_program.h"
 
+#include "../../includes/code_control.h"
+
 namespace ba = boost::locale::boundary;
 
 void merge_maps(
