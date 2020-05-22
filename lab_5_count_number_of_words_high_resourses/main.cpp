@@ -99,8 +99,8 @@ int main(int argc, char *argv[]) {
         tbb::concurrent_bounded_queue<file_packet> packet_queue;
         packet_queue.set_capacity(QUEUE_CAPACITY);
         std::vector<std::thread> vector_of_threads{};
-//        for (uint8_t i = 0; i < threads; i++)
-//            vector_of_threads.emplace_back(counting, std::ref(packet_queue), std::ref(map_queue));
+        for (uint8_t i = 0; i < threads; i++)
+            vector_of_threads.emplace_back(counting, std::ref(packet_queue), std::ref(map_queue));
         counting(packet_queue, map_queue);
         read_files_thread<std::vector<std::string>>(std::ref(files_list), packet_queue);
         for (auto &t: vector_of_threads)
