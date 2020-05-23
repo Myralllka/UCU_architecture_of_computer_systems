@@ -55,3 +55,19 @@ void list_all_files_from(const std::string &dir_path, std::vector<std::string> &
         }
     }
 }
+
+file_packet read_input_file_gen(const std::string &input_filename) {
+    if (is_text_file(input_filename)) {
+        if (is_of_allowed_size(input_filename)) {
+            return file_packet{read_binary_file(input_filename)};
+        } else {
+            std::cerr << "Warning: text file '" << input_filename << "' is missed as it is empty or lager than "
+                      << MAX_TEXT_FILE_SIZE << "!" << std::endl;
+        }
+    } else if (is_archive_file(input_filename)) {
+        return file_packet{read_binary_file(input_filename), true};
+    } else {
+        std::cerr << "Warning: File '" << input_filename << "' passed as it has a not supported format!" << std::endl;
+    }
+    return file_packet{};
+}

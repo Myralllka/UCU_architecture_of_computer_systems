@@ -9,6 +9,7 @@
 #include <deque>
 #include "../../includes/files/file_interface.h"
 #include "../../includes/archivation/archive_t.h"
+#include "../../includes/counting/linear_program.h"
 
 namespace ba = boost::locale::boundary;
 
@@ -20,7 +21,7 @@ void linear_count(const std::vector<std::string> &file_names, std::map<std::stri
         file_packet data{};
 
         void push(file_packet &&source) {
-            data = source;
+            data = std::move(source);
             is_empty = false;
         }
 
