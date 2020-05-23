@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <deque>
 
 #include "../files/file_packet.h"
 #include "../code_control.h"
@@ -25,15 +24,13 @@ class archive_t {
 public:
     archive_t();
 
-    explicit archive_t(std::string buffer);
+    explicit archive_t(std::string &&buffer);
 
     ~archive_t();
 
     archive_t(const archive_t &archive) = delete;
 
     const archive_t &operator=(const archive_t &archive) = delete;
-
-    void load_file(const std::string &file_name);
 
     template<class T>
     static void extract_to(std::string data, T &tqueue);

@@ -1,0 +1,4 @@
+infile = archives/archive
+out_by_a = res/result_a.txt
+out_by_n = res/result_n.txt
+threads = 8
