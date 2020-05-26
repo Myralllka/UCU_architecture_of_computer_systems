@@ -6,21 +6,26 @@ while true; do
       config_filename=$2
       shift 2
     ;;
+    -D|--debug-build)
+      debug_build=true;
+      shift
+    ;;
     -d|--debug)
       debug=true;
       shift
     ;;
-    -o|--optimize)
-      optimize=true;
+    -O|--optimize-build)
+      optimize_build=true;
       shift
     ;;
     -h|--help)
       echo "Usage: ./start.sh [options]
   Options:
-    -co   --compile       Compile with O3 optimization before executing
-    -cd   --debug         Compile with debug options
-    -f    --file          Config filename
-    -h    --help          Show help message"
+    -O   --optimize-build  Compile with optimization before executing
+    -D   --debug-build     Compile with debug options
+    -d   --debug           Run executable with debug symbols
+    -f    --file           Config filename
+    -h    --help           Show help message"
       exit 0;
     ;;
     \?)
@@ -35,20 +40,29 @@ while true; do
   esac
 done
 
-mkdir -p ./cmake-build-debug;
 mkdir -p ./res;
-pushd ./cmake-build-debug  > /dev/null || exit 1
 
-if [[ "$debug" = true ]]; then
+
+if [[ "$debug_build" = true ]]; then
+  mkdir -p ./cmake-build-debug;
+  pushd ./cmake-build-debug  > /dev/null || exit 1
   echo Compiling...
-  cmake -DCMAKE_BUILD_TYPE=Debug -G"Unix Makefiles" ..;
-  make;
+  cmake -DCMAKE_BUILD_TYPE=Debug -G"Unix Makefiles" ..
+  make
+  popd
 fi;
 
-if [[ "$optimize" = true ]]; then
+if [[ "$optimize_build" = true ]]; then
+  mkdir -p ./cmake-build-release;
+  pushd ./cmake-build-release  > /dev/null || exit 1
   echo Compiling...
-  cmake -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles" ..;
-  make;
+  cmake -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles" ..
+  make
+  popd
 fi;
 
-./cmake-build-debug/lab_6 "$config_filename"
+if [[ "$debug_build" = true ]]; then
+./cmake-build-debug/mpi_heat_transfer "$config_filename" || exit 1
+else
+./cmake-build-release/mpi_heat_transfer "$config_filename" || exit 1
+fi
