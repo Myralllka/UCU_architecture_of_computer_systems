@@ -9,17 +9,19 @@
 #include <deque>
 #include "../../includes/files/file_interface.h"
 #include "../../includes/archivation/archive_t.h"
+#include "../../includes/counting/linear_program.h"
 
 namespace ba = boost::locale::boundary;
 
-void linear_count(const std::vector<std::string> &file_names,
-                  tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q) {
+//void linear_count(const std::vector<std::string> &file_names,
+//                  tbb::concurrent_bounded_queue<std::map<std::string, size_t>> &map_q) {
+void linear_count(const std::vector<std::string> &file_names, std::map<std::string, size_t> &map_q) {
     std::map<std::string, size_t> map_of_words;
     struct {
         file_packet data{};
 
         void push(file_packet &&source) {
-            data = source;
+            data = std::move(source);
             is_empty = false;
         }
 
@@ -58,5 +60,6 @@ void linear_count(const std::vector<std::string> &file_names,
             content.clear();
         }
     }
-    map_q.push(std::move(map_of_words));
+//    map_q.push(std::move(map_of_words));
+    map_q = std::move(map_of_words);
 }

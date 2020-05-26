@@ -5,15 +5,13 @@
 #ifndef COUNT_NUMBER_OF_ALL_WORDS_FILE_INTERFACE_H
 #define COUNT_NUMBER_OF_ALL_WORDS_FILE_INTERFACE_H
 
-//#include "../../includes/archivation/archive_t.h"
 #include <string>
 #include <map>
 #include <algorithm>
 #include <boost/filesystem.hpp>
 #include <iostream>
-#include <deque>
 #include "file_packet.h"
-#include "tbb/concurrent_queue.h"
+
 #include "../code_control.h"
 
 void dump_map_to_files(const std::map<std::string, size_t> &map_of_words, const std::string &output_filename_a,
@@ -60,6 +58,8 @@ void read_input_file_gen(const std::string &input_filename, T &data_struct) {
         std::cerr << "Warning: File '" << input_filename << "' passed as it has a not supported format!" << std::endl;
     }
 }
+
+file_packet read_input_file_gen(const std::string &input_filename);
 
 // WARNING: do not list empty files!!!
 void list_all_files_from(const std::string &dir_path, std::vector<std::string> &res);
