@@ -5,150 +5,130 @@
 #ifndef CNN_CONVOLUTION_2D_M_MATRIX_H
 #define CNN_CONVOLUTION_2D_M_MATRIX_H
 
+#include <cstring>
+#include <algorithm>
+
+#include "code_controle.h"
+
+#if defined(ERROR_MSG_ON) || defined(DEBUG)
+
 #include <iostream>
 
-#define ALIGNMENT 32
+#endif // ERROR_MSG_ON || DEBUG
 
+#ifdef DEBUG
+
+#include <exeptions/index_exception.h>
+
+#endif // DEBUG
+
+template<typename T>
 class m_matrix {
-    size_t rows;
-    size_t cols;
-    float *data;
-    bool transposed = false;
-
-    void check_indexes(size_t m, size_t n) const {
-        if (m > rows or n > cols) {
-            std::cerr << "Array out of bounds access!" << std::endl;
-            std::cerr << (m > rows ? "incorrect number of rows" : "incorrect number of columns");
-            exit(1);
-        }
-    }
+    size_t rows, cols;
+    T *data;
 
 public:
+    m_matrix() = delete;
 
-    m_matrix(size_t m, size_t n) : rows(m), cols(n) {
-        auto size = n * m;
-//        data[size] = float{0};
-        data = static_cast<float *>(aligned_alloc(ALIGNMENT, size * sizeof(float)));
-        for (int i = 0; i < size; ++i) {
-            data[i] = 0;
-        }
-    }
+    m_matrix(size_t row, size_t col) : rows(row), cols(col), data(new T[row * col * sizeof(T)]) {}
 
     ~m_matrix() {
         delete[] data;
     }
 
-    m_matrix(const m_matrix &matrix) = delete;
+    m_matrix(const m_matrix &matrix) : rows(matrix.rows), cols(matrix.cols), data(new T[rows * cols * sizeof(T)]) {
+        memcpy(data, matrix.data, rows * cols * sizeof(T));
+#if defined(ERROR_MSG_ON) || defined(DEBUG)
+        std::cerr << "Warning: Use of copy constructor of m_matrix!"
+#endif // ERROR_MSG_ON || DEBUG
+    }
 
     m_matrix(m_matrix &&matrix) noexcept: rows(matrix.rows), cols(matrix.cols), data(matrix.data) {
         matrix.data = nullptr;
     }
 
-    m_matrix &operator=(m_matrix &matrix) = delete;
-
-    m_matrix &operator=(m_matrix &&matrix) noexcept {
+    m_matrix &operator=(const m_matrix &matrix) {
         if (&matrix != this) {
+            if (rows * cols != matrix.rows * matrix.cols) {
+                delete[] data;
+                data = new T[rows * cols * sizeof(T)];
+            }
             rows = matrix.rows;
             cols = matrix.cols;
             data = matrix.data;
-            matrix.data = nullptr;
+            memcpy(data, matrix.data, rows * cols * sizeof(T));
         }
         return *this;
     }
 
+    m_matrix &operator=(m_matrix &&matrix) noexcept {
+        rows = matrix.rows;
+        cols = matrix.cols;
+        data = matrix.data;
+        matrix.data = nullptr;
+        return *this;
+    }
+
     [[nodiscard]] size_t get_cols() const {
-        return transposed ? cols : rows;
+        return cols;
     }
 
     [[nodiscard]] size_t get_rows() const {
-        return transposed ? rows : cols;
+        return rows;
     }
 
-    [[nodiscard]] const float &get(size_t m, size_t n) const {
-        if (transposed) {
-            check_indexes(n, m);
-            return data[n * cols + m];
-        }
+    [[nodiscard]] size_t size() const {
+        return rows * cols;
+    }
+
+    [[nodiscard]] const T &get(size_t m, size_t n) const {
+#ifdef DEBUG
         check_indexes(m, n);
+#endif // DEBUG
         return data[m * cols + n];
     }
 
-    void put(size_t m, size_t n, float element) {
-        if (transposed) {
-            check_indexes(n, m);
-            data[n * cols + m] = element;
-        } else {
-            check_indexes(m, n);
-            data[m * cols + n] = element;
-        }
+    void set(size_t m, size_t n, const T &element) {
+#ifdef DEBUG
+        check_indexes(m, n);
+#endif // DEBUG
+        data[m * cols + n] = element;
     }
 
-    void transpose() {
-        transposed = !transposed;
+    void set(size_t m, size_t n, T &&element) {
+#ifdef DEBUG
+        check_indexes(m, n);
+#endif // DEBUG
+        data[m * cols + n] = std::move(element);
     }
 
-    m_matrix real_transpose() const {
-        m_matrix result(this->cols, this->rows);
-        for (size_t m = 0; m < this->rows; ++m) {
-            for (size_t n = 0; n < this->cols; ++n) {
-                result.data[n * rows + m] = this->data[m * cols + n];
-            }
-        }
-        return result;
-    }
+#ifdef DEBUG
 
     void print() const {
-        if (transposed) {
-            for (size_t n = 0; n < this->cols; ++n) {
-                for (size_t m = 0; m < this->rows; ++m) {
-                    std::cout << data[m * cols + n] << " ";
-                }
-                std::cout << std::endl;
-            }
-        } else {
+        for (size_t n = 0; n < this->cols; ++n) {
             for (size_t m = 0; m < this->rows; ++m) {
-                for (size_t n = 0; n < this->cols; ++n) {
-                    std::cout << data[m * cols + n] << " ";
-                }
-                std::cout << std::endl;
+                std::cout << data[m * cols + n] << " ";
             }
+            std::cout << std::endl;
         }
     }
 
-    [[nodiscard]] float *get_data(size_t i) const {
-        return data + i;
-    }
+#endif // DEBUG
 
-    void print_data() {
-        for (size_t i = 0; i < rows * cols; i++) {
-            std::cout << data[i] << "|";
+private:
+#ifdef DEBUG
+
+    void check_indexes(size_t m, size_t n) const {
+        if (m > rows or n > cols) {
+#ifdef ERROR_MSG_ON
+            std::cerr << "Array out of bounds access!" << std::endl;
+            std::cerr << (m > rows ? "incorrect number of rows" : "incorrect number of columns");
+#endif // ERROR_MSG_ON
+            throw IndexException{};
         }
-        std::cout << std::endl;
     }
 
-    static m_matrix im2col(const std::vector<m_matrix> &src, size_t kernel_size) {
-        size_t p = std::pow(kernel_size, 2);
-        size_t c = src.size() * p, r = std::pow((src[0].get_rows() - kernel_size + 1), 2);
-        size_t s_size = src[0].get_rows() - kernel_size + 1;
-        size_t counter_x = 0, counter_y = 0;
-        m_matrix result(r, (c / 8 + 1) * 8);
-        for (int channel = 0; channel < src.size(); ++channel) {
-            for (size_t i = 0; i < s_size; ++i) {
-                for (size_t j = 0; j < s_size; ++j) {
-                    for (size_t m = 0; m < kernel_size; ++m) {
-                        for (size_t n = 0; n < kernel_size; ++n) {
-                            result.data[counter_y * (c / 8 + 1) * 8 + (channel * p + counter_x++)] = src[channel].get((m+j), (n+i));
-                        }
-                    }
-                    ++counter_y;
-                    counter_x = 0;
-                }
-            }
-            counter_y = 0;
-        }
-        return result;
-    }
-
+#endif // DEBUG
 };
 
 #endif //CNN_CONVOLUTION_2D_M_MATRIX_H
