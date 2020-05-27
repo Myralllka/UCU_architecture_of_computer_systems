@@ -15,10 +15,10 @@ endif ()
 #find_package(Threads REQUIRED)
 
 ## include Boost
-#find_package(Boost COMPONENTS filesystem program_options system locale REQUIRED)
-#set(Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
+find_package(Boost COMPONENTS filesystem program_options system locale REQUIRED)
+set(Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
 #set(Boost_USE_MULTITHREAD ON)  # enable maltreating
-#INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 ## include MPI
 find_package(MPI REQUIRED)
@@ -30,7 +30,7 @@ INCLUDE_DIRECTORIES(includes)
 file(GLOB_RECURSE SRC "includes/*.h" "src/*.cpp")
 
 add_executable(mpi_heat_transfer main.cpp ${SRC})
-#TARGET_LINK_LIBRARIES(mpi_heat_transfer LINK_PUBLIC ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(mpi_heat_transfer LINK_PUBLIC ${Boost_LIBRARIES})
 TARGET_LINK_LIBRARIES(mpi_heat_transfer LINK_PUBLIC ${MPI_LIBRARIES})
 #TARGET_LINK_LIBRARIES(mpi_heat_transfer LINK_PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
