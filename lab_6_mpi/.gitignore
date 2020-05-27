@@ -2,3 +2,4 @@ cmake-build-*
 .idea/
 venv
 requirements.txt
+field/filed.txt
