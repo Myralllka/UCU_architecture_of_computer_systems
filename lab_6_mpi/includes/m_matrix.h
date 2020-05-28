@@ -29,9 +29,30 @@ class m_matrix {
     T *data;
 
 public:
-    m_matrix() = default;
+    m_matrix() = delete;
 
     m_matrix(size_t row, size_t col) : rows(row), cols(col), data(new T[row * col * sizeof(T)]) {}
+
+    explicit m_matrix(const std::string &input_filename) {
+        cols = 0, rows = 0;
+        std::string line;
+        std::ifstream in(input_filename);
+        in >> cols >> rows;
+        cols += 2;
+        rows += 2;
+        data = new T[rows * cols * sizeof(T)];
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                in >> data[i * cols + j];
+            }
+        }
+    }
+
+    void print_data() {
+        for (size_t n = 0; n < cols * rows; ++n) {
+            std::cout << data[n] << " ";
+        }
+    }
 
     ~m_matrix() {
         delete[] data;
@@ -40,7 +61,7 @@ public:
     m_matrix(const m_matrix &matrix) : rows(matrix.rows), cols(matrix.cols), data(new T[rows * cols * sizeof(T)]) {
         memcpy(data, matrix.data, rows * cols * sizeof(T));
 #if defined(ERROR_MSG_ON) || defined(DEBUG)
-        std::cerr << "Warning: Use of copy constructor of m_matrix!";
+        std::cerr << "Warning: Use of copy constructor of m_matrix!" << std::endl;
 #endif // ERROR_MSG_ON || DEBUG
     }
 
@@ -123,7 +144,7 @@ private:
         if (m > rows or n > cols) {
 #ifdef ERROR_MSG_ON
             std::cerr << "Array out of bounds access!" << std::endl;
-            std::cerr << (m > rows ? "incorrect number of rows" : "incorrect number of columns");
+            std::cerr << (m > rows ? "incorrect number of rows" : "incorrect number of columns") << std::endl;
 #endif // ERROR_MSG_ON
             throw IndexException{};
         }

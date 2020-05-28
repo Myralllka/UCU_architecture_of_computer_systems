@@ -6,8 +6,8 @@
 #define MPI_HEAT_TRANSFER_LINEAR_PROGRAM_H
 
 #include "files/config_file.h"
-#include "field.h"
+#include "m_matrix.h"
 
-void linear_program(field &matrix, ConfigFileOpt &config);
+void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config);
 
 #endif //MPI_HEAT_TRANSFER_LINEAR_PROGRAM_H

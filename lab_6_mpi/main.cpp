@@ -6,7 +6,6 @@
 #include "files/config_file.h"
 #include "m_matrix.h"
 #include "linear_program.h"
-#include "field.h"
 
 ConfigFileOpt parse_args(int argc, char **argv);
 
@@ -16,8 +15,10 @@ void assert_valid_config(const ConfigFileOpt &conf);
 int main(int argc, char *argv[]) {
     ConfigFileOpt config = parse_args(argc, argv);
     assert_valid_config(config);
-//    m_matrix<double> tmp(config.get_field_filename()); // load matrix
-    field tmp(config.get_field_filename());
+    m_matrix<double> tmp(config.get_field_filename()); // load matrix
+    ////////////////////////////////////////////////
+    linear_program(tmp, config);
+    ////////////////////////////////////////////////
     boost::mpi::environment env{argc, argv};
     boost::mpi::communicator world{};
 //    if (world.rank() == 0) {

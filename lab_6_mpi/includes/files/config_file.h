@@ -22,11 +22,11 @@ public:
     void parse(const std::string &file_name);
 
     // make getters
-    const size_t& get_specific_heat_capacity() const { return specific_heat_capacity; }
+    const double& get_specific_heat_capacity() const { return specific_heat_capacity; }
 
-    const size_t& get_thermal_conduction() const { return thermal_conduction; }
+    const double & get_thermal_conduction() const { return thermal_conduction; }
 
-    const size_t& get_density() const { return density; }
+    const double & get_density() const { return density; }
 
     const size_t& get_height() const { return height; }
 
@@ -47,15 +47,15 @@ private:
     std::string assert_file_exist(const std::string &f_name);
 
     // declare all parameters
-    size_t specific_heat_capacity = 0;
-    size_t thermal_conduction = 0;
-    size_t density = 0;
+    double specific_heat_capacity = 0;
+    double thermal_conduction = 0;
+    double density = 0;
     size_t height = 1000;
     size_t width = 1000;
-    double delta_x = 0;
-    double delta_y = 0;
-    double delta_t = 0;
-    size_t data_cycles = 0;
+    double delta_x = 1;
+    double delta_y = 1;
+    double delta_t = 1;
+    size_t data_cycles = 10;
     std::string field_filename;
 
     boost::program_options::options_description opt_conf{"Config File Options"};

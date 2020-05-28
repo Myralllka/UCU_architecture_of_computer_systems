@@ -12,9 +12,9 @@ ConfigFileOpt::ConfigFileOpt() {
 
 void ConfigFileOpt::init_opt_description() {
     opt_conf.add_options()
-            ("specific_heat_capacity", po::value<size_t>(&specific_heat_capacity), "specific heat capacity ")
-            ("thermal_conduction", po::value<size_t>(&thermal_conduction), "thermal conduction")
-            ("density", po::value<size_t>(&density), "density")
+            ("specific_heat_capacity", po::value<double>(&specific_heat_capacity), "specific heat capacity ")
+            ("thermal_conduction", po::value<double>(&thermal_conduction), "thermal conduction")
+            ("density", po::value<double>(&density), "density")
             ("height", po::value<size_t>(&height), "field height")
             ("width", po::value<size_t>(&height), "field width")
             ("delta_x", po::value<double>(&delta_x), "delta_x")
