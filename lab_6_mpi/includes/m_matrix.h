@@ -29,22 +29,9 @@ class m_matrix {
     T *data;
 
 public:
-    m_matrix() = delete;
+    m_matrix() = default;
 
     m_matrix(size_t row, size_t col) : rows(row), cols(col), data(new T[row * col * sizeof(T)]) {}
-
-    explicit m_matrix(const std::string &input_filename) {
-        cols = 0, rows = 0;
-        std::string line;
-        std::ifstream in(input_filename);
-        in >> cols >> rows;
-        data = new T[rows * cols * sizeof(T)];
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
-                in >> data[i * cols + j];
-            }
-        }
-    }
 
     ~m_matrix() {
         delete[] data;
