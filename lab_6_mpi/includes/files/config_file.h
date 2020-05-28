@@ -22,29 +22,29 @@ public:
     void parse(const std::string &file_name);
 
     // make getters
-    size_t get_specific_heat_capacity() const { return specific_heat_capacity; }
+    const size_t& get_specific_heat_capacity() const { return specific_heat_capacity; }
 
-    size_t get_thermal_conduction() const { return thermal_conduction; }
+    const size_t& get_thermal_conduction() const { return thermal_conduction; }
 
-    size_t get_density() const { return density; }
+    const size_t& get_density() const { return density; }
 
-    size_t get_height() const { return height; }
+    const size_t& get_height() const { return height; }
 
-    size_t get_width() const { return width; }
+    const size_t& get_width() const { return width; }
 
-    double get_delta_x() const { return delta_x; }
+    const double& get_delta_x() const { return delta_x; }
 
-    double get_delta_y() const { return delta_y; }
+    const double& get_delta_y() const { return delta_y; }
 
-    double get_delta_t() const { return delta_t; }
+    const double& get_delta_t() const { return delta_t; }
 
-    size_t get_data_cycles() const { return data_cycles; };
+    const size_t& get_data_cycles() const { return data_cycles; };
 
-    std::string get_field_filename() const { return field_filename; };
+    const std::string &get_field_filename() const { return field_filename; };
 private:
     void init_opt_description();
 
-    static std::string assert_file_exist(const std::string &f_name);
+    static const std::string& assert_file_exist(const std::string &f_name);
 
     // declare all parameters
     size_t specific_heat_capacity = 0;

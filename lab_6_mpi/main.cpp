@@ -1,10 +1,36 @@
 #include <iostream>
 #include <string>
+#include <boost/mpi.hpp>
+#include <filesystem>
 
 #include "files/config_file.h"
 #include "m_matrix.h"
 
-//ConfigFileOpt parse_args(int argc, char **argv);
+ConfigFileOpt parse_args(int argc, char **argv);
+
+void assert_valid_config(const ConfigFileOpt& conf);
+
+
+int main(int argc, char *argv[]) {
+    ConfigFileOpt config = parse_args(argc, argv);
+    assert_valid_config(config);
+    m_matrix<double> tmp(config.get_field_filename()); // load matrix
+
+    boost::mpi::environment env{argc, argv};
+    boost::mpi::communicator world{};
+
+//    if (world.rank() == 0) {
+//        int i;
+//        world.recv(1, 16, i);
+//        std::cout << i << std::endl;
+//    } else if (world.rank() == 1) {
+//        world.send(0, 16, 99);
+//    }
+    std::cout << "rank " << world.rank() << " of " << world.size() << std::endl;
+
+
+    return 0;
+}
 
 ConfigFileOpt parse_args(int argc, char **argv) {
     //  ##################### Program Parameter Parsing ######################
@@ -27,32 +53,14 @@ ConfigFileOpt parse_args(int argc, char **argv) {
     return config;
 }
 
-
-int main(int argc, char *argv[]) {
-    ConfigFileOpt config = parse_args(argc, argv);
-
-    const size_t specific_heat_capacity = config.get_specific_heat_capacity();
-    const size_t thermal_conduction = config.get_thermal_conduction();
-    const size_t density = config.get_density();
-    const size_t width = config.get_width();
-    const size_t height = config.get_height();
-    const double delta_x = config.get_delta_x();
-    const double delta_y = config.get_delta_y();
-    const double delta_t = config.get_delta_t();
-    const size_t data_cycles = config.get_data_cycles();
-    const std::string field_filename = config.get_field_filename();
-
-    ////////////////////////////// ValidateParameters ///////////////////////////////
-    if (!boost::filesystem::exists(field_filename)) {
-        std::cerr << "Error: File or Directory '" << field_filename << "' do not exist (or can not be created)!"
+void assert_valid_config(const ConfigFileOpt& conf) {
+    // TODO: rewrite through exceptions
+    if (!std::filesystem::exists(conf.get_field_filename())) {
+        std::cerr << "Error: File or Directory '" << conf.get_field_filename() << "' do not exist (or can not be created)!"
                   << std::endl;
-        return 21;
-    } else if (field_filename.empty()) {
+        exit(21);
+    } else if (conf.get_field_filename().empty()) {
         std::cerr << "Error: Field file is empty or missing field file filename!" << std::endl;
-        return 23;
+        exit(23);
     }
-    /////////////////////////////////////////////////////////////////////////////////
-    m_matrix<double> tmp(field_filename);
-    tmp.print();
-    return 0;
 }
