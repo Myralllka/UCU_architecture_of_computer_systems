@@ -34,6 +34,8 @@ int main(int argc, char *argv[]) {
     const size_t specific_heat_capacity = config.get_specific_heat_capacity();
     const size_t thermal_conduction = config.get_thermal_conduction();
     const size_t density = config.get_density();
+    const size_t width = config.get_width();
+    const size_t height = config.get_height();
     const double delta_x = config.get_delta_x();
     const double delta_y = config.get_delta_y();
     const double delta_t = config.get_delta_t();
