@@ -3,6 +3,7 @@
 
 #include "files/config_file.h"
 #include "m_matrix.h"
+#include "linear_program.h"
 
 //ConfigFileOpt parse_args(int argc, char **argv);
 
@@ -43,6 +44,8 @@ int main(int argc, char *argv[]) {
     const std::string field_filename = config.get_field_filename();
 
     ////////////////////////////// ValidateParameters ///////////////////////////////
+    auto a = config.get_thermal_conduction() / config.get_density() / config.get_specific_heat_capacity();
+    auto coef = std::pow(std::max(config.get_delta_y(), config.get_delta_x()), 2) / 8 / a;
     if (!boost::filesystem::exists(field_filename)) {
         std::cerr << "Error: File or Directory '" << field_filename << "' do not exist (or can not be created)!"
                   << std::endl;
@@ -50,9 +53,14 @@ int main(int argc, char *argv[]) {
     } else if (field_filename.empty()) {
         std::cerr << "Error: Field file is empty or missing field file filename!" << std::endl;
         return 23;
+    } else if (config.get_delta_t() < coef) {
+        std::cerr << "Error: parameters does not meet the Von Neumann criterion!" << std::endl;
+        return 23;
     }
     /////////////////////////////////////////////////////////////////////////////////
     m_matrix<double> tmp(field_filename);
+
+    linear_program(tmp, config);
     tmp.print();
     return 0;
 }

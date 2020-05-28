@@ -17,14 +17,14 @@ option_parser.add_argument("inner_temperature", type=float, nargs=1,
                            help="Temperature of the object (field).")
 option_parser.add_argument("--output_file", "-of", default="field.txt", type=str,
                            help="Output file with the header and field generated.")
-option_parser.add_argument("--width", "-W", type=int, default=1000,
+option_parser.add_argument("--width", "-W", type=int, default=10,
                            help="Width of the field. The border is not added to the Width.")
-option_parser.add_argument("--height", "-H", type=int, default=1000,
+option_parser.add_argument("--height", "-H", type=int, default=10,
                            help="Height of the field. The border is not added to the height.")
 option_parser.add_argument("--border", "-B", type=int, default=1,
                            help="The border width. Go around the field rectangular and represents the outer\n"
                                 "environment. This border is not counted in the and parameters.")
-option_parser.add_argument("--outer_t", "-T", type=float, default=20.0,
+option_parser.add_argument("--outer_t", "-T", type=float, default=100,
                            help="Temperature of the environment (border).")
 
 
@@ -59,6 +59,6 @@ def generate_field(args_f, out_file):
 if __name__ == "__main__":
     args = option_parser.parse_args()
     with open(args.output_file, "w+", encoding="utf-8") as f:
-        print(f"{args.width}\n{args.height}\n{args.border}", file=f)
+        print(f"{args.width}\n{args.height}", file=f)
         generate_field(args, f)
     print(f"Result file {args.output_file} of size {round(stat(args.output_file).st_size / (1024 * 1024), 2)} MiB")
