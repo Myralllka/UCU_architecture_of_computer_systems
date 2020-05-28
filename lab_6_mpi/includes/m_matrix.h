@@ -7,6 +7,7 @@
 
 #include <cstring>
 #include <algorithm>
+#include <fstream>
 
 #include "code_controle.h"
 
@@ -24,13 +25,26 @@
 
 template<typename T>
 class m_matrix {
-    size_t rows, cols;
+    size_t rows{}, cols{};
     T *data;
 
 public:
     m_matrix() = delete;
 
     m_matrix(size_t row, size_t col) : rows(row), cols(col), data(new T[row * col * sizeof(T)]) {}
+
+    explicit m_matrix(const std::string &input_filename) {
+        cols = 0, rows = 0;
+        std::string line;
+        std::ifstream in(input_filename);
+        in >> cols >> rows;
+        data = new T[rows * cols * sizeof(T)];
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                in >> data[i * cols + j];
+            }
+        }
+    }
 
     ~m_matrix() {
         delete[] data;
@@ -39,7 +53,7 @@ public:
     m_matrix(const m_matrix &matrix) : rows(matrix.rows), cols(matrix.cols), data(new T[rows * cols * sizeof(T)]) {
         memcpy(data, matrix.data, rows * cols * sizeof(T));
 #if defined(ERROR_MSG_ON) || defined(DEBUG)
-        std::cerr << "Warning: Use of copy constructor of m_matrix!"
+        std::cerr << "Warning: Use of copy constructor of m_matrix!";
 #endif // ERROR_MSG_ON || DEBUG
     }
 
@@ -105,8 +119,8 @@ public:
 #ifdef DEBUG
 
     void print() const {
-        for (size_t n = 0; n < this->cols; ++n) {
-            for (size_t m = 0; m < this->rows; ++m) {
+        for (size_t m = 0; m < this->rows; ++m) {
+            for (size_t n = 0; n < this->cols; ++n) {
                 std::cout << data[m * cols + n] << " ";
             }
             std::cout << std::endl;
