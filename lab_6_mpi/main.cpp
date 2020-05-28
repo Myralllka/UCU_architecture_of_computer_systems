@@ -5,6 +5,7 @@
 
 #include "files/config_file.h"
 #include "m_matrix.h"
+#include "linear_program.h"
 
 ConfigFileOpt parse_args(int argc, char **argv);
 
