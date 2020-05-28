@@ -62,7 +62,7 @@ if [[ "$optimize_build" = true ]]; then
 fi;
 
 if [[ "$debug_build" = true ]]; then
-./cmake-build-debug/mpi_heat_transfer "$config_filename" || exit 1
+    mpirun -np 4 ./cmake-build-debug/mpi_heat_transfer "$config_filename" || exit 1
 else
-./cmake-build-release/mpi_heat_transfer "$config_filename" || exit 1
+    mpirun -np 4 ./cmake-build-release/mpi_heat_transfer "$config_filename" || exit 1
 fi
