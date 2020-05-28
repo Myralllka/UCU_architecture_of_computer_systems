@@ -10,17 +10,16 @@
 
 ConfigFileOpt parse_args(int argc, char **argv);
 
-void assert_valid_config(const ConfigFileOpt& conf);
+void assert_valid_config(const ConfigFileOpt &conf);
 
 
 int main(int argc, char *argv[]) {
     ConfigFileOpt config = parse_args(argc, argv);
     assert_valid_config(config);
-    m_matrix<double> tmp(config.get_field_filename()); // load matrix
-
+//    m_matrix<double> tmp(config.get_field_filename()); // load matrix
+    field tmp(config.get_field_filename());
     boost::mpi::environment env{argc, argv};
     boost::mpi::communicator world{};
-
 //    if (world.rank() == 0) {
 //        int i;
 //        world.recv(1, 16, i);
@@ -29,7 +28,6 @@ int main(int argc, char *argv[]) {
 //        world.send(0, 16, 99);
 //    }
     std::cout << "rank " << world.rank() << " of " << world.size() << std::endl;
-
 
     return 0;
 }
@@ -55,10 +53,11 @@ ConfigFileOpt parse_args(int argc, char **argv) {
     return config;
 }
 
-void assert_valid_config(const ConfigFileOpt& conf) {
+void assert_valid_config(const ConfigFileOpt &conf) {
     // TODO: rewrite through exceptions
     if (!std::filesystem::exists(conf.get_field_filename())) {
-        std::cerr << "Error: File or Directory '" << conf.get_field_filename() << "' do not exist (or can not be created)!"
+        std::cerr << "Error: File or Directory '" << conf.get_field_filename()
+                  << "' do not exist (or can not be created)!"
                   << std::endl;
         exit(21);
     } else if (conf.get_field_filename().empty()) {
