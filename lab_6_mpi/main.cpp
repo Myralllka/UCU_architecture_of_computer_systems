@@ -19,6 +19,11 @@ int main(int argc, char *argv[]) {
     ////////////////////////////////////////////////
     linear_program(tmp, config);
     ////////////////////////////////////////////////
+    //
+    // TODO: Add Ctrl+C
+    // TODO: Add stop after thermal balance
+    //
+    ////////////////////////////////////////////////
     boost::mpi::environment env{argc, argv};
     boost::mpi::communicator world{};
 //    if (world.rank() == 0) {

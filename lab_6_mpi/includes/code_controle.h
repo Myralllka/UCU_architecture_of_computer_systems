@@ -9,4 +9,6 @@
 
 #define DEBUG
 
+#define EPSILON 10
+
 #endif //MPI_HEAT_TRANSFER_CODE_CONTROLE_H

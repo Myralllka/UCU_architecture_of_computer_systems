@@ -47,7 +47,7 @@ public:
 private:
     void init_opt_description();
 
-    std::string assert_file_exist(const std::string &f_name);
+    static std::string assert_file_exist(const std::string &f_name);
 
     // declare all parameters
     double specific_heat_capacity = 0;

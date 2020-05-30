@@ -46,11 +46,15 @@ public:
         }
     }
 
+#if defined(ERROR_MSG_ON) || defined(DEBUG)
+
     void print_data() {
         for (size_t n = 0; n < cols * rows; ++n) {
             std::cout << data[n] << " ";
         }
     }
+
+#endif // ERROR_MSG_ON || DEBUG
 
     ~m_matrix() {
         delete[] data;
