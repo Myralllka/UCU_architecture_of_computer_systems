@@ -11,7 +11,6 @@
 #pragma ide diagnostic ignored "EndlessLoop"
 #define MASTER_ID 0
 #define NONE 0
-#define EPSILON 10
 #define BEGIN_TAG       1                  /* message tag */
 #define UPPER_TAG       2                  /* message tag */
 #define LOWER_TAG       3                  /* message tag */
@@ -22,17 +21,6 @@
 ConfigFileOpt parse_args(int argc, char **argv);
 
 void assert_valid_config(const ConfigFileOpt &conf);
-
-bool check_thermal_balance(m_matrix<double> &field) {
-    auto prev = &field.get(0, 0);
-    for (int i = 0; i < field.get_rows() * field.get_cols(); ++i) {
-        if (std::abs(*prev - *(prev + i)) > EPSILON) {
-            return false;
-        }
-    }
-    return true;
-}
-
 
 int main(int argc, char *argv[]) {
     ConfigFileOpt config = parse_args(argc, argv);

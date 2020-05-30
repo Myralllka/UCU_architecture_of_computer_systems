@@ -10,4 +10,5 @@
 
 void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config);
 
+bool check_thermal_balance(m_matrix<double> &field);
 #endif //MPI_HEAT_TRANSFER_LINEAR_PROGRAM_H
