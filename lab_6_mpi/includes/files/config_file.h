@@ -5,11 +5,12 @@
 #ifndef COUNT_NUMBER_OF_ALL_WORDS_CONFIG_FILE_H
 #define COUNT_NUMBER_OF_ALL_WORDS_CONFIG_FILE_H
 
-#include <string>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <string>
 #include <iostream>
+
+
 
 #include "exeptions/parser_exeption.h"
 
@@ -22,27 +23,27 @@ public:
     void parse(const std::string &file_name);
 
     // make getters
-    const double &get_specific_heat_capacity() const { return specific_heat_capacity; }
+    [[nodiscard]] const double &get_specific_heat_capacity() const { return specific_heat_capacity; }
 
-    const double &get_thermal_conduction() const { return thermal_conduction; }
+    [[nodiscard]] const double &get_thermal_conduction() const { return thermal_conduction; }
 
-    const double &get_density() const { return density; }
+    [[nodiscard]] const double &get_density() const { return density; }
 
-    const size_t &get_height() const { return height; }
+    [[nodiscard]] const size_t &get_height() const { return height; }
 
-    const size_t &get_width() const { return width; }
+    [[nodiscard]] const size_t &get_width() const { return width; }
 
-    const double &get_delta_x() const { return delta_x; }
+    [[nodiscard]] const double &get_delta_x() const { return delta_x; }
 
-    const double &get_delta_y() const { return delta_y; }
+    [[nodiscard]] const double &get_delta_y() const { return delta_y; }
 
-    const double &get_delta_t() const { return delta_t; }
+    [[nodiscard]] const double &get_delta_t() const { return delta_t; }
 
-    const size_t &get_data_cycles() const { return data_cycles; };
+    [[nodiscard]] const size_t &get_data_cycles() const { return data_cycles; };
 
-    const std::string &get_field_filename() const { return field_filename; };
+    [[nodiscard]] const std::string &get_field_filename() const { return field_filename; };
 
-    const double &get_alpha() const { return alpha; };
+    [[nodiscard]] const double &get_alpha() const { return alpha; };
 
 private:
     void init_opt_description();
@@ -59,8 +60,8 @@ private:
     double delta_y = 1;
     double delta_t = 1;
     size_t data_cycles = 10;
-    std::string field_filename;
-    double alpha;
+    std::string field_filename{};
+    double alpha = 0;
 
     boost::program_options::options_description opt_conf{"Config File Options"};
     boost::program_options::variables_map var_map{};
