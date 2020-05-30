@@ -54,15 +54,17 @@ ConfigFileOpt parse_args(int argc, char **argv) {
     return config;
 }
 
-void assert_valid_config(const ConfigFileOpt &conf) {
+void assert_valid_config(const ConfigFileOpt &config) {
     // TODO: rewrite through exceptions
-    if (!std::filesystem::exists(conf.get_field_filename())) {
-        std::cerr << "Error: File or Directory '" << conf.get_field_filename()
+    if (!std::filesystem::exists(config.get_field_filename())) {
+        std::cerr << "Error: File or Directory '" << config.get_field_filename()
                   << "' do not exist (or can not be created)!"
                   << std::endl;
         exit(21);
-    } else if (conf.get_field_filename().empty()) {
+    } else if (config.get_field_filename().empty()) {
         std::cerr << "Error: Field file is empty or missing field file filename!" << std::endl;
         exit(23);
+    } else if (config.get_delta_t() >= std::pow(std::max(config.get_delta_x(), config.get_delta_y()), 2)) {
+
     }
 }

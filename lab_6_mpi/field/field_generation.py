@@ -7,6 +7,7 @@ CONFIG_FILE = "config.conf"
 CONFIG_SECTION = "field-properties"
 BORDER_WIDTH = 1
 
+
 def generate_field(args):
     """
     Generate field with given function on borders and constant values inside.
