@@ -38,8 +38,6 @@ public:
         std::string line;
         std::ifstream in(input_filename);
         in >> cols >> rows;
-        cols += 2;
-        rows += 2;
         data = new T[rows * cols * sizeof(T)];
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
