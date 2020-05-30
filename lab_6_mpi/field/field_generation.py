@@ -20,8 +20,8 @@ def generate_field(args):
         :param col: t-coordinate of point
         :return: bool
         """
-        return (row <= int(args["border_width"]) or row >= int(args["height"]) - int(args["border_width"])) or \
-               (col <= int(args["border_width"]) or col >= int(args["width"]) - int(args["border_width"]))
+        return (row < int(args["border_width"]) or row > int(args["height"]) - int(args["border_width"]) - 1) or \
+               (col < int(args["border_width"]) or col > int(args["width"]) - int(args["border_width"]) - 1)
 
     with open(args["output_file"], 'w+') as field:
         print(args["width"], file=field)
