@@ -2,7 +2,7 @@
 // Created by myralllka on 3/25/20.
 //
 
-#include "../../includes/files/config_file.h"
+#include "files/config_file.h"
 
 namespace po = boost::program_options;
 
