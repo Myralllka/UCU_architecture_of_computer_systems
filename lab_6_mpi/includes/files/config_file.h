@@ -22,25 +22,28 @@ public:
     void parse(const std::string &file_name);
 
     // make getters
-    const double& get_specific_heat_capacity() const { return specific_heat_capacity; }
+    const double &get_specific_heat_capacity() const { return specific_heat_capacity; }
 
-    const double & get_thermal_conduction() const { return thermal_conduction; }
+    const double &get_thermal_conduction() const { return thermal_conduction; }
 
-    const double & get_density() const { return density; }
+    const double &get_density() const { return density; }
 
-    const size_t& get_height() const { return height; }
+    const size_t &get_height() const { return height; }
 
-    const size_t& get_width() const { return width; }
+    const size_t &get_width() const { return width; }
 
-    const double& get_delta_x() const { return delta_x; }
+    const double &get_delta_x() const { return delta_x; }
 
-    const double& get_delta_y() const { return delta_y; }
+    const double &get_delta_y() const { return delta_y; }
 
-    const double& get_delta_t() const { return delta_t; }
+    const double &get_delta_t() const { return delta_t; }
 
-    const size_t& get_data_cycles() const { return data_cycles; };
+    const size_t &get_data_cycles() const { return data_cycles; };
 
     const std::string &get_field_filename() const { return field_filename; };
+
+    const double &get_alpha() const { return alpha; };
+
 private:
     void init_opt_description();
 
@@ -57,6 +60,7 @@ private:
     double delta_t = 1;
     size_t data_cycles = 10;
     std::string field_filename;
+    double alpha;
 
     boost::program_options::options_description opt_conf{"Config File Options"};
     boost::program_options::variables_map var_map{};
