@@ -33,6 +33,7 @@ void ConfigFileOpt::parse(const std::string &file_name) {
         std::cerr << E.what() << std::endl;
         throw OptionsParseException();
     }
+    alpha = get_thermal_conduction() / get_density() / get_specific_heat_capacity();
 }
 
 std::string ConfigFileOpt::assert_file_exist(const std::string &f_name) {
