@@ -4,6 +4,7 @@
 
 #include "linear_program.h"
 #include "code_controle.h"
+#define EPSILON 10
 
 bool check_thermal_balance(m_matrix<double> &field) {
     auto prev = &field.get(0, 0);

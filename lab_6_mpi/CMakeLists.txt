@@ -11,8 +11,6 @@ if (CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 endif ()
 
-## include Threads
-#find_package(Threads REQUIRED)
 ## include Boost
 find_package(Boost COMPONENTS mpi filesystem program_options system REQUIRED)
 set(Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
@@ -21,7 +19,6 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
 ## include Headers
 INCLUDE_DIRECTORIES(includes)
-
 file(GLOB_RECURSE SRC "includes/*.h" "src/*.cpp")
 
 add_executable(mpi_heat_transfer main.cpp ${SRC})
