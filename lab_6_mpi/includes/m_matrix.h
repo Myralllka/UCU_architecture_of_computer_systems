@@ -121,25 +121,25 @@ public:
         return rows * cols;
     }
 
-    [[nodiscard]] const T &get(size_t m, size_t n) const {
+    [[nodiscard]] const T &get(size_t row, size_t col) const {
 #ifdef DEBUG
-        check_indexes(m, n);
+        check_indexes(row, col);
 #endif // DEBUG
-        return data[m * cols + n];
+        return data[row * cols + col];
     }
 
-    void set(size_t m, size_t n, const T &element) {
+    void set(size_t row, size_t col, const T &element) {
 #ifdef DEBUG
-        check_indexes(m, n);
+        check_indexes(row, col);
 #endif // DEBUG
-        data[m * cols + n] = element;
+        data[row * cols + col] = element;
     }
 
-    void set(size_t m, size_t n, T &&element) {
+    void set(size_t row, size_t col, T &&element) {
 #ifdef DEBUG
-        check_indexes(m, n);
+        check_indexes(row, col);
 #endif // DEBUG
-        data[m * cols + n] = std::move(element);
+        data[row * cols + col] = std::move(element);
     }
 
 #ifdef DEBUG
@@ -158,11 +158,11 @@ public:
 private:
 #ifdef DEBUG
 
-    void check_indexes(size_t m, size_t n) const {
-        if (m > rows or n > cols) {
+    void check_indexes(size_t row, size_t col) const {
+        if (row > rows or col > cols) {
 #ifdef ERROR_MSG_ON
             std::cerr << "Array out of bounds access!" << std::endl;
-            std::cerr << (m > rows ? "incorrect number of rows" : "incorrect number of columns") << std::endl;
+            std::cerr << (row > rows ? "incorrect number of rows" : "incorrect number of columns") << std::endl;
 #endif // ERROR_MSG_ON
             throw IndexException{};
         }
