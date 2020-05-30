@@ -46,6 +46,22 @@ public:
         }
     }
 
+    T *get_process_data_portion(size_t process_index, size_t number_of_processes) {
+        // return pointer on the beginning of the data for the process
+        // the pointer is directly on the data portion, without any overlaps
+        auto main_work = rows / number_of_processes;
+        auto extra_work = rows % number_of_processes;
+        auto process_block_width = (process_index <= extra_work) ? main_work + 1 : main_work;
+        return &(data + (process_block_width * cols));
+    }
+
+    size_t get_process_data_portion_length(size_t process_index, size_t number_of_processes) {
+        auto main_work = rows / number_of_processes;
+        auto extra_work = rows % number_of_processes;
+        auto process_block_width = (process_index <= extra_work) ? main_work + 1 : main_work;
+        return cols * process_block_width;
+    }
+
 #if defined(ERROR_MSG_ON) || defined(DEBUG)
 
     void print_data() {
