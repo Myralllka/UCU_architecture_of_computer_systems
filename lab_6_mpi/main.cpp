@@ -64,7 +64,8 @@ void assert_valid_config(const ConfigFileOpt &config) {
     } else if (config.get_field_filename().empty()) {
         std::cerr << "Error: Field file is empty or missing field file filename!" << std::endl;
         exit(23);
-    } else if (config.get_delta_t() >= std::pow(std::max(config.get_delta_x(), config.get_delta_y()), 2)) {
-
+    } else if (config.get_delta_t() >=
+               std::pow(std::max(config.get_delta_x(), config.get_delta_y()), 2) / config.get_alpha() / 8) {
+        std::cerr << "Violation of the Von Neumann criteria for input data." << std::endl;
     }
 }
