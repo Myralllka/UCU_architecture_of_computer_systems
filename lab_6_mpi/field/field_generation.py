@@ -5,7 +5,7 @@ import sys
 
 CONFIG_FILE = "config.conf"
 CONFIG_SECTION = "field-properties"
-
+BORDER_WIDTH = 1
 
 def generate_field(args):
     """
@@ -20,8 +20,8 @@ def generate_field(args):
         :param col: t-coordinate of point
         :return: bool
         """
-        return (row < int(args["border_width"]) or row > int(args["height"]) - int(args["border_width"]) - 1) or \
-               (col < int(args["border_width"]) or col > int(args["width"]) - int(args["border_width"]) - 1)
+        return (row < int(BORDER_WIDTH) or row > int(args["height"]) - int(BORDER_WIDTH) - 1) or \
+               (col < int(BORDER_WIDTH) or col > int(args["width"]) - int(BORDER_WIDTH) - 1)
 
     with open(args["output_file"], 'w+') as field:
         print(args["width"], file=field)
