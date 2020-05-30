@@ -16,7 +16,7 @@ void ConfigFileOpt::init_opt_description() {
             ("thermal_conduction", po::value<double>(&thermal_conduction), "thermal conduction")
             ("density", po::value<double>(&density), "density")
             ("height", po::value<size_t>(&height), "field height")
-            ("width", po::value<size_t>(&height), "field width")
+            ("width", po::value<size_t>(&width), "field width")
             ("delta_x", po::value<double>(&delta_x), "delta_x")
             ("delta_y", po::value<double>(&delta_y), "delta_y")
             ("delta_t", po::value<double>(&delta_t), "delta_t")
