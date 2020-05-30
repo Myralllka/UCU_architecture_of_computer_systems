@@ -27,9 +27,9 @@ void assert_valid_config(const ConfigFileOpt &conf);
 int main(int argc, char *argv[]) {
     ConfigFileOpt config = parse_args(argc, argv);
     assert_valid_config(config);
-    m_matrix<double> tmp(config.get_field_filename()); // load matrix
     ////////////////////////////////////////////////
-//    linear_program(tmp, config);
+    m_matrix<double> tmp(config.get_field_filename()); // load matrix
+    linear_program(tmp, config);
     ////////////////////////////////////////////////
     //
     // TODO: Add Ctrl+C
@@ -58,8 +58,8 @@ int main(int argc, char *argv[]) {
         m_matrix<double> u{config.get_field_filename()}; // load matrix
         ///////////////////////////////////// Initialize grid END //////////////////////////////////
 
-        size_t main_work = config.get_height() / workers_num;
-        size_t extra_work = config.get_height() % workers_num;
+        int main_work = static_cast<int>(config.get_height() / workers_num);
+        int extra_work = static_cast<int>(config.get_height() % workers_num);
 
         ///////////////////////////////////// DISTRIBUTE WORK //////////////////////////////////////
         for (int dest_id = 1; dest_id <= workers_num; dest_id++) {
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
             world.send(dest_id, BEGIN_TAG, upper_worker);
             world.send(dest_id, BEGIN_TAG, lower_worker);
             world.send(dest_id, BEGIN_TAG, &u.get(offset, 0),
-                       work_block_width * config.get_width()); // TODO : set valid pointer
+                       static_cast<int>(work_block_width * config.get_width())); // TODO : set valid pointer
             std::cout << "Sent to task " << dest_id << " rows= " << work_block_width << " offset= " << offset
                       << std::endl;
             std::cout << "upper_worker= " << upper_worker << " lower_worker= " << lower_worker << std::endl;
@@ -95,7 +95,8 @@ int main(int argc, char *argv[]) {
             for (size_t source = 1; source <= workers_num; source++) {
                 world.recv(source, ITER_RES_TAG, offset);
                 world.recv(source, ITER_RES_TAG, work_block_width);
-                world.recv(source, ITER_RES_TAG, &u.get(offset, 0), work_block_width * config.get_width());
+                world.recv(source, ITER_RES_TAG, &u.get(offset, 0),
+                           static_cast<int>(work_block_width * config.get_width()));
             }
             if (++iters > config.get_data_cycles()) { // TODO: check trigger condition
                 // TODO: add logging and stop condition
@@ -116,18 +117,18 @@ int main(int argc, char *argv[]) {
 
         m_matrix<double> u[] = {m_matrix<double>{static_cast<size_t>(work_block_width + 2), config.get_width()},
                                 m_matrix<double>{static_cast<size_t>(work_block_width + 2), config.get_width()}};
-        world.recv(MASTER_ID, BEGIN_TAG, &u[0].get(1, 0), static_cast<size_t>(work_block_width) * config.get_width());
+        world.recv(MASTER_ID, BEGIN_TAG, &u[0].get(1, 0), static_cast<int>(work_block_width * config.get_width()));
 
         /* Determine border elements.  Need to consider first and last columns. */
         /* Obviously, row 0 can't exchange with row 0-1.  Likewise, the last */
         /* row can't exchange with last+1.  */
-        size_t start = offset;
-        size_t end = offset + work_block_width - 1;
+        size_t start = 0;
+        size_t end = work_block_width - 1;
         if (offset == 0)
             start = 1;
         if ((offset + work_block_width) == config.get_height())
             end--;
-        std::cout << "task=" << world.rank() << "  start=" << start << "  end=" << end << std::endl;
+        std::cout << "task=" << world.rank() << "  start=" << start + offset << "  end=" << end + offset << std::endl;
         ///////////////////////////////////// INIT PARAMS END //////////////////////////////////
 
         //////////////////////////////////// MAIN LOOP ////////////////////////////////////

@@ -121,7 +121,7 @@ public:
         return rows * cols;
     }
 
-    [[nodiscard]] const T &get(size_t row, size_t col) const {
+    [[nodiscard]] T &get(size_t row, size_t col) const {
 #ifdef DEBUG
         check_indexes(row, col);
 #endif // DEBUG
