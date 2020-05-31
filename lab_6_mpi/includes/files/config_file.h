@@ -46,6 +46,8 @@ public:
 
     [[nodiscard]] const double &get_epsilon() const { return epsilon; };
 
+    [[nodiscard]] const size_t &get_max_number_of_cycles() const { return max_number_of_cycles; };
+
 private:
     void init_opt_description();
 
@@ -78,6 +80,7 @@ private:
     double temp = 0;
     double epsilon = 0.0001;
     std::string output_file{};
+    size_t max_number_of_cycles = 0;
 
     boost::program_options::options_description opt_conf{"Config File Options"};
     boost::program_options::variables_map var_map{};

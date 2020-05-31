@@ -5,7 +5,7 @@
 #include "mpi_program.h"
 #include "m_matrix.h"
 #include "visualization.h"
-
+#include "code_controle.h"
 
 #define NONE            0
 #define BEGIN_TAG       1                  /* message tag */
@@ -67,9 +67,10 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     size_t counter = 1;
     GifWriter gif_w{};
     size_t delay = 50;
+    auto max_num_of_cycles = config.get_max_number_of_cycles();
     GifBegin(&gif_w, "res/heatmap.gif", main_matrix.get_cols(), main_matrix.get_rows(), delay);
     write_to_png("res/0.png", main_matrix, gif_w);
-    while (!check_thermal_balance(main_matrix, config.get_epsilon())) {
+    while (!check_thermal_balance(main_matrix, config.get_epsilon()) or max_num_of_cycles <= counter) {
         for (int source = 1; source <= workers_num; ++source) {
             world.send(source, ITER_RES_TAG, true);
             world.recv(source, ITER_RES_TAG, offset); // fail here
@@ -77,7 +78,9 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
             world.recv(source, ITER_RES_TAG, &main_matrix.get(static_cast<size_t>(offset), 0),
                        work_block_width * static_cast<int>(config.get_width()));
         }
+#ifdef DEBUG
         std::cout << "SNAPSHOT " << counter << std::endl;
+#endif
         sprintf(name, "res/%zu.png", counter++);
         write_to_png(name, main_matrix, gif_w);
     }
@@ -85,7 +88,9 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
         world.send(source, ITER_RES_TAG, false);
     }
     GifEnd(&gif_w);
+#ifdef DEBUG
     std::cout << "############################## MAIN STOP #########################################" << std::endl;
+#endif
 
     //////////////////////// COLLECT RESULTS END /////////////////////////////////
 }
