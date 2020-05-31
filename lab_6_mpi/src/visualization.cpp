@@ -5,6 +5,21 @@
 #include "visualization.h"
 #include <png.h>
 
+std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
+    double f_max = static_cast<double>(max);
+    double f_min = static_cast<double>(min);
+    double ratio = 2 * (value - f_min) / (f_max - f_min);
+
+    std::vector<size_t> rgb;
+    size_t b = static_cast<size_t>(std::max(0.0, 255 * (1 - ratio)));
+    size_t r = static_cast<size_t>(std::max(0.0, 255 * (ratio - 1)));
+    rgb.push_back(r);
+    rgb.push_back(255 - b - r); // g
+    rgb.push_back(b);
+
+    return rgb;
+}
+
 void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
@@ -31,12 +46,16 @@ void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
 
     auto rows_ptr = (png_bytepp) png_malloc(png_ptr, sizeof(png_bytepp) * height);
     for (size_t i = 0; i < height; i++) {
-        rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width);
+        rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width * 3);
     }
 
+    std::vector<size_t> rgb_value;
     for (size_t i = 0; i < height; i++) {  // row
         for (size_t j = 0; j < width; j++) { //column
-            rows_ptr[i][j] = to_vis.get(i, j);
+            rgb_value = to_rgb(0, 100, to_vis.get(i, j));
+
+            for (size_t k = 0; k < 3; k++)
+                rows_ptr[i][j * 3 + k] = rgb_value[k];
         }
     }
 
