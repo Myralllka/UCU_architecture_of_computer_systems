@@ -4,17 +4,9 @@
 #include <filesystem>
 
 #include "files/config_file.h"
-#include "m_matrix.h"
 #include "linear_program.h"
-#include "visualization.h"
+#include "mpi_program.h"
 
-
-#define MASTER_ID       0
-#define NONE            0
-#define BEGIN_TAG       1                  /* message tag */
-#define UPPER_TAG       2                  /* message tag */
-#define LOWER_TAG       3                  /* message tag */
-#define ITER_RES_TAG    4                  /* message tag */
 
 ConfigFileOpt parse_args(int argc, char **argv);
 
@@ -33,151 +25,17 @@ int main(int argc, char *argv[]) {
     ////////////////////////////////////////////////
     boost::mpi::environment env{argc, argv};
     boost::mpi::communicator world{};
-    int workers_num = world.size() - 1, upper_worker, lower_worker;
-    size_t offset = 0;
-    int work_block_width;
+    const int workers_num = world.size() - 1;
 
     if (!workers_num) {
         std::cerr << "ERROR: the number of tasks must be at least 1.\nQuitting..." << std::endl;
         return 1;
     }
-    ////////////////////////////////////////////// MASTER  CODE ////////////////////////////////////////////////////////
-    if (world.rank() == MASTER_ID) {
-        std::cout << "Starting mpi_heat_transfer with " << workers_num << " worker tasks." << std::endl;;
 
-        ///////////////////////////////////// Initialize grid //////////////////////////////////////
-        std::cout << "Grid size: X= " << config.get_width() << "  Y= " << config.get_height() << std::endl;
-        std::cout << "Initializing grid and writing initial.dat file..." << std::endl;
-        m_matrix<double> main_matrix{config.get_field_filename()}; // load matrix
-#ifdef DEBUG
-        main_matrix.print();
-#endif // DEBUG
-        ///////////////////////////////////// Initialize grid END //////////////////////////////////
-
-        int main_work = static_cast<int>(config.get_height() / workers_num);
-        int extra_work = static_cast<int>(config.get_height() % workers_num);
-
-        ///////////////////////////////////// DISTRIBUTE WORK //////////////////////////////////////
-        for (int dest_id = 1; dest_id <= workers_num; dest_id++) {
-            work_block_width = (dest_id <= extra_work) ? main_work + 1 : main_work;
-            /* Tell each worker who its neighbors are, since they must exchange */
-            /* data with each other. */
-            if (dest_id == 1)
-                upper_worker = NONE;
-            else
-                upper_worker = dest_id - 1;
-            if (dest_id == workers_num)
-                lower_worker = NONE;
-            else
-                lower_worker = dest_id + 1;
-
-            /*  Now send startup information to each worker  */
-            world.send(dest_id, BEGIN_TAG, offset);
-            world.send(dest_id, BEGIN_TAG, work_block_width);
-            world.send(dest_id, BEGIN_TAG, upper_worker);
-            world.send(dest_id, BEGIN_TAG, lower_worker);
-            world.send(dest_id, BEGIN_TAG, &main_matrix.get(offset, 0),
-                       static_cast<int>(work_block_width * config.get_width()));
-            std::cout << "Sent to task " << dest_id << " rows= " << work_block_width << " offset= " << offset
-                      << std::endl;
-            std::cout << "upper_worker= " << upper_worker << " lower_worker= " << lower_worker << std::endl;
-            offset = offset + work_block_width;
-        }
-        ///////////////////////////////////// DISTRIBUTE WORK END //////////////////////////////////
-
-        ////////////////////////////////////// COLLECT RESULTS /////////////////////////////////////
-        while (!check_thermal_balance(main_matrix)) {
-            for (size_t source = 1; source <= workers_num; ++source) {
-                world.send(source, ITER_RES_TAG, true);
-                world.recv(source, ITER_RES_TAG, offset);
-                world.recv(source, ITER_RES_TAG, work_block_width);
-                world.recv(source, ITER_RES_TAG, &main_matrix.get(offset, 0),
-                           static_cast<int>(work_block_width * config.get_width()));
-            }
-#ifdef DEBUG
-            std::cout << "___________________________________________________\n";
-            main_matrix.print();
-#endif // DEBUG
-        }
-        for (size_t source = 1; source <= workers_num; source++) {
-            world.send(source, ITER_RES_TAG, false);
-        }
-        std::cout << "############################## MAIN STOP #########################################" << std::endl;
-
-        //////////////////////// COLLECT RESULTS END /////////////////////////////////
-    }
-    /////////////////////////////////////////////// MASTER CODE END ////////////////////////////////////////////////////
-
-
-    /////////////////////////////////////////////// SLAVE CODE /////////////////////////////////////////////////////////
-    if (world.rank() != MASTER_ID) {
-        ///////////////////////////////////// INIT PARAMS /////////////////////////////////////
-        world.recv(MASTER_ID, BEGIN_TAG, offset);
-        world.recv(MASTER_ID, BEGIN_TAG, work_block_width);
-        world.recv(MASTER_ID, BEGIN_TAG, upper_worker);
-        world.recv(MASTER_ID, BEGIN_TAG, lower_worker);
-
-        m_matrix<double> work_matrix_set[] = {
-                m_matrix<double>{static_cast<size_t>(work_block_width + 2), config.get_width()},
-                m_matrix<double>{static_cast<size_t>(work_block_width + 2), config.get_width()}};
-
-        world.recv(MASTER_ID, BEGIN_TAG, &work_matrix_set[0].get(1, 0),
-                   static_cast<int>(work_block_width * config.get_width()));
-        work_matrix_set[1] = work_matrix_set[0];
-
-        /* Determine border elements.  Need to consider first and last columns. */
-        /* Obviously, row 0 can't exchange with row 0-1.  Likewise, the last */
-        /* row can't exchange with last+1.  */
-        int start = 1;
-        int end_i = work_block_width + 1;
-        if (offset == 0)
-            start = 2;
-        if ((offset + work_block_width) == config.get_height())
-            end_i--;
-        std::cout << "task=" << world.rank() << "  start=" << start + offset << "  end_i=" << end_i + offset
-                  << std::endl;
-        ///////////////////////////////////// INIT PARAMS END //////////////////////////////////
-
-        //////////////////////////////////// MAIN LOOP ////////////////////////////////////
-        /* Begin doing STEPS iterations.  Must communicate border rows with */
-        /* neighbors.  If I have the first or last grid row, then I only need */
-        /*  to  communicate with one neighbor  */
-        std::cout << "Task " << world.rank() << " received work. Beginning time steps..." << std::endl;
-        uint8_t next_matrix = 0;
-        size_t iter = 0;
-        bool execute_flag;
-        while (true) {
-            if (upper_worker != NONE) {
-                world.send(upper_worker, LOWER_TAG, &work_matrix_set[next_matrix].get(1, 0), config.get_width());
-                world.recv(upper_worker, UPPER_TAG, &work_matrix_set[next_matrix].get(0, 0), config.get_width());
-            }
-            if (lower_worker != NONE) {
-                world.send(lower_worker, UPPER_TAG, &work_matrix_set[next_matrix].get(work_block_width, 0),
-                           config.get_width());
-                world.recv(lower_worker, LOWER_TAG, &work_matrix_set[next_matrix].get(work_block_width + 1, 0),
-                           config.get_width());
-            }
-            /* Now call update to update the value of grid points */
-            count_next_step_for_cell(work_matrix_set[next_matrix], work_matrix_set[1 - next_matrix], config, start,
-                                     end_i);
-            if (++iter >= config.get_data_cycles()) {
-                /* Send my portion of results back to master */
-                world.recv(MASTER_ID, ITER_RES_TAG, execute_flag);
-                if (!execute_flag) {
-                    break;
-                }
-                world.send(MASTER_ID, ITER_RES_TAG, offset);
-                world.send(MASTER_ID, ITER_RES_TAG, work_block_width);
-                world.send(MASTER_ID, ITER_RES_TAG, &work_matrix_set[next_matrix].get(1, 0),
-                           work_block_width * config.get_width());
-                iter = 0;
-            }
-
-            next_matrix = 1 - next_matrix;
-        }
-        //////////////////////////////////// MAIN LOOP END ////////////////////////////////
-    }
-    /////////////////////////////////////////////// SLAVE CODE END /////////////////////////////////////////////////////
+    if (world.rank() == MASTER_ID)
+        master_code(world, config);
+    else
+        slave_code(world, config);
 
     std::cout << "FINISH process with rank " << world.rank() << " of " << world.size() << std::endl;
     return 0;

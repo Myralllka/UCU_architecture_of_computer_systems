@@ -13,8 +13,9 @@
 #if defined(ERROR_MSG_ON) || defined(DEBUG)
 
 #include <iostream>
-
 #include "code_controle.h"
+
+#endif
 
 #ifdef DEBUG
 
@@ -34,12 +35,11 @@ public:
 
     explicit m_matrix(const std::string &input_filename) {
         cols = 0, rows = 0;
-        std::string line;
         std::ifstream in(input_filename);
         in >> cols >> rows;
         data = new T[rows * cols * sizeof(T)];
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
                 in >> data[i * cols + j];
             }
         }
@@ -88,9 +88,12 @@ public:
 
     m_matrix &operator=(const m_matrix &matrix) {
         if (&matrix != this) {
+            if (rows * cols != matrix.rows * matrix.cols) {
+                delete[] data;
+                data = new T[matrix.rows * matrix.cols * sizeof(T)];
+            }
             rows = matrix.rows;
             cols = matrix.cols;
-            data = new T[rows * cols * sizeof(T)];
             memcpy(data, matrix.data, rows * cols * sizeof(T));
         }
         return *this;
