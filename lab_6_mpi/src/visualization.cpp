@@ -62,7 +62,7 @@ void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
         rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width * 3);
     }
 
-    size_t max_temp = 0;
+    double max_temp = 0;
     for (size_t i = 0; i < to_vis.get_rows(); i++)
         for (size_t j = 0; j < to_vis.get_cols(); j++)
             if (to_vis.get(i, j) > max_temp)
@@ -71,7 +71,7 @@ void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
     std::vector<size_t> rgb_value;
     for (size_t i = 0; i < height; i++) {  // row
         for (size_t j = 0; j < width; j++) { //column
-            rgb_value = to_rgb(0, max_temp, to_vis.get(i, j));
+            rgb_value = to_rgb(0, static_cast<size_t>max_temp, to_vis.get(i, j));
 
             for (size_t k = 0; k < 3; k++)
                 rows_ptr[i][j * 3 + k] = rgb_value[k];
