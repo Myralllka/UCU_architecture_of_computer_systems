@@ -45,8 +45,10 @@ while true; do
 done
 
 
-
+rm -rf ./res;
 mkdir -p ./res;
+
+python3 field/field_generation.py "$config_filename"
 
 if [[ "$debug_build" = true ]]; then
   mkdir -p ./cmake-build-debug;

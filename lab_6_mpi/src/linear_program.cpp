@@ -7,8 +7,6 @@
 #include "visualization.h"
 #include "sstream"
 
-#define EPSILON 10
-
 bool check_thermal_balance(const m_matrix<double> &field) {
     auto prev = &field.get(0, 0);
     for (int i = 0; i < static_cast<int>(field.get_rows() * field.get_cols()); ++i) {
