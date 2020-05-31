@@ -59,7 +59,7 @@ void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
 
     auto rows_ptr = (png_bytepp) png_malloc(png_ptr, sizeof(png_bytepp) * height);
     for (size_t i = 0; i < height; i++) {
-        rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width * 3);
+        rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width * 6);
     }
 
     double max_temp = 0;
