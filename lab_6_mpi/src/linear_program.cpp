@@ -56,7 +56,7 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
 //            std::cout << "--------matrix" << std::endl;
             std::cout << counter << std::endl;
 //            matrix.print();
-            char *name;
+            char name[100];
             sprintf(name, "res/%zu.png", counter);
             write_to_png(name, matrix);
         }

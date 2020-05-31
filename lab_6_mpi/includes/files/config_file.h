@@ -61,6 +61,20 @@ private:
     size_t data_cycles = 10;
     std::string field_filename{};
     double alpha = 0;
+    std::string up_func{};
+    double up_func_arg = 0;
+    double up_func_arg2 = 0;
+    std::string left_func{};
+    double left_func_arg = 0;
+    double left_func_arg2 = 0;
+    std::string right_func{};
+    double right_func_arg = 0;
+    double right_func_arg2 = 0;
+    std::string bottom_func{};
+    double bottom_func_arg = 0;
+    double bottom_func_arg2 = 0;
+    double temp = 0;
+    std::string output_file{};
 
     boost::program_options::options_description opt_conf{"Config File Options"};
     boost::program_options::variables_map var_map{};

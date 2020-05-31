@@ -21,7 +21,7 @@ std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
     rgb.push_back(255 - b - r); // g
     rgb.push_back(b);
 
-    assert_valid_rgb(&rgb);
+    assert_valid_rgb(rgb);
 
     return rgb;
 }
