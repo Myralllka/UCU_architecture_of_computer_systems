@@ -6,7 +6,7 @@
 #include "code_controle.h"
 #include "visualization.h"
 #include "sstream"
-#define EPSILON 10
+#define EPSILON 0.01
 
 bool check_thermal_balance(m_matrix<double> &field) {
     auto prev = &field.get(0, 0);
