@@ -44,6 +44,12 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
     m_matrix<double> second_matrix = matrix;
     size_t counter = 0;
     bool flag = false;
+
+    // for gif creation
+    GifWriter gif_w;
+    size_t delay = 50;
+    GifBegin(&gif_w, "heatmap.gif", 100, 100, delay);
+
     while (!check_thermal_balance(matrix)) {
         if (flag) {
             count_next_step(matrix, second_matrix, config);
@@ -58,9 +64,9 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
 //            matrix.print();
             char name[100];
             sprintf(name, "res/%zu.png", counter);
-            write_to_png(name, matrix);
+            write_to_png(name, matrix, &gif_w);
         }
 
     }
-
+    GifEnd(&gif_w);
 }

@@ -3,7 +3,8 @@
 //
 
 #include "visualization.h"
-#include <png.h>
+
+namespace fs = std::filesystem;
 
 std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
     double f_max = static_cast<double>(max);
@@ -33,7 +34,7 @@ void assert_valid_rgb(std::vector<size_t> &rgb) {
             throw VisualizationException("invalid RGB generated");
 }
 
-void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
+void write_to_png(const std::string &f_name, m_matrix<double> to_vis, GifWriter &gif_w) {
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
         throw VisualizationException("invalid to-write-to file specified");
@@ -69,19 +70,19 @@ void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
                 max_temp = to_vis.get(i, j);
 
     std::vector<size_t> rgb_value;
+    std::vector<size_t> pix;
     for (size_t i = 0; i < height; i++) {  // row
         for (size_t j = 0; j < width; j++) { //column
             rgb_value = to_rgb(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
 
-            std::cout << "(";
             for (size_t k = 0; k < 3; k++) {
                 rows_ptr[i][j * 3 + k] = rgb_value[k];
-                std::cout << rgb_value[k] << ", ";
+                pix.push_back(rgb_value[k]);
             }
-            std::cout << ") ";
         }
-        std::cout << "\n";
     }
+
+    GifWriteFrame(&gif_w, pix.data(), 100, 100, 50);
 
     png_write_info(png_ptr, info_ptr);
     png_write_image(png_ptr, rows_ptr);
