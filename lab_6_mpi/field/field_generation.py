@@ -3,7 +3,7 @@ from configparser import ConfigParser
 import sys
 
 
-CONFIG_FILE = "config.conf"
+CONFIG_FILE = "../config.conf"
 CONFIG_SECTION = "field-properties"
 BORDER_WIDTH = 1
 
