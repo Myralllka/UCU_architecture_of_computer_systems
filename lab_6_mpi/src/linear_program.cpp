@@ -4,7 +4,8 @@
 
 #include "linear_program.h"
 #include "code_controle.h"
-#define EPSILON 10
+
+#define EPSILON 20
 
 bool check_thermal_balance(m_matrix<double> &field) {
     auto prev = &field.get(0, 0);
@@ -16,18 +17,16 @@ bool check_thermal_balance(m_matrix<double> &field) {
     return true;
 }
 
-void count_next_step(const m_matrix<double> &previous,
-                     m_matrix<double> &current,
-                     const ConfigFileOpt &config) {
+void count_next_step(const m_matrix<double> &previous, m_matrix<double> &current, const ConfigFileOpt &config) {
     // count next area for the "current" field based on previous
-    auto c = previous.get_cols() - 1, r = previous.get_rows() - 1;
-    for (size_t i = 1; i < r; ++i) {
-        for (size_t j = 1; j < c; ++j) {
-            double x = (previous.get(i - 1, j) - (2 * previous.get(i, j)) + previous.get(i + 1, j)) /
+    const auto c = previous.get_cols() - 1, r = previous.get_rows() - 1;
+    for (size_t row = 1; row < r; ++row) {
+        for (size_t col = 1; col < c; ++col) {
+            double x = (previous.get(row - 1, col) - (2 * previous.get(row, col)) + previous.get(row + 1, col)) /
                        std::pow(config.get_delta_x(), 2);
-            double y = (previous.get(i, j - 1) - (2 * previous.get(i, j)) + previous.get(i, j + 1)) /
+            double y = (previous.get(row, col - 1) - (2 * previous.get(row, col)) + previous.get(row, col + 1)) /
                        std::pow(config.get_delta_y(), 2);
-            current.set(i, j, previous.get(i, j) + config.get_delta_t() * config.get_alpha() * (x + y));
+            current.set(row, col, previous.get(row, col) + config.get_delta_t() * config.get_alpha() * (x + y));
         }
     }
 #ifdef DEBUG
@@ -38,23 +37,36 @@ void count_next_step(const m_matrix<double> &previous,
 #endif
 }
 
+
+void count_next_step_for_cell(const m_matrix<double> &previous, m_matrix<double> &current,
+                              const ConfigFileOpt &config, const int start, const int end) {
+    // count next area for the "current" field based on previous
+    const auto c = previous.get_cols() - 1;
+    double x, y;
+    for (int row = start; row < end; ++row) {
+        for (int col = 1; col < c; ++col) {
+            x = (previous.get(row - 1, col) - (2 * previous.get(row, col)) + previous.get(row + 1, col)) /
+                std::pow(config.get_delta_x(), 2);
+            y = (previous.get(row, col - 1) - (2 * previous.get(row, col)) + previous.get(row, col + 1)) /
+                std::pow(config.get_delta_y(), 2);
+            current.set(row, col, previous.get(row, col) + config.get_delta_t() * config.get_alpha() * (x + y));
+        }
+    }
+}
+
 void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
     m_matrix<double> second_matrix = matrix;
     size_t counter = 0;
     bool flag = false;
     while (!check_thermal_balance(matrix)) {
-        if (flag) {
+        if (flag)
             count_next_step(matrix, second_matrix, config);
-            flag ^= true;
-        } else {
+        else
             count_next_step(second_matrix, matrix, config);
-            flag ^= true;
-        }
+        flag ^= true;
         if (counter++ > config.get_data_cycles()) {
             std::cout << "--------matrix" << std::endl;
             matrix.print();
         }
-
     }
-
 }
