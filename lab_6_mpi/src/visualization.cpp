@@ -29,7 +29,7 @@ void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
             PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
     png_bytepp rows_ptr = (png_bytepp) png_malloc(png_ptr, sizeof(png_bytepp) * height);
-    for (int i = 0; i < height; i++) {
+    for (size_t i = 0; i < height; i++) {
         rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width);
     }
 
