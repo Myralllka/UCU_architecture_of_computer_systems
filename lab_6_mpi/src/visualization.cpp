@@ -5,8 +5,8 @@
 #include "visualization.h"
 
 std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
-    double f_max = static_cast<double>(max);
-    double f_min = static_cast<double>(min);
+    auto f_max = static_cast<double>(max);
+    auto f_min = static_cast<double>(min);
 
     if (value > f_max or value < f_min)
         throw VisualizationException("temperature value out of visualization range");
@@ -32,19 +32,19 @@ void assert_valid_rgb(std::vector<size_t> &rgb) {
             throw VisualizationException("invalid RGB generated");
 }
 
-void write_to_png(const std::string &f_name, m_matrix<double> to_vis, GifWriter &gif_w) {
+void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, GifWriter &gif_w) {
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
         throw VisualizationException("invalid to-write-to file specified");
     }
 
-    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     if (!png_ptr){
         throw VisualizationException("failed to create PNG structure");
     }
     png_infop info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+        png_destroy_write_struct(&png_ptr, (png_infopp)nullptr);
         throw VisualizationException("failed to create info structure");
     }
 

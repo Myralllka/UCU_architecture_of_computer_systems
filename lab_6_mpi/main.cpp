@@ -6,7 +6,6 @@
 #include "files/config_file.h"
 #include "m_matrix.h"
 #include "linear_program.h"
-#include "visualization.h"
 
 #define MASTER_ID 0
 #define NONE 0

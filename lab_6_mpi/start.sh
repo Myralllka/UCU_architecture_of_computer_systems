@@ -1,5 +1,6 @@
 #!/bin/bash
 config_filename=config.conf
+number_of_processes=2
 while true; do
   case $1 in
     -f|--file)

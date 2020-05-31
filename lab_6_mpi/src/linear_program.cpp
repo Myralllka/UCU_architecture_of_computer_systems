@@ -5,7 +5,7 @@
 #include "linear_program.h"
 #include "code_controle.h"
 #include "visualization.h"
-#include "sstream"
+
 #define EPSILON 0.01
 
 bool check_thermal_balance(m_matrix<double> &field) {
@@ -46,7 +46,7 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
     bool flag = false;
 
     // for gif-h creation
-    GifWriter gif_w;
+    GifWriter gif_w{};
     size_t delay = 50;
     GifBegin(&gif_w, "heatmap.gif-h", matrix.get_cols(), matrix.get_rows(), delay);
 
