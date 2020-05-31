@@ -52,11 +52,11 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
             count_next_step(second_matrix, matrix, config);
             flag ^= true;
         }
-        if (counter++ > config.get_data_cycles()) {
+        if ((counter++)% config.get_data_cycles()) {
             std::cout << "--------matrix" << std::endl;
             matrix.print();
-            char *name = nullptr;
-            sprintf(name, "%zu", counter);
+            char *name;
+            sprintf(name, "res/%zu.png", counter);
             write_to_png(name, matrix);
         }
 
