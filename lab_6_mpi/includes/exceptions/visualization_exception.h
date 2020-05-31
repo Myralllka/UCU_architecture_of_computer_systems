@@ -7,14 +7,16 @@
 
 #include <exception>
 #include <string>
+#include <utility>
 
 class VisualizationException : public std::exception {
     std::string error_msg;
 public:
-    VisualizationException(const std::string& msg) : error_msg(msg) {}
+    explicit VisualizationException(std::string  msg) : error_msg(std::move(msg)) {}
 
     [[nodiscard]] const char *what() const noexcept override {
-        return "Visualization error: " + error_msg + "!";
+        std::cerr << "Visualization error";
+        return error_msg.data();
     }
 };
 

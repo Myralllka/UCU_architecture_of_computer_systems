@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(mpi_heat_transfer CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_COMPILER clang++)
 ## PVS Studio
 #include(PVS-Studio.cmake)
@@ -27,7 +27,7 @@ file(GLOB_RECURSE SRC "includes/*.h" "src/*.cpp")
 
 add_executable(mpi_heat_transfer main.cpp ${SRC})
 TARGET_LINK_LIBRARIES(mpi_heat_transfer LINK_PUBLIC ${Boost_LIBRARIES})
-TARGET_LINK_LIBRARIES(mpi_heat_transfer ${PNG_LIBRARY})
+TARGET_LINK_LIBRARIES(mpi_heat_transfer LINK_PUBLIC ${PNG_LIBRARIES})
 
 #####################################
 ## create own target for library

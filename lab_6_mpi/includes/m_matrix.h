@@ -5,21 +5,15 @@
 #ifndef CNN_CONVOLUTION_2D_M_MATRIX_H
 #define CNN_CONVOLUTION_2D_M_MATRIX_H
 
-#include <cstring>
-#include <algorithm>
+#include <string>
 #include <fstream>
+#include <iostream>
 
 #include "code_controle.h"
 
-#if defined(ERROR_MSG_ON) || defined(DEBUG)
-
-#include <iostream>
-
-#endif // ERROR_MSG_ON || DEBUG
-
 #ifdef DEBUG
 
-#include <exeptions/index_exception.h>
+#include <exceptions/index_exception.h>
 
 #endif // DEBUG
 

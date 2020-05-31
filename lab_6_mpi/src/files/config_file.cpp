@@ -2,6 +2,7 @@
 // Created by myralllka on 3/25/20.
 //
 
+#include <filesystem>
 #include "files/config_file.h"
 
 namespace po = boost::program_options;
@@ -37,7 +38,7 @@ void ConfigFileOpt::parse(const std::string &file_name) {
 }
 
 std::string ConfigFileOpt::assert_file_exist(const std::string &f_name) {
-    if (!boost::filesystem::exists(f_name)) {
+    if (!std::filesystem::exists(f_name)) {
         throw std::invalid_argument("File " + f_name + " not found!");
     }
     return f_name;

@@ -3,9 +3,10 @@
 //
 
 #include "visualization.h"
+#include <png.h>
 
 void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
-    FILE * file_ptr = fopen(f_name, "wb");
+    FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
         throw VisualizationException("invalid to-write-to file specified");
     }
@@ -28,7 +29,7 @@ void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
             PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
             PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
-    png_bytepp rows_ptr = (png_bytepp) png_malloc(png_ptr, sizeof(png_bytepp) * height);
+    auto rows_ptr = (png_bytepp) png_malloc(png_ptr, sizeof(png_bytepp) * height);
     for (size_t i = 0; i < height; i++) {
         rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width);
     }
