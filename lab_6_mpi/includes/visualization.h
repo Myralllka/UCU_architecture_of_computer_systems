@@ -8,6 +8,7 @@
 #include <png.h>
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "m_matrix.h"
 #include "exceptions/visualization_exception.h"

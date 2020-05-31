@@ -53,9 +53,9 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
             flag ^= true;
         }
         if (!((counter++) % config.get_data_cycles())) {
-            std::cout << "--------matrix" << std::endl;
+//            std::cout << "--------matrix" << std::endl;
             std::cout << counter << std::endl;
-            matrix.print();
+//            matrix.print();
             char *name;
             sprintf(name, "res/%zu.png", counter);
             write_to_png(name, matrix);
