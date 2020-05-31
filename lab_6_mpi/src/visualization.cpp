@@ -33,7 +33,7 @@ void assert_valid_rgb(std::vector<size_t> &rgb) {
             throw VisualizationException("invalid RGB generated");
 }
 
-void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
+void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
         throw VisualizationException("invalid to-write-to file specified");
