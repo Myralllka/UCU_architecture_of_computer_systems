@@ -12,7 +12,7 @@ void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
 
     png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png_ptr){
-        throw VisualizaionException("failed to create PNG structure");
+        throw VisualizationException("failed to create PNG structure");
     }
     png_infop info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {

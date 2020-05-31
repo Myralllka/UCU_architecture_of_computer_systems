@@ -9,7 +9,7 @@
 #include <string>
 
 #include "m_matrix.h"
-#include "exeptions/visualization_execption.h"
+#include "exeptions/visualization_exception.h"
 
 void write_to_png(const std::string &f_name, m_matrix<double> &to_vis);
 
