@@ -195,5 +195,6 @@ void assert_valid_config(const ConfigFileOpt &config) {
     } else if (config.get_delta_t() >=
                std::pow(std::max(config.get_delta_x(), config.get_delta_y()), 2) / config.get_alpha() / 8) {
         std::cerr << "Violation of the Von Neumann criteria for input data." << std::endl;
+        exit(23);
     }
 }

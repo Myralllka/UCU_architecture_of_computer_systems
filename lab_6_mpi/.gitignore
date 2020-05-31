@@ -4,3 +4,4 @@ venv
 requirements.txt
 field/field.txt
 field/config.conf
+res
