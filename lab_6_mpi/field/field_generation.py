@@ -14,38 +14,68 @@ def generate_field(args):
     :param args: dictionary with arguments parsed from .conf file
     """
 
-    def border(row, col):
+    def upper_border(row):
         """
-        Check if current point is in field border.
-        :param row: x-coordinate of point
-        :param col: t-coordinate of point
-        :return: bool
+        Check if current point is in upper field border.
+        :param row: x-coordinate of point / number of row
         """
-        return (row < int(BORDER_WIDTH) or row > int(args["height"]) - int(BORDER_WIDTH) - 1) or \
-               (col < int(BORDER_WIDTH) or col > int(args["width"]) - int(BORDER_WIDTH) - 1)
+        return row < BORDER_WIDTH
+
+    def bottom_border(row):
+        """
+        Check if current point is in bottom field border.
+        :param row: x-coordinate of point / number of row
+        """
+        return row > int(args["height"]) - BORDER_WIDTH - 1
+
+    def left_border(col):
+        """
+        Check if current point is in left field border.
+        :param col: y-coordinate of point / number of column
+        """
+        return col < BORDER_WIDTH
+
+    def right_border(col):
+        """
+        Check if current point is in right field border.
+        :param col: y-coordinate of point / number of column
+        """
+        return col > int(args["height"]) - BORDER_WIDTH - 1
 
     with open(args["output_file"], 'w+') as field:
         print(args["width"], file=field)
         print(args["height"], file=field)
 
-        border_val = float(args["func_arg"])
-        if args["func"] == "sqr":
-            border_val = border_val ** 2
+        border_vals = dict()
+        for key in ["up", "bottom", "left", "right"]:
+            border_vals[key] = float(args[key + "_func_arg"])
+
+        for key in border_vals:
+            if args[key + "_func"] == "sqr":
+                border_vals[key] = border_vals[key] ** 2
 
         for row in range(int(args["height"])):
             for col in range(int(args["width"])):
-                if border(row, col):
-                    print(border_val, end=' ', file=field)
+                if upper_border(row):
+                    to_print = border_vals["up"]
+                elif bottom_border(row):
+                    to_print = border_vals["bottom"]
+                elif left_border(col):
+                    to_print = border_vals["left"]
+                elif right_border(col):
+                    to_print = border_vals["right"]
                 else:
-                    print(args["temp"], end=' ', file=field)
+                    to_print = args["temp"]
+                print(to_print, end=' ', file=field)
             print('', file=field)
 
-            border_val = getattr(sys.modules[__name__], args["func"])(args, border_val)
+            for key in border_vals:
+                border_vals[key] = getattr(sys.modules[__name__], args[key + "_func"])(args, key, border_vals[key])
 
 
 # functions to be used for field borders values generation
 # with same signature
-def const(args, cur_val):
+def const(args, key, cur_val):
     """
     Constant function.
     :param args: dictionary with field generation arguments
@@ -54,25 +84,25 @@ def const(args, cur_val):
     return cur_val
 
 
-def lin(args, cur_val):
+def lin(args, key, cur_val):
     """
     Linear function.
     """
-    return cur_val * float(args["func_arg"]) + float(args["func_arg2"])
+    return cur_val * float(args[key + "_func_arg"]) + float(args[key + "_func_arg2"])
 
 
-def sqr(args, cur_val):
+def sqr(args, key, cur_val):
     """
     y = x^2 function.
     """
     return (cur_val ** 0.5 + 1) ** 2
 
 
-def exp(args, cur_val):
+def exp(args, key, cur_val):
     """
     Exponential function.
     """
-    return cur_val * float(args["func_arg"])
+    return cur_val * float(args[key + "_func_arg"])
 
 
 if __name__ == "__main__":

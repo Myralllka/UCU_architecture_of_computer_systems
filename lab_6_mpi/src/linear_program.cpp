@@ -4,8 +4,9 @@
 
 #include "linear_program.h"
 #include "code_controle.h"
-
-#define EPSILON 20
+#include "visualization.h"
+#include "sstream"
+#define EPSILON 10
 
 bool check_thermal_balance(m_matrix<double> &field) {
     auto prev = &field.get(0, 0);
@@ -63,10 +64,15 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
             count_next_step(matrix, second_matrix, config);
         else
             count_next_step(second_matrix, matrix, config);
-        flag ^= true;
-        if (counter++ > config.get_data_cycles()) {
-            std::cout << "--------matrix" << std::endl;
-            matrix.print();
+            flag ^= true;
+        }
+        if (!((counter++) % config.get_data_cycles())) {
+//            std::cout << "--------matrix" << std::endl;
+            std::cout << counter << std::endl;
+//            matrix.print();
+            char *name;
+            sprintf(name, "res/%zu.png", counter);
+            write_to_png(name, matrix);
         }
     }
 }

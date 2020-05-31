@@ -14,11 +14,11 @@
 
 #include <iostream>
 
-#endif // ERROR_MSG_ON || DEBUG
+#include "code_controle.h"
 
 #ifdef DEBUG
 
-#include <exeptions/index_exception.h>
+#include <exceptions/index_exception.h>
 
 #endif // DEBUG
 

@@ -17,12 +17,17 @@ set(Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
 set(Boost_USE_MULTITHREAD ON)  # enable maltreating
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
+## include libpng
+find_package(PNG REQUIRED)
+INCLUDE_DIRECTORIES(${PNG_INCLUDE_DIR})
+
 ## include Headers
 INCLUDE_DIRECTORIES(includes)
 file(GLOB_RECURSE SRC "includes/*.h" "src/*.cpp")
 
 add_executable(mpi_heat_transfer main.cpp ${SRC})
 TARGET_LINK_LIBRARIES(mpi_heat_transfer LINK_PUBLIC ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(mpi_heat_transfer LINK_PUBLIC ${PNG_LIBRARIES})
 
 #####################################
 ## create own target for library

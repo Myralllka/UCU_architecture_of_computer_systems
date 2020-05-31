@@ -6,13 +6,12 @@
 #define COUNT_NUMBER_OF_ALL_WORDS_CONFIG_FILE_H
 
 #include <boost/program_options.hpp>
-#include <boost/filesystem.hpp>
 #include <string>
 #include <iostream>
+#include <fstream>
 
 
-
-#include "exeptions/parser_exeption.h"
+#include "exceptions/parser_exeption.h"
 
 class ConfigFileOpt {
 public:

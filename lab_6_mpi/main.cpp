@@ -6,6 +6,7 @@
 #include "files/config_file.h"
 #include "m_matrix.h"
 #include "linear_program.h"
+#include "visualization.h"
 
 
 #define MASTER_ID       0
@@ -14,7 +15,6 @@
 #define UPPER_TAG       2                  /* message tag */
 #define LOWER_TAG       3                  /* message tag */
 #define ITER_RES_TAG    4                  /* message tag */
-
 
 ConfigFileOpt parse_args(int argc, char **argv);
 
@@ -215,7 +215,8 @@ void assert_valid_config(const ConfigFileOpt &config) {
         std::cerr << "Error: Field file is empty or missing field file filename!" << std::endl;
         exit(23);
     } else if (config.get_delta_t() >=
-               std::pow(std::max(config.get_delta_x(), config.get_delta_y()), 2) / config.get_alpha() / 8) {
+               std::pow(std::max(config.get_delta_x(), config.get_delta_y()), 2) / config.get_alpha() / 4) {
         std::cerr << "Violation of the Von Neumann criteria for input data." << std::endl;
+        exit(23);
     }
 }
