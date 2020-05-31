@@ -125,22 +125,38 @@ void slave_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     bool execute_flag;
     while (true) {
         if (upper_worker != NONE) {
-            world.send(upper_worker, LOWER_TAG,
-                       &work_matrix_set[next_matrix].get(1, 0),
-                       static_cast<int>(config.get_width()));
-            std::cout << "LOOP" << std::endl;
-            world.recv(upper_worker, UPPER_TAG,
-                       &work_matrix_set[next_matrix].get(0, 0),
-                       static_cast<int>(config.get_width()));
+//            OMPI_DECLSPEC  int MPI_Sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+//                                            int dest, int sendtag, void *recvbuf, int recvcount,
+//                                            MPI_Datatype recvtype, int source, int recvtag,
+//                                            MPI_Comm comm,  MPI_Status *status);
+            MPI_Status status{};
+            MPI_Sendrecv(&work_matrix_set[next_matrix].get(1, 0), static_cast<int>(config.get_width()), MPI_DOUBLE,
+                         upper_worker, LOWER_TAG, &work_matrix_set[next_matrix].get(0, 0),
+                         static_cast<int>(config.get_width()),
+                         MPI_DOUBLE, upper_worker, UPPER_TAG, MPI_COMM_WORLD, &status);
+//            std::cout << "LOOP" << std::endl;
+//            world.send(upper_worker, LOWER_TAG,
+//                       &work_matrix_set[next_matrix].get(1, 0),
+//                       static_cast<int>(config.get_width()));
+//            world.recv(upper_worker, UPPER_TAG,
+//                       &work_matrix_set[next_matrix].get(0, 0),
+//                       static_cast<int>(config.get_width()));
         }
         if (lower_worker != NONE) {
-            world.send(lower_worker, UPPER_TAG,
-                       &work_matrix_set[next_matrix].get(static_cast<size_t>(work_block_width), 0),
-                       static_cast<int>(config.get_width()));
-            std::cout << "LOOP" << std::endl;
-            world.recv(lower_worker, LOWER_TAG,
-                       &work_matrix_set[next_matrix].get(static_cast<size_t>(work_block_width) + 1, 0),
-                       static_cast<int>(config.get_width()));
+            MPI_Status status{};
+            MPI_Sendrecv(&work_matrix_set[next_matrix].get(static_cast<size_t>(work_block_width), 0),
+                         static_cast<int>(config.get_width()), MPI_DOUBLE,
+                         lower_worker, UPPER_TAG,
+                         &work_matrix_set[next_matrix].get(static_cast<size_t>(work_block_width) + 1, 0),
+                         static_cast<int>(config.get_width()),
+                         MPI_DOUBLE, lower_worker, LOWER_TAG, MPI_COMM_WORLD, &status);
+//            world.send(lower_worker, UPPER_TAG,
+//                       &work_matrix_set[next_matrix].get(static_cast<size_t>(work_block_width), 0),
+//                       static_cast<int>(config.get_width()));
+//            std::cout << "LOOP" << std::endl;
+//            world.recv(lower_worker, LOWER_TAG,
+//                       &work_matrix_set[next_matrix].get(static_cast<size_t>(work_block_width) + 1, 0),
+//                       static_cast<int>(config.get_width()));
         }
         // Now call update to update the value of grid points
 
