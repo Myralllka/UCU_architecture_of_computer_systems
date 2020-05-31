@@ -28,7 +28,7 @@ std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
 
 void assert_valid_rgb(std::vector<size_t> &rgb) {
     for (size_t i = 0; i < 3; i++)
-        if (rgb[i] > 255)
+        if (rgb[i] > 256)
             // if invalid range was given - invalid RGB value will be calculated
             throw VisualizationException("invalid RGB generated");
 }
