@@ -47,7 +47,7 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
     size_t delay = 50;
     GifBegin(&gif_w, "heatmap.gif-h", matrix.get_cols(), matrix.get_rows(), delay);
 
-    while (!check_thermal_balance(matrix)) {
+    while (!check_thermal_balance(matrix, config.get_epsilon())) {
         if (flag)
             count_next_step(matrix, second_matrix, config);
         else

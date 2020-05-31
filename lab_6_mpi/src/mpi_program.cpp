@@ -66,8 +66,8 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     char name[100];
     size_t counter = 1;
     GifWriter gif_w{};
-    GifBegin(&gif_w, "heatmap.gif-h", main_matrix.get_cols(), main_matrix.get_rows(), delay);
     size_t delay = 50;
+    GifBegin(&gif_w, "res/heatmap.gif", main_matrix.get_cols(), main_matrix.get_rows(), delay);
     write_to_png("res/0.png", main_matrix, gif_w);
     while (!check_thermal_balance(main_matrix, config.get_epsilon())) {
         for (int source = 1; source <= workers_num; ++source) {
