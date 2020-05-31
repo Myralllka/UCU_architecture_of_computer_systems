@@ -5,9 +5,8 @@
 #ifndef CNN_CONVOLUTION_2D_M_MATRIX_H
 #define CNN_CONVOLUTION_2D_M_MATRIX_H
 
-#include <cstring>
-#include <algorithm>
 #include <fstream>
+#include <string>
 
 #include "code_controle.h"
 
@@ -89,13 +88,9 @@ public:
 
     m_matrix &operator=(const m_matrix &matrix) {
         if (&matrix != this) {
-            if (rows * cols != matrix.rows * matrix.cols) {
-                delete[] data;
-                data = new T[rows * cols * sizeof(T)];
-            }
             rows = matrix.rows;
             cols = matrix.cols;
-            data = matrix.data;
+            data = new T[rows * cols * sizeof(T)];
             memcpy(data, matrix.data, rows * cols * sizeof(T));
         }
         return *this;
@@ -145,8 +140,8 @@ public:
 #ifdef DEBUG
 
     void print() const {
-        for (size_t m = 0; m < this->rows; ++m) {
-            for (size_t n = 0; n < this->cols; ++n) {
+        for (size_t m = 0; m < rows; ++m) {
+            for (size_t n = 0; n < cols; ++n) {
                 std::cout << data[m * cols + n] << " ";
             }
             std::cout << std::endl;
