@@ -4,7 +4,7 @@
 
 #include "visualization.h"
 
-std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
+std::vector<size_t> to_rgba(size_t min, size_t max, double value) {
     auto f_max = static_cast<double>(max);
     auto f_min = static_cast<double>(min);
 
@@ -13,23 +13,24 @@ std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
 
     double ratio = 2 * (value - f_min) / (f_max - f_min);
 
-    std::vector<size_t> rgb;
+    std::vector<size_t> rgba;
     size_t b = static_cast<size_t>(std::max(0.0, 255 * (1 - ratio)));
     size_t r = static_cast<size_t>(std::max(0.0, 255 * (ratio - 1)));
-    rgb.push_back(r);
-    rgb.push_back(255 - b - r); // g
-    rgb.push_back(b);
+    rgba.push_back(r);
+    rgba.push_back(255 - b - r); // g
+    rgba.push_back(b);
+    rgba.push_back(255); // a
 
-    assert_valid_rgb(rgb);
+    assert_valid_rgba(rgba);
 
-    return rgb;
+    return rgba;
 }
 
-void assert_valid_rgb(std::vector<size_t> &rgb) {
+void assert_valid_rgba(std::vector<size_t> &rgba) {
     for (size_t i = 0; i < 3; i++)
-        if (rgb[i] > 256)
+        if (rgba[i] > 256)
             // if invalid range was given - invalid RGB value will be calculated
-            throw VisualizationException("invalid RGB generated");
+            throw VisualizationException("invalid RGBA generated");
 }
 
 void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, GifWriter &gif_w) {
@@ -54,12 +55,12 @@ void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, Gif
     int bit_depth = 8; // 8-bit depth
     png_init_io(png_ptr, file_ptr);
     png_set_IHDR(png_ptr, info_ptr, width, height, bit_depth,
-                 PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+                 PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
     auto rows_ptr = (png_bytepp) png_malloc(png_ptr, sizeof(png_bytepp) * height);
     for (size_t i = 0; i < height; i++) {
-        rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width * 6);
+        rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width * 4);
     }
 
     double max_temp = 0;
@@ -68,15 +69,15 @@ void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, Gif
             if (to_vis.get(i, j) > max_temp)
                 max_temp = to_vis.get(i, j);
 
-    std::vector<size_t> rgb_value;
+    std::vector<size_t> rgba_value;
     std::vector<uint8_t> pix;
     for (size_t i = 0; i < height; i++) {  // row
         for (size_t j = 0; j < width; j++) { //column
-            rgb_value = to_rgb(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
+            rgba_value = to_rgba(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
 
-            for (size_t k = 0; k < 3; k++) {
-                rows_ptr[i][j * 3 + k] = rgb_value[k];
-                pix.push_back(static_cast<uint8_t>(rgb_value[k]));
+            for (size_t k = 0; k < 4; k++) {
+                rows_ptr[i][j * 4 + k] = rgba_value[k];
+                pix.push_back(static_cast<uint8_t>(rgba_value[k]));
             }
         }
     }
