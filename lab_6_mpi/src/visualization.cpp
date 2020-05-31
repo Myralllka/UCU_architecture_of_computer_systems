@@ -4,8 +4,6 @@
 
 #include "visualization.h"
 
-namespace fs = std::filesystem;
-
 std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
     double f_max = static_cast<double>(max);
     double f_min = static_cast<double>(min);
@@ -70,19 +68,19 @@ void write_to_png(const std::string &f_name, m_matrix<double> to_vis, GifWriter 
                 max_temp = to_vis.get(i, j);
 
     std::vector<size_t> rgb_value;
-    std::vector<size_t> pix;
+    std::vector<uint8_t> pix;
     for (size_t i = 0; i < height; i++) {  // row
         for (size_t j = 0; j < width; j++) { //column
             rgb_value = to_rgb(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
 
             for (size_t k = 0; k < 3; k++) {
                 rows_ptr[i][j * 3 + k] = rgb_value[k];
-                pix.push_back(rgb_value[k]);
+                pix.push_back(static_cast<uint8_t>(rgb_value[k]));
             }
         }
     }
 
-    GifWriteFrame(&gif_w, pix.data(), 100, 100, 50);
+    GifWriteFrame(&gif_w, pix.data(), to_vis.get_cols(), to_vis.get_rows(), 50);
 
     png_write_info(png_ptr, info_ptr);
     png_write_image(png_ptr, rows_ptr);

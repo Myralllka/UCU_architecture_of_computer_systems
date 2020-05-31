@@ -10,7 +10,7 @@
 #include <iostream>
 #include <vector>
 
-#inlcude "../gif-h/gif.h"
+#include "gif-h/gif.h"
 
 #include "m_matrix.h"
 #include "exceptions/visualization_exception.h"

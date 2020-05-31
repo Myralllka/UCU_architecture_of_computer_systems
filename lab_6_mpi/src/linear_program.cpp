@@ -45,10 +45,10 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
     size_t counter = 0;
     bool flag = false;
 
-    // for gif creation
+    // for gif-h creation
     GifWriter gif_w;
     size_t delay = 50;
-    GifBegin(&gif_w, "heatmap.gif", 100, 100, delay);
+    GifBegin(&gif_w, "heatmap.gif-h", matrix.get_cols(), matrix.get_rows(), delay);
 
     while (!check_thermal_balance(matrix)) {
         if (flag) {
@@ -64,7 +64,7 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
 //            matrix.print();
             char name[100];
             sprintf(name, "res/%zu.png", counter);
-            write_to_png(name, matrix, &gif_w);
+            write_to_png(name, matrix, gif_w);
         }
 
     }
