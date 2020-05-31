@@ -5,7 +5,7 @@
 #include "linear_program.h"
 #include "code_controle.h"
 #include "visualization.h"
-#include "sstream"
+
 
 static bool check_thermal_balance(const m_matrix<double> &field, const double &epsilon) {
     auto prev = &field.get(0, 0);
@@ -41,7 +41,13 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
     m_matrix<double> second_matrix = matrix;
     size_t counter = 0;
     bool flag = false;
-    while (!check_thermal_balance(matrix, config.get_epsilon())) {
+
+    // for gif-h creation
+    GifWriter gif_w{};
+    size_t delay = 50;
+    GifBegin(&gif_w, "heatmap.gif-h", matrix.get_cols(), matrix.get_rows(), delay);
+
+    while (!check_thermal_balance(matrix)) {
         if (flag)
             count_next_step(matrix, second_matrix, config);
         else
@@ -51,7 +57,8 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
         if (!((counter++) % config.get_data_cycles())) {
             char name[100];
             sprintf(name, "res/%zu.png", counter);
-            write_to_png(name, matrix);
+            write_to_png(name, matrix, gif_w);
         }
     }
+    GifEnd(&gif_w);
 }

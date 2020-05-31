@@ -3,11 +3,10 @@
 //
 
 #include "visualization.h"
-#include <png.h>
 
 std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
-    double f_max = static_cast<double>(max);
-    double f_min = static_cast<double>(min);
+    auto f_max = static_cast<double>(max);
+    auto f_min = static_cast<double>(min);
 
     if (value > f_max or value < f_min)
         throw VisualizationException("temperature value out of visualization range");
@@ -33,20 +32,20 @@ void assert_valid_rgb(std::vector<size_t> &rgb) {
             throw VisualizationException("invalid RGB generated");
 }
 
-void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
+void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, GifWriter &gif_w) {
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
         throw VisualizationException("invalid to-write-to file specified");
     }
 
-    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png_ptr) {
+    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+    if (!png_ptr){
         // TODO: error: V773 The exception was thrown without closing the file referenced by the 'file_ptr' handle. A resource leak is possible.
         throw VisualizationException("failed to create PNG structure");
     }
     png_infop info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        png_destroy_write_struct(&png_ptr, (png_infopp) NULL);
+        png_destroy_write_struct(&png_ptr, (png_infopp)nullptr);
         throw VisualizationException("failed to create info structure");
     }
 
@@ -70,19 +69,19 @@ void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
                 max_temp = to_vis.get(i, j);
 
     std::vector<size_t> rgb_value;
+    std::vector<uint8_t> pix;
     for (size_t i = 0; i < height; i++) {  // row
         for (size_t j = 0; j < width; j++) { //column
             rgb_value = to_rgb(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
 
-//            std::cout << "(";
             for (size_t k = 0; k < 3; k++) {
                 rows_ptr[i][j * 3 + k] = rgb_value[k];
-//                std::cout << rgb_value[k] << ", ";
+                pix.push_back(static_cast<uint8_t>(rgb_value[k]));
             }
-//            std::cout << ") ";
         }
-//        std::cout << "\n";
     }
+
+    GifWriteFrame(&gif_w, pix.data(), to_vis.get_cols(), to_vis.get_rows(), 50);
 
     png_write_info(png_ptr, info_ptr);
     png_write_image(png_ptr, rows_ptr);
