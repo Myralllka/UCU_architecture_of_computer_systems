@@ -47,7 +47,7 @@ if [[ "$debug_build" = true ]]; then
   mkdir -p ./cmake-build-debug;
   pushd ./cmake-build-debug  > /dev/null || exit 1
   echo Compiling...
-  cmake -DCMAKE_BUILD_TYPE=Debug -G"Unix Makefiles" ..
+  cmake -lpng -DCMAKE_BUILD_TYPE=Debug -G"Unix Makefiles" ..
   make
   popd
 fi;
@@ -56,7 +56,7 @@ if [[ "$optimize_build" = true ]]; then
   mkdir -p ./cmake-build-release;
   pushd ./cmake-build-release  > /dev/null || exit 1
   echo Compiling...
-  cmake -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles" ..
+  cmake -lpng -DCMAKE_BUILD_TYPE=Release -G"Unix Makefiles" ..
   make
   popd
 fi;
