@@ -16,16 +16,20 @@
 static bool check_thermal_balance(const m_matrix<double> &field, const double &epsilon);
 
 static void count_next_step_for_cell(const m_matrix<double> &previous, m_matrix<double> &current,
-                                     const ConfigFileOpt &config, const int start, const int end);
+                                     const ConfigFileOpt &config, int start, int end);
 
 void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     const int workers_num = world.size() - 1;
     int offset = 0, work_block_width, upper_worker, lower_worker;
+#ifdef DEBUG
     std::cout << "Starting mpi_heat_transfer with " << workers_num << " worker tasks." << std::endl;;
+#endif
 
     ///////////////////////////////////// Initialize grid //////////////////////////////////////
+#ifdef DEBUG
     std::cout << "Grid size: X= " << config.get_width() << "  Y= " << config.get_height() << std::endl;
     std::cout << "Initializing grid and writing initial.dat file..." << std::endl;
+#endif
     m_matrix<double> main_matrix{config.get_field_filename()}; // load matrix
     ///////////////////////////////////// Initialize grid END //////////////////////////////////
 
@@ -53,11 +57,13 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
         world.send(dest_id, BEGIN_TAG, lower_worker);
         world.send(dest_id, BEGIN_TAG, &main_matrix.get(static_cast<size_t>(offset), 0),
                    work_block_width * static_cast<int>(config.get_width()));
+#ifdef DEBUG
         std::cout << "Sent to task " << dest_id
                   << " rows= " << work_block_width
                   << " offset= " << offset << std::endl;
         std::cout << "upper_worker= " << upper_worker
                   << " lower_worker= " << lower_worker << std::endl;
+#endif
         offset += work_block_width;
     }
     ///////////////////////////////////// DISTRIBUTE WORK END //////////////////////////////////
@@ -70,7 +76,7 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     auto max_num_of_cycles = config.get_max_number_of_cycles();
     GifBegin(&gif_w, "res/heatmap.gif", main_matrix.get_cols(), main_matrix.get_rows(), delay);
     write_to_png("res/0.png", main_matrix, gif_w);
-    while (!check_thermal_balance(main_matrix, config.get_epsilon()) or max_num_of_cycles <= counter) {
+    while (!check_thermal_balance(main_matrix, config.get_epsilon()) and max_num_of_cycles > counter) {
         for (int source = 1; source <= workers_num; ++source) {
             world.send(source, ITER_RES_TAG, true);
             world.recv(source, ITER_RES_TAG, offset); // fail here
@@ -120,15 +126,19 @@ void slave_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
         start = 2;
     if ((offset + work_block_width) == static_cast<int>(config.get_height()))
         end_i--;
+#ifdef DEBUG
     std::cout << "task=" << world.rank() << "  start=" << start + offset << "  end_i=" << end_i + offset
               << std::endl;
+#endif
     ///////////////////////////////////// INIT PARAMS END //////////////////////////////////
 
     //////////////////////////////////// MAIN LOOP ////////////////////////////////////
     /* Begin doing iterations.  Must communicate border rows with                   //
      *  neighbors.  If I have the first or last grid row, then I only need          //
      *   to  communicate with one neighbor                                          */
+#ifdef DEBUG
     std::cout << "Task " << world.rank() << " received work. Beginning time steps..." << std::endl;
+#endif
     uint8_t next_matrix = 0;
     size_t iter = 0;
     bool execute_flag;
@@ -173,7 +183,7 @@ static void count_next_step_for_cell(const m_matrix<double> &previous, m_matrix<
     // count next area for the "current" field based on previous
     const int c = static_cast<int>(previous.get_cols() - 1);
     double x, y;
-    for (size_t row = static_cast<size_t>(start); row < static_cast<size_t>(end); ++row) {
+    for (auto row = static_cast<size_t>(start); row < static_cast<size_t>(end); ++row) {
         for (size_t col = 1; col < static_cast<size_t>(c); ++col) {
             x = (previous.get(row - 1, col) - (2 * previous.get(row, col)) + previous.get(row + 1, col)) /
                 std::pow(config.get_delta_x(), 2);

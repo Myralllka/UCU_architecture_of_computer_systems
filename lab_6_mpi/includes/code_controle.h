@@ -7,6 +7,6 @@
 
 #define ERROR_MSG_ON
 //
-#define DEBUG
+//#define DEBUG
 
 #endif //MPI_HEAT_TRANSFER_CODE_CONTROLE_H

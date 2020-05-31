@@ -7,10 +7,10 @@
 You have to make correct config file located in the root, coled `config.onf` where `[main]` is the block for simulation and `[field-properties]` is properties for field.
 more info is in comments in config file.
 
-The default parameters for iron:
-specific_heat_capacity = 460
-thermal_conduction = 80
-density = 7800
+The default parameters for iron: <br>
+specific_heat_capacity = 460 <br>
+thermal_conduction = 80 <br>
+density = 7800 <br>
 
 ### Usage
 ```shell script
@@ -19,4 +19,5 @@ chmod +x ./start.sh
 ```
 
 ### Results
-the results are in `res/` folder.
+The results are in `res/` folder.
+if uncomment the 

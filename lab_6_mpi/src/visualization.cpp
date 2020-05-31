@@ -3,6 +3,7 @@
 //
 
 #include "visualization.h"
+#include "code_controle.h"
 
 std::vector<size_t> to_rgba(size_t min, size_t max, double value) {
     auto f_max = static_cast<double>(max);
@@ -33,7 +34,8 @@ void assert_valid_rgba(std::vector<size_t> &rgba) {
             throw VisualizationException("invalid RGBA generated");
 }
 
-void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, GifWriter &gif_w) {
+void write_to_png(const std::string &f_name, const m_matrix<double> to_vis, GifWriter &gif_w) {
+#ifdef DEBUG
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
         throw VisualizationException("invalid to-write-to file specified");
@@ -49,11 +51,12 @@ void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, Gif
         png_destroy_write_struct(&png_ptr, (png_infopp)nullptr);
         throw VisualizationException("failed to create info structure");
     }
-
+#endif
     int width = static_cast<int>(to_vis.get_cols());
     int height = static_cast<int>(to_vis.get_rows());
-    int bit_depth = 8; // 8-bit depth
+#ifdef DEBUG
     png_init_io(png_ptr, file_ptr);
+    int bit_depth = 8; // 8-bit depth
     png_set_IHDR(png_ptr, info_ptr, width, height, bit_depth,
                  PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
@@ -62,7 +65,7 @@ void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, Gif
     for (size_t i = 0; i < height; i++) {
         rows_ptr[i] = (png_bytep) png_malloc(png_ptr, width * 4);
     }
-
+#endif
     double max_temp = 0;
     for (size_t i = 0; i < to_vis.get_rows(); i++)
         for (size_t j = 0; j < to_vis.get_cols(); j++)
@@ -76,16 +79,19 @@ void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, Gif
             rgba_value = to_rgba(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
 
             for (size_t k = 0; k < 4; k++) {
+#ifdef DEBUG
                 rows_ptr[i][j * 4 + k] = rgba_value[k];
+#endif
                 pix.push_back(static_cast<uint8_t>(rgba_value[k]));
             }
         }
     }
 
     GifWriteFrame(&gif_w, pix.data(), to_vis.get_cols(), to_vis.get_rows(), 50);
-
+#ifdef DEBUG
     png_write_info(png_ptr, info_ptr);
     png_write_image(png_ptr, rows_ptr);
     png_write_end(png_ptr, info_ptr);
     png_destroy_write_struct(&png_ptr, &info_ptr);
+#endif
 }

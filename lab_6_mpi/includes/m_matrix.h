@@ -13,11 +13,10 @@
 #if defined(ERROR_MSG_ON) || defined(DEBUG)
 
 #include <iostream>
-#include "code_controle.h"
 
 #endif
 
-#ifdef DEBUG
+#if defined(ERROR_MSG_ON) || defined(DEBUG)
 
 #include <exceptions/index_exception.h>
 
@@ -78,7 +77,7 @@ public:
     m_matrix(const m_matrix &matrix) : rows(matrix.rows), cols(matrix.cols), data(new T[rows * cols * sizeof(T)]) {
         memcpy(data, matrix.data, rows * cols * sizeof(T));
 #if defined(ERROR_MSG_ON) || defined(DEBUG)
-        std::cerr << "Warning: Use of copy constructor of m_matrix!" << std::endl;
+        std::cerr << "Warning: Use of assign operator of m_matrix!" << std::endl;
 #endif // ERROR_MSG_ON || DEBUG
     }
 
@@ -87,6 +86,9 @@ public:
     }
 
     m_matrix &operator=(const m_matrix &matrix) {
+#if defined(ERROR_MSG_ON) || defined(DEBUG)
+        std::cerr << "Warning: Use of copy constructor of m_matrix!" << std::endl;
+#endif // ERROR_MSG_ON || DEBUG
         if (&matrix != this) {
             if (rows * cols != matrix.rows * matrix.cols) {
                 delete[] data;
