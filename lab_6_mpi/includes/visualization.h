@@ -14,6 +14,8 @@
 
 std::vector<size_t> to_rgb(size_t min, size_t max, double value);
 
+void assert_valid_rgb(const std::vector<size_t> &rgb);
+
 void write_to_png(const std::string &f_name, m_matrix<double> &to_vis);
 
 #endif //ARCHITECTURE_OF_COMPUTER_SYSTEMS_VISUALIZATION_H

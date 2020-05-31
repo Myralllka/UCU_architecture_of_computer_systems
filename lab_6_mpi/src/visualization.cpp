@@ -8,6 +8,10 @@
 std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
     double f_max = static_cast<double>(max);
     double f_min = static_cast<double>(min);
+
+    if (value > f_max or value < f_min)
+        throw VisualizationException("temperature value out of visualization range");
+
     double ratio = 2 * (value - f_min) / (f_max - f_min);
 
     std::vector<size_t> rgb;
@@ -17,7 +21,16 @@ std::vector<size_t> to_rgb(size_t min, size_t max, double value) {
     rgb.push_back(255 - b - r); // g
     rgb.push_back(b);
 
+    assert_valid_rgb(&rgb);
+
     return rgb;
+}
+
+void assert_valid_rgb(std::vector<size_t> &rgb) {
+    for (size_t i = 0; i < 3; i++)
+        if (rgb[i] > 255)
+            // if invalid range was given - invalid RGB value will be calculated
+            throw VisualizationException("invalid RGB generated");
 }
 
 void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
@@ -36,8 +49,8 @@ void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
         throw VisualizationException("failed to create info structure");
     }
 
-    int width = to_vis.get_rows();
-    int height = to_vis.get_cols();
+    int width = to_vis.get_cols();
+    int height = to_vis.get_rows();
     int bit_depth = 8; // 8-bit depth
     png_init_io(png_ptr, file_ptr);
     png_set_IHDR(png_ptr, info_ptr, width, height, bit_depth,
