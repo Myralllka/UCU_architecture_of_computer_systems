@@ -65,7 +65,10 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     ////////////////////////////////////// COLLECT RESULTS /////////////////////////////////////
     char name[100];
     size_t counter = 1;
-    write_to_png("res/0.png", main_matrix);
+    GifWriter gif_w{};
+    GifBegin(&gif_w, "heatmap.gif-h", main_matrix.get_cols(), main_matrix.get_rows(), delay);
+    size_t delay = 50;
+    write_to_png("res/0.png", main_matrix, gif_w);
     while (!check_thermal_balance(main_matrix, config.get_epsilon())) {
         for (int source = 1; source <= workers_num; ++source) {
             world.send(source, ITER_RES_TAG, true);
@@ -76,11 +79,12 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
         }
         std::cout << "SNAPSHOT " << counter << std::endl;
         sprintf(name, "res/%zu.png", counter++);
-        write_to_png(name, main_matrix);
+        write_to_png(name, main_matrix, gif_w);
     }
     for (int source = 1; source <= workers_num; source++) {
         world.send(source, ITER_RES_TAG, false);
     }
+    GifEnd(&gif_w);
     std::cout << "############################## MAIN STOP #########################################" << std::endl;
 
     //////////////////////// COLLECT RESULTS END /////////////////////////////////
