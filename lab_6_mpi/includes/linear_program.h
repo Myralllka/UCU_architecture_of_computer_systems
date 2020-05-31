@@ -10,8 +10,6 @@
 
 void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config);
 
-bool check_thermal_balance(const m_matrix<double> &field);
-
 void count_next_step(const m_matrix<double> &previous,
                      m_matrix<double> &current,
                      const ConfigFileOpt &config);

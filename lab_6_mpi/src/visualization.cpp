@@ -74,14 +74,14 @@ void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
         for (size_t j = 0; j < width; j++) { //column
             rgb_value = to_rgb(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
 
-            std::cout << "(";
+//            std::cout << "(";
             for (size_t k = 0; k < 3; k++) {
                 rows_ptr[i][j * 3 + k] = rgb_value[k];
-                std::cout << rgb_value[k] << ", ";
+//                std::cout << rgb_value[k] << ", ";
             }
-            std::cout << ") ";
+//            std::cout << ") ";
         }
-        std::cout << "\n";
+//        std::cout << "\n";
     }
 
     png_write_info(png_ptr, info_ptr);

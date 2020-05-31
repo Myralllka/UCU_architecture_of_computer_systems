@@ -7,10 +7,10 @@
 #include "visualization.h"
 #include "sstream"
 
-bool check_thermal_balance(const m_matrix<double> &field) {
+static bool check_thermal_balance(const m_matrix<double> &field, const double &epsilon) {
     auto prev = &field.get(0, 0);
     for (int i = 0; i < static_cast<int>(field.get_rows() * field.get_cols()); ++i) {
-        if (std::abs(*prev - *(prev + i)) > EPSILON) {
+        if (std::abs(*prev - *(prev + i)) > epsilon) {
             return false;
         }
     }
@@ -41,7 +41,7 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
     m_matrix<double> second_matrix = matrix;
     size_t counter = 0;
     bool flag = false;
-    while (!check_thermal_balance(matrix)) {
+    while (!check_thermal_balance(matrix, config.get_epsilon())) {
         if (flag)
             count_next_step(matrix, second_matrix, config);
         else
@@ -49,9 +49,6 @@ void linear_program(m_matrix<double> matrix, const ConfigFileOpt &config) {
         flag ^= true;
 
         if (!((counter++) % config.get_data_cycles())) {
-//            std::cout << "--------matrix" << std::endl;
-            std::cout << counter << std::endl;
-//            matrix.print();
             char name[100];
             sprintf(name, "res/%zu.png", counter);
             write_to_png(name, matrix);

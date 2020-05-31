@@ -44,6 +44,8 @@ public:
 
     [[nodiscard]] const double &get_alpha() const { return alpha; };
 
+    [[nodiscard]] const double &get_epsilon() const { return epsilon; };
+
 private:
     void init_opt_description();
 
@@ -74,6 +76,7 @@ private:
     double bottom_func_arg = 0;
     double bottom_func_arg2 = 0;
     double temp = 0;
+    double epsilon = 0.0001;
     std::string output_file{};
 
     boost::program_options::options_description opt_conf{"Config File Options"};

@@ -13,9 +13,7 @@
 #define LOWER_TAG       3                  /* message tag */
 #define ITER_RES_TAG    4                  /* message tag */
 
-#define EPSILON 10                          // precision
-
-static bool check_thermal_balance(const m_matrix<double> &field);
+static bool check_thermal_balance(const m_matrix<double> &field, const double &epsilon);
 
 static void count_next_step_for_cell(const m_matrix<double> &previous, m_matrix<double> &current,
                                      const ConfigFileOpt &config, const int start, const int end);
@@ -65,7 +63,10 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     ///////////////////////////////////// DISTRIBUTE WORK END //////////////////////////////////
 
     ////////////////////////////////////// COLLECT RESULTS /////////////////////////////////////
-    while (!check_thermal_balance(main_matrix)) {
+    char name[100];
+    size_t counter = 1;
+    write_to_png("res/0.png", main_matrix);
+    while (!check_thermal_balance(main_matrix, config.get_epsilon())) {
         for (int source = 1; source <= workers_num; ++source) {
             world.send(source, ITER_RES_TAG, true);
             world.recv(source, ITER_RES_TAG, offset); // fail here
@@ -73,6 +74,9 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
             world.recv(source, ITER_RES_TAG, &main_matrix.get(static_cast<size_t>(offset), 0),
                        work_block_width * static_cast<int>(config.get_width()));
         }
+        std::cout << "SNAPSHOT " << counter << std::endl;
+        sprintf(name, "res/%zu.png", counter++);
+        write_to_png(name, main_matrix);
     }
     for (int source = 1; source <= workers_num; source++) {
         world.send(source, ITER_RES_TAG, false);
@@ -121,20 +125,25 @@ void slave_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     bool execute_flag;
     while (true) {
         if (upper_worker != NONE) {
-            world.send(upper_worker, LOWER_TAG, &work_matrix_set[next_matrix].get(1, 0),
+            world.send(upper_worker, LOWER_TAG,
+                       &work_matrix_set[next_matrix].get(1, 0),
                        static_cast<int>(config.get_width()));
-            world.recv(upper_worker, UPPER_TAG, &work_matrix_set[next_matrix].get(0, 0),
+            std::cout << "LOOP" << std::endl;
+            world.recv(upper_worker, UPPER_TAG,
+                       &work_matrix_set[next_matrix].get(0, 0),
                        static_cast<int>(config.get_width()));
         }
         if (lower_worker != NONE) {
             world.send(lower_worker, UPPER_TAG,
                        &work_matrix_set[next_matrix].get(static_cast<size_t>(work_block_width), 0),
                        static_cast<int>(config.get_width()));
+            std::cout << "LOOP" << std::endl;
             world.recv(lower_worker, LOWER_TAG,
                        &work_matrix_set[next_matrix].get(static_cast<size_t>(work_block_width) + 1, 0),
                        static_cast<int>(config.get_width()));
         }
         // Now call update to update the value of grid points
+
         count_next_step_for_cell(work_matrix_set[next_matrix], work_matrix_set[1 - next_matrix],
                                  config, start, end_i);
         if (++iter >= config.get_data_cycles()) {
@@ -172,10 +181,10 @@ static void count_next_step_for_cell(const m_matrix<double> &previous, m_matrix<
 }
 
 
-static bool check_thermal_balance(const m_matrix<double> &field) {
+static bool check_thermal_balance(const m_matrix<double> &field, const double &epsilon) {
     auto prev = &field.get(0, 0);
     for (int i = 0; i < static_cast<int>(field.get_rows() * field.get_cols()); ++i)
-        if (std::abs(*prev - *(prev + i)) > EPSILON)
+        if (std::abs(*prev - *(prev + i)) > epsilon)
             return false;
     return true;
 }

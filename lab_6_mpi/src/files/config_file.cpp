@@ -16,6 +16,7 @@ void ConfigFileOpt::init_opt_description() {
             ("main.specific_heat_capacity", po::value<double>(&specific_heat_capacity), "specific heat capacity ")
             ("main.thermal_conduction", po::value<double>(&thermal_conduction), "thermal conduction")
             ("main.density", po::value<double>(&density), "density")
+            ("main.epsilon", po::value<double>(&epsilon), "the acceptable temperature error for equality condition")
             ("field-properties.height", po::value<size_t>(&height), "field height")
             ("field-properties.width", po::value<size_t>(&width), "field width")
             ("main.delta_x", po::value<double>(&delta_x), "delta_x")

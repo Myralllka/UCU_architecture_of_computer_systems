@@ -1,5 +1,6 @@
 #!/bin/bash
 config_filename=config.conf
+number_of_processes=2
 while true; do
   case $1 in
     -f|--file)
@@ -25,11 +26,12 @@ while true; do
     -h|--help)
       echo "Usage: ./start.sh [options]
   Options:
-    -O   --optimize-build  Compile with optimization before executing
-    -D   --debug-build     Compile with debug options
-    -d   --debug           Run executable with debug symbols
-    -f    --file           Config filename
-    -h    --help           Show help message"
+    -O      --optimize-build        Compile with optimization before executing
+    -D      --debug-build           Compile with debug options
+    -d      --debug                 Run executable with debug symbols
+    -f      --file                  Config filename
+    -np     --number_of_processes   Config filename
+    -h      --help                  Show help message"
       exit 0;
     ;;
     \?)
