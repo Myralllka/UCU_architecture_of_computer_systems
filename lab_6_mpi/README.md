@@ -17,7 +17,18 @@ density = 7800 <br>
 chmod +x ./start.sh
 ./start.sh [options]
 ```
-
+### Important!
+Possible options:
+```
+    -h      --help                  Show help message.
+    -O      --optimize-build        Compile with optimization before executing.
+    -D      --debug-build           Compile with debug options.
+    -d      --debug                 Run executable with debug symbols.
+    -i      --image                 Save the images, not only gif, to res/ folder.
+    
+    -np     --number_of_processes   Number of processes for mpirun. Require second numerical parameter. 2 by default.
+    -f      --file                  Config filename. Require second parameter. ./config.conf by default.
+```
 ### Results
 The results are in `res/` folder.
-if uncomment the 
+If it is  needed to save each image, use `-i` flag with script.  

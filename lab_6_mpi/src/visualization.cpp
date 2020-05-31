@@ -35,7 +35,7 @@ void assert_valid_rgba(std::vector<size_t> &rgba) {
 }
 
 void write_to_png(const std::string &f_name, const m_matrix<double> to_vis, GifWriter &gif_w) {
-#ifdef DEBUG
+#ifdef IMG
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
         throw VisualizationException("invalid to-write-to file specified");
@@ -54,7 +54,7 @@ void write_to_png(const std::string &f_name, const m_matrix<double> to_vis, GifW
 #endif
     int width = static_cast<int>(to_vis.get_cols());
     int height = static_cast<int>(to_vis.get_rows());
-#ifdef DEBUG
+#ifdef IMG
     png_init_io(png_ptr, file_ptr);
     int bit_depth = 8; // 8-bit depth
     png_set_IHDR(png_ptr, info_ptr, width, height, bit_depth,
@@ -79,7 +79,7 @@ void write_to_png(const std::string &f_name, const m_matrix<double> to_vis, GifW
             rgba_value = to_rgba(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
 
             for (size_t k = 0; k < 4; k++) {
-#ifdef DEBUG
+#ifdef IMG
                 rows_ptr[i][j * 4 + k] = rgba_value[k];
 #endif
                 pix.push_back(static_cast<uint8_t>(rgba_value[k]));
@@ -88,7 +88,7 @@ void write_to_png(const std::string &f_name, const m_matrix<double> to_vis, GifW
     }
 
     GifWriteFrame(&gif_w, pix.data(), to_vis.get_cols(), to_vis.get_rows(), 50);
-#ifdef DEBUG
+#ifdef IMG
     png_write_info(png_ptr, info_ptr);
     png_write_image(png_ptr, rows_ptr);
     png_write_end(png_ptr, info_ptr);

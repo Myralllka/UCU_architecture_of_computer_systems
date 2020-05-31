@@ -23,7 +23,7 @@ void ConfigFileOpt::init_opt_description() {
             ("main.delta_y", po::value<double>(&delta_y), "delta_y")
             ("main.delta_t", po::value<double>(&delta_t), "delta_t")
             ("main.data_cycles", po::value<size_t>(&data_cycles), "data_cycles")
-            ("main.field_filename", po::value<std::string>(&field_filename), "field filename")
+            ("field-properties.output_file", po::value<std::string>(&field_filename), "field filename")
             ("field-properties.up_func", po::value<std::string>(&up_func),"up_func")
             ("field-properties.up_func_arg", po::value<double>(&up_func_arg),"up_func_arg")
             ("field-properties.up_func_arg2", po::value<double>(&up_func_arg2),"up_func_arg2")
@@ -37,8 +37,7 @@ void ConfigFileOpt::init_opt_description() {
             ("field-properties.bottom_func_arg", po::value<double>(&bottom_func_arg),"bottom_func_arg")
             ("field-properties.bottom_func_arg2", po::value<double>(&bottom_func_arg2),"bottom_func_arg2")
             ("field-properties.temp", po::value<double>(&temp),"temp")
-            ("main.max_number_of_cycles", po::value<size_t>(&max_number_of_cycles),"max_number_of_cycles")
-            ("field-properties.output_file", po::value<std::string>(&output_file),"output_file");
+            ("main.max_number_of_cycles", po::value<size_t>(&max_number_of_cycles),"max_number_of_cycles");
 }
 
 void ConfigFileOpt::parse(const std::string &file_name) {

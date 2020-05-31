@@ -79,7 +79,6 @@ private:
     double bottom_func_arg2 = 0;
     double temp = 0;
     double epsilon = 0.0001;
-    std::string output_file{};
     size_t max_number_of_cycles = 0;
 
     boost::program_options::options_description opt_conf{"Config File Options"};

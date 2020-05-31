@@ -1,6 +1,12 @@
 //
 // Created by myralllka on 5/31/20.
 //
+// Based on gif-h.h
+// by Charlie Tangora
+// Public domain.
+// Email me : ctangora -at- gmail -dot- com
+//
+
 
 #include "gif-h/gif.h"
 

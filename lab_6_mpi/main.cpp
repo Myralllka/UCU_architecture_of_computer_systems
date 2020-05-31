@@ -18,11 +18,7 @@ int main(int argc, char *argv[]) {
     ////////////////////////////////////////////////
 //    m_matrix<double> tmp(config.get_field_filename()); // load matrix
 //    linear_program(tmp, config);
-    ////////////////////////////////////////////////
-    //
-    // TODO: Add Ctrl+C
-    //
-    ////////////////////////////////////////////////
+
     boost::mpi::environment env{argc, argv};
     boost::mpi::communicator world{};
     const int workers_num = world.size() - 1;
