@@ -6,6 +6,10 @@ while true; do
       config_filename=$2
       shift 2
     ;;
+    -np|--number_of_processes)
+      number_of_processes=$2
+      shift 2
+    ;;
     -D|--debug-build)
       debug_build=true;
       shift
@@ -40,8 +44,9 @@ while true; do
   esac
 done
 
-mkdir -p ./res;
 
+
+mkdir -p ./res;
 
 if [[ "$debug_build" = true ]]; then
   mkdir -p ./cmake-build-debug;
@@ -62,7 +67,7 @@ if [[ "$optimize_build" = true ]]; then
 fi;
 
 if [[ "$debug_build" = true ]]; then
-    mpirun --allow-run-as-root -np 4 ./cmake-build-debug/mpi_heat_transfer "$config_filename" || exit 1
+    mpirun --allow-run-as-root -np "$number_of_processes" ./cmake-build-debug/mpi_heat_transfer "$config_filename" || exit 1
 else
-    mpirun --allow-run-as-root -np 4 ./cmake-build-release/mpi_heat_transfer "$config_filename" || exit 1
+    mpirun --allow-run-as-root -np "$number_of_processes" ./cmake-build-release/mpi_heat_transfer "$config_filename" || exit 1
 fi
