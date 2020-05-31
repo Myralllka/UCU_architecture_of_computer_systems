@@ -35,7 +35,7 @@ void write_to_png(const std::string &f_name, m_matrix<double> &to_vis) {
 
     for (size_t i = 0; i < height; i++) {  // row
         for (size_t j = 0; j < width; j++) { //column
-            rows_ptr[i][j] = to_vis[j + width * i];
+            rows_ptr[i][j] = to_vis.get(i, j);
         }
     }
 
