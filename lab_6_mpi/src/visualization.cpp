@@ -63,8 +63,8 @@ void write_to_png(const std::string &f_name, m_matrix<double> to_vis) {
     }
 
     size_t max_temp = 0;
-    for (size_t i = 0; i < to_vis.get_cols(); i++)
-        for (size_t j = 0; j < to_vis.get_rows(); j++)
+    for (size_t i = 0; i < to_vis.get_rows(); i++)
+        for (size_t j = 0; j < to_vis.get_cols(); j++)
             if (to_vis.get(i, j) > max_temp)
                 max_temp = to_vis.get(i, j);
 
