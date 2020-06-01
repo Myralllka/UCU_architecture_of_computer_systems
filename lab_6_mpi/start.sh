@@ -103,7 +103,7 @@ fi;
 if [[ "$hostfile" = true ]]; then
   mpirun --allow-run-as-root -np "$number_of_processes" --hostfile "$hostfilename" /home/mpiuser/lab_6_mpi/lab_6_mpi/cmake-build-release/mpi_heat_transfer /home/mpiuser/lab_6_mpi/lab_6_mpi/config.conf || exit 1
 else
-  if [[ "$debug" = true ]]; then
+  if [[ "$debug_build" = true ]]; then
       mpirun --allow-run-as-root -np "$number_of_processes" ./cmake-build-debug/mpi_heat_transfer "$config_filename" || exit 1
   else
       mpirun --allow-run-as-root -np "$number_of_processes" ./cmake-build-release/mpi_heat_transfer "$config_filename" || exit 1

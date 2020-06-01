@@ -7,7 +7,7 @@
 
 //#define ERROR_MSG_ON
 
-//#define DEBUG
+#define DEBUG
 #define IMG
 #define TIME
 
