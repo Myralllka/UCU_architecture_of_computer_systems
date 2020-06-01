@@ -6,6 +6,7 @@
 #include "files/config_file.h"
 #include "linear_program.h"
 #include "mpi_program.h"
+#include "speed_tester.h"
 
 
 ConfigFileOpt parse_args(int argc, char **argv);
@@ -13,6 +14,7 @@ ConfigFileOpt parse_args(int argc, char **argv);
 void assert_valid_config(const ConfigFileOpt &conf);
 
 int main(int argc, char *argv[]) {
+    auto start = get_current_time_fenced();
     ConfigFileOpt config = parse_args(argc, argv);
     assert_valid_config(config);
     ////////////////////////////////////////////////
@@ -33,7 +35,13 @@ int main(int argc, char *argv[]) {
     else
         slave_code(world, config);
 
+#ifdef TIME
+    const auto finish_time = get_current_time_fenced();
+    std::cout << "Total " << world.rank() << " time: " << to_us(finish_time - start) << std::endl;
+#endif
+#ifdef DEBUG
     std::cout << "FINISH process with rank " << world.rank() << " of " << world.size() << std::endl;
+#endif
     return 0;
 }
 
@@ -70,7 +78,10 @@ void assert_valid_config(const ConfigFileOpt &config) {
         exit(23);
     } else if (config.get_delta_t() >=
                std::pow(std::max(config.get_delta_x(), config.get_delta_y()), 2) / config.get_alpha() / 4) {
-        std::cerr << "Violation of the Von Neumann criteria for input data." << std::endl;
+        std::cerr << "Error: Violation of the Von Neumann criteria for input data." << std::endl;
+        exit(23);
+    } else if (config.get_width() < 1000 or config.get_height() < 1000) {
+        std::cerr << "Error: field must be at least 1000*1000" << std::endl;
         exit(23);
     }
 }

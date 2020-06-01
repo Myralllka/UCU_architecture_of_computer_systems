@@ -90,11 +90,11 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
         std::cout << "SNAPSHOT " << counter << std::endl;
 #endif
         sprintf(name, "res/%zu.png", counter++);
-#ifdef TIME
+#if defined(TIME) and defined(DEBUG)
         auto start =  get_current_time_fenced();
 #endif
         write_to_png(name, main_matrix, gif_w);
-#ifdef TIME
+#if defined(TIME) and defined(DEBUG)
         const auto finish_time = get_current_time_fenced();
         std::cout << "Time for saving one image: " << to_us(finish_time - start) << std::endl;
 #endif

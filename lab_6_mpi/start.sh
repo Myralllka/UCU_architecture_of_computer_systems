@@ -53,7 +53,9 @@ while true; do
     -D      --debug-build           Compile with debug options.
     -d      --debug                 Run executable with debug symbols.
     -i      --image                 Save the images, not only gif, to res/ folder.
+    -t      --time                  Add printing time measurements for each process.
 
+            --hostfile              Allow to start processes throw ssh on the list of hostnames. Require second argument.
     -np     --number_of_processes   Number of processes for mpirun. Require second parameter. 2 by default.
     -f      --file                  Config filename. Require second parameter. ./config.conf by default."
     exit 0

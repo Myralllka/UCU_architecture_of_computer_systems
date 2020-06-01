@@ -9,6 +9,6 @@
 
 //#define DEBUG
 //#define IMG
-//#define TIME
+#define TIME
 
 #endif //MPI_HEAT_TRANSFER_CODE_CONTROLE_H
