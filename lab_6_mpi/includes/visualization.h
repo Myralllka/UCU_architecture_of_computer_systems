@@ -16,7 +16,7 @@
 
 std::vector<size_t> to_rgba(size_t min, size_t max, double value);
 
-void assert_valid_rgba(std::vector<size_t> &rgba);
+void assert_valid_rgba(const std::vector<size_t> &rgba);
 
 void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, GifWriter &gif_w);
 

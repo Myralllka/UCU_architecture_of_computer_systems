@@ -27,8 +27,8 @@ std::vector<size_t> to_rgba(size_t min, size_t max, double value) {
     return rgba;
 }
 
-void assert_valid_rgba(std::vector<size_t> &rgba) {
-    for (size_t i = 0; i < 3; i++)
+void assert_valid_rgba(const std::vector<size_t> &rgba) {
+    for (uint8_t i = 0; i < 3; i++)
         if (rgba[i] > 256)
             // if invalid range was given - invalid RGB value will be calculated
             throw VisualizationException("invalid RGBA generated");
@@ -74,8 +74,8 @@ void write_to_png(const std::string &f_name, const m_matrix<double> &to_vis, Gif
 
     std::vector<size_t> rgba_value;
     std::vector<uint8_t> pix;
-    for (size_t i = 0; i < height; i++) {  // row
-        for (size_t j = 0; j < width; j++) { //column
+    for (int i = 0; i < height; i++) {  // row
+        for (int j = 0; j < width; j++) { //column
             rgba_value = to_rgba(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
             for (size_t k = 0; k < 4; k++) {
 #ifdef IMG

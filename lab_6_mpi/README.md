@@ -34,5 +34,5 @@ Execution ends either after `data_cycles*max_number_of_cycles` iterations, or af
 ### Results
 The results will be in the `res/` folder.
 If it is needed to save each image, use `-i` flag with script.
-### Running on two computers:
+### Running on different computers:
 Future plans. Not at 4a.m. But we tried.

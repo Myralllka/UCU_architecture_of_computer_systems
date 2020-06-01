@@ -4,7 +4,6 @@
 #include <filesystem>
 
 #include "files/config_file.h"
-#include "linear_program.h"
 #include "mpi_program.h"
 #include "speed_tester.h"
 
@@ -17,9 +16,6 @@ int main(int argc, char *argv[]) {
     auto start = get_current_time_fenced();
     ConfigFileOpt config = parse_args(argc, argv);
     assert_valid_config(config);
-    ////////////////////////////////////////////////
-//    m_matrix<double> tmp(config.get_field_filename()); // load matrix
-//    linear_program(tmp, config);
 
     boost::mpi::environment env{argc, argv};
     boost::mpi::communicator world{};
