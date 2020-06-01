@@ -10,7 +10,7 @@
 #include <cassert>
 
 
-inline std::chrono::steady_clock::time_point get_current_time_fenced() {
+[[maybe_unused]] inline std::chrono::steady_clock::time_point get_current_time_fenced() {
     assert(std::chrono::steady_clock::is_steady &&
                    "Timer should be steady (monotonic).");
     std::atomic_thread_fence(std::memory_order_seq_cst);

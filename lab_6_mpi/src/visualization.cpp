@@ -34,7 +34,7 @@ void assert_valid_rgba(std::vector<size_t> &rgba) {
             throw VisualizationException("invalid RGBA generated");
 }
 
-void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, GifWriter &gif_w) {
+void write_to_png(const std::string &f_name, const m_matrix<double> &to_vis, GifWriter &gif_w) {
 #ifdef IMG
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {
@@ -77,7 +77,6 @@ void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, Gif
     for (size_t i = 0; i < height; i++) {  // row
         for (size_t j = 0; j < width; j++) { //column
             rgba_value = to_rgba(0, static_cast<size_t>(max_temp), to_vis.get(i, j));
-
             for (size_t k = 0; k < 4; k++) {
 #ifdef IMG
                 rows_ptr[i][j * 4 + k] = rgba_value[k];

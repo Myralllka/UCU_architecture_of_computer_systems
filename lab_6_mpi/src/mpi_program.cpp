@@ -8,6 +8,7 @@
 #include "code_controle.h"
 #include "speed_tester.h"
 
+#define GIF_DELAY       10
 #define NONE            0
 #define BEGIN_TAG       1                  /* message tag */
 #define UPPER_TAG       2                  /* message tag */
@@ -73,7 +74,7 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
     char name[100];
     size_t counter = 1;
     GifWriter gif_w{};
-    size_t delay = 50;
+    size_t delay = GIF_DELAY;
     auto max_num_of_cycles = config.get_max_number_of_cycles();
     GifBegin(&gif_w, "res/heatmap.gif", main_matrix.get_cols(), main_matrix.get_rows(), delay);
     write_to_png("res/0.png", main_matrix, gif_w);
@@ -95,7 +96,7 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
         write_to_png(name, main_matrix, gif_w);
 #ifdef TIME
         const auto finish_time = get_current_time_fenced();
-        std::cout << "Total: " << to_us(finish_time - start) << std::endl;
+        std::cout << "Time for saving one image: " << to_us(finish_time - start) << std::endl;
 #endif
 
     }
