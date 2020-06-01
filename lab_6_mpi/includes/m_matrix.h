@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 
-#include "code_controle.h"
+#include "code_control.h"
 
 #if defined(ERROR_MSG_ON) || defined(DEBUG)
 

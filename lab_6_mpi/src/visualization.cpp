@@ -3,7 +3,7 @@
 //
 
 #include "visualization.h"
-#include "code_controle.h"
+#include "code_control.h"
 
 std::vector<size_t> to_rgba(size_t min, size_t max, double value) {
     auto f_max = static_cast<double>(max);

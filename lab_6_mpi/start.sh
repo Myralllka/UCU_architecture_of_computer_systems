@@ -81,17 +81,17 @@ mkdir ./res
 python3 field/field_generation.py "$config_filename" || exit 1
 
 # change code control with respect to input flags
-sed -i '/IMG/s/^\/\///g' includes/code_controle.h || exit 1
-sed -i '/DEBUG/s/^\/\///g' includes/code_controle.h || exit 1
-sed -i '/TIME/s/^\/\///g' includes/code_controle.h || exit 1
+sed -i '/IMG/s/^\/\///g' includes/code_control.h || exit 1
+sed -i '/DEBUG/s/^\/\///g' includes/code_control.h || exit 1
+sed -i '/TIME/s/^\/\///g' includes/code_control.h || exit 1
 if [[ "$time_measure" == false ]]; then
-  sed -i '/TIME/s/^/\/\//g' includes/code_controle.h || exit 1
+  sed -i '/TIME/s/^/\/\//g' includes/code_control.h || exit 1
 fi
 if [[ "$image" == false ]]; then
-  sed -i '/IMG/s/^/\/\//g' includes/code_controle.h || exit 1
+  sed -i '/IMG/s/^/\/\//g' includes/code_control.h || exit 1
 fi
 if [[ "$debug" == false ]]; then
-  sed -i '/DEBUG/s/^/\/\//g' includes/code_controle.h || exit 1
+  sed -i '/DEBUG/s/^/\/\//g' includes/code_control.h || exit 1
 fi
 
 if [[ "$debug_build" == true ]]; then

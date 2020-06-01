@@ -5,7 +5,7 @@
 #include "mpi_program.h"
 #include "m_matrix.h"
 #include "visualization.h"
-#include "code_controle.h"
+#include "code_control.h"
 #include "speed_tester.h"
 
 #define GIF_DELAY       10

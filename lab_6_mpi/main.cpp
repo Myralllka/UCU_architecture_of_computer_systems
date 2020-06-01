@@ -6,6 +6,7 @@
 #include "files/config_file.h"
 #include "mpi_program.h"
 #include "speed_tester.h"
+#include "code_control.h"
 
 
 ConfigFileOpt parse_args(int argc, char **argv);
