@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.15)
 project(lab_2_parallel_integration)
 
 set(CMAKE_CXX_STANDARD 17)
-
+#set(CMAKE_CXX_COMPILER g++)
 # PVS Studio
 #include(PVS-Studio.cmake)
 #SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -march=native -Wall -Wextra")
 endif ()
 
 #set(CMAKE_VERBOSE_MAKEFILE ON)

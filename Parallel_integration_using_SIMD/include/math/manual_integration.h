@@ -9,13 +9,10 @@
 #include <cassert>
 #include <thread>
 #include <vector>
-#include <xmmintrin.h>
 #include <immintrin.h>
 
 #include "arguments.h"
 
-#define ALIGNMENT 64
-#define SIZE 4
 
 // steps describe the number of steps for etch x and y separately
 template<typename func_T>
@@ -41,11 +38,7 @@ void simple_integrate(func_T func, integration_args int_ars, double *res) {
     *res = l_res * int_ars.dx * int_ars.dy;
 }
 
-inline static double diag_len(const point &p, const f_params &conf, size_t i) {
-    return (p.x - conf.a1[i]) * (p.x - conf.a1[i]) + (p.y - conf.a2[i]) * (p.y - conf.a2[i]);
-}
-
-void simd_simple_integrate_langermann(const integration_args& int_ars, double *res) {
+void simd_simple_integrate_langermann(const integration_args &int_ars, double *res) {
     double local_result = 0; // local result
     // return zero area if invalid range of integration
     assert(int_ars.end.x > int_ars.start.x
@@ -54,16 +47,31 @@ void simd_simple_integrate_langermann(const integration_args& int_ars, double *r
 
     // point to calculate
     point tmp_point{int_ars.start.x, int_ars.start.y};
-    double diag;
-    double tmp_local_result = 0.0;
+    double tmp_local_result;
+    const __m256d PI = {M_PI, M_PI, M_PI, M_PI};
+    const __m256d int_ars_conf_c = {int_ars.conf.c[0], int_ars.conf.c[1], int_ars.conf.c[2], int_ars.conf.c[3]};
 
     while (tmp_point.y < int_ars.end.y) {
         while (tmp_point.x < int_ars.end.x) {
+            __m256d COORS = {tmp_point.x, tmp_point.y, tmp_point.x, tmp_point.y};
+            __m256d d12 = {int_ars.conf.a1[0], int_ars.conf.a2[0], int_ars.conf.a1[1], int_ars.conf.a2[1]};
+            d12 = _mm256_sub_pd(COORS, d12);
+            d12 = _mm256_mul_pd(d12, d12);
+            __m256d d34 = {int_ars.conf.a1[2], int_ars.conf.a2[2], int_ars.conf.a1[3], int_ars.conf.a2[3]};
+            d34 = _mm256_sub_pd(COORS, d34);
+            d34 = _mm256_mul_pd(d34, d34);
+            d12 = _mm256_hadd_pd(d12, d34);
+            d34 = _mm256_div_pd(__m256d{-d12[0], -d12[2], -d12[1], -d12[3]}, PI);
+            d12 = _mm256_mul_pd(d12, PI);
+            __m256d COS = {cos(d12[0]), cos(d12[2]), cos(d12[1]), cos(d12[3])};
+            d34 = _mm256_mul_pd(_mm256_mul_pd(COS, __m256d{exp(d34[0]), exp(d34[1]), exp(d34[2]), exp(d34[3])}), int_ars_conf_c);
+            tmp_local_result = d34[0] + d34[1] + d34[2] + d34[3];
 
-            for (size_t i = 0; i < int_ars.conf.m; ++i) {
-                diag = diag_len(tmp_point, int_ars.conf, i);
-                tmp_local_result += int_ars.conf.c[i] * exp(-1 / M_PI * diag) * cos(M_PI * diag);
-            }
+            
+            auto diag = std::pow(tmp_point.x - int_ars.conf.a1[4], 2) + std::pow(tmp_point.y - int_ars.conf.a2[4], 2);
+
+            tmp_local_result += int_ars.conf.c[4] * exp(-diag / M_PI) * cos(M_PI * diag);
+
             local_result -= tmp_local_result;
             tmp_point.x += int_ars.dx;
         }
@@ -123,3 +131,5 @@ double integrate(func_T func, size_t steps, const integration_args &int_ars) {
 }
 
 #endif //LAB_2_PARALLEL_INTEGRATION_MANUAL_INTEGRATION_H
+
+#pragma clang diagnostic pop

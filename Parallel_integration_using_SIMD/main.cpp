@@ -6,7 +6,7 @@
 #include "math/manual_integration.h"
 #include "math/langermann_f.h"
 
-#define PRINT_INTERMEDIATE_STEPS
+//#define PRINT_INTERMEDIATE_STEPS
 
 inline static auto get_int_args_from_conf(const ConfigFileOpt &config) {
     return integration_args{
