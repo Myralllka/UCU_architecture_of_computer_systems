@@ -6,6 +6,8 @@
 #include "math/manual_integration.h"
 #include "math/langermann_f.h"
 
+#define PRINT_INTERMEDIATE_STEPS
+
 inline static auto get_int_args_from_conf(const ConfigFileOpt &config) {
     return integration_args{
             point{config.get_x().first, config.get_y().first},
@@ -22,27 +24,8 @@ inline static auto get_int_args_from_conf(const ConfigFileOpt &config) {
 
 
 int main(int argc, char *argv[]) {
-//  ##################### Program Parameter Parsing ######################
-    std::string file_name = "../execution.conf";
-    if (argc == 2) {
-        file_name = argv[1];
-    }
-    if (argc > 2) {
-        std::cerr << "Too many arguments. Usage: \n"
-                     "<program>\n"
-                     "or\n"
-                     "<program> <config-filename>\n" << std::endl;
-        return 1;
-    }
-
-//  #####################    Config File Parsing    ######################
-    ConfigFileOpt config{};
-    try {
-        config.parse(file_name);
-    } catch (std::exception &ex) {
-        std::cerr << "Error: " << ex.what() << std::endl;
-        return 3;
-    }
+    ConfigFileOpt config = parse_args(argc, argv);
+    assert_valid_config(config);
 
 //  #####################   Integration Initiation   ######################
     size_t steps = config.get_init_steps();
@@ -83,8 +66,6 @@ int main(int argc, char *argv[]) {
 
     
 //  #####################   Program Output Block   ######################
-//    std::cout << "Steps: " << steps << std::endl;
-//    std::cout << "Flows: " << config.get_flow_num() << std::endl;
     std::cout << "Result = " << cur_res << std::endl;
     std::cout << "Absolute_error = " << abs_err << std::endl;
     std::cout << "Relative_error = " << rel_err << std::endl;

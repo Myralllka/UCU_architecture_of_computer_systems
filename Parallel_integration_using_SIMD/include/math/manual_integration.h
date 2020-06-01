@@ -9,9 +9,13 @@
 #include <cassert>
 #include <thread>
 #include <vector>
+#include <xmmintrin.h>
+#include <immintrin.h>
 
 #include "arguments.h"
 
+#define ALIGNMENT 64
+#define SIZE 4
 
 // steps describe the number of steps for etch x and y separately
 template<typename func_T>
@@ -37,6 +41,41 @@ void simple_integrate(func_T func, integration_args int_ars, double *res) {
     *res = l_res * int_ars.dx * int_ars.dy;
 }
 
+inline static double diag_len(const point &p, const f_params &conf, size_t i) {
+    return (p.x - conf.a1[i]) * (p.x - conf.a1[i]) + (p.y - conf.a2[i]) * (p.y - conf.a2[i]);
+}
+
+void simd_simple_integrate_langermann(const integration_args& int_ars, double *res) {
+    double local_result = 0; // local result
+    // return zero area if invalid range of integration
+    assert(int_ars.end.x > int_ars.start.x
+           && int_ars.end.y > int_ars.start.y
+           && "invalid integration boundaries in simple integrate");
+
+    // point to calculate
+    point tmp_point{int_ars.start.x, int_ars.start.y};
+    double diag;
+    double tmp_local_result = 0.0;
+
+    while (tmp_point.y < int_ars.end.y) {
+        while (tmp_point.x < int_ars.end.x) {
+
+            for (size_t i = 0; i < int_ars.conf.m; ++i) {
+                diag = diag_len(tmp_point, int_ars.conf, i);
+                tmp_local_result += int_ars.conf.c[i] * exp(-1 / M_PI * diag) * cos(M_PI * diag);
+            }
+            local_result -= tmp_local_result;
+            tmp_point.x += int_ars.dx;
+        }
+        tmp_point.x = int_ars.start.x;
+        tmp_point.y += int_ars.dy;
+    }
+
+    *res = local_result * int_ars.dx * int_ars.dy;
+}
+//                std::cout << r1[0] << " " << r1[1] << " " << r1[2] << " " << r1[3] << std::endl;
+//                std::cout << r2[0] << " " << r2[1] << " " << r2[2] << " " << r2[3] << std::endl;
+
 
 template<typename func_T>
 double integrate(func_T func, size_t steps, const integration_args &int_ars) {
@@ -48,20 +87,14 @@ double integrate(func_T func, size_t steps, const integration_args &int_ars) {
     double res = 0.0;
     integration_args int_arg_template{int_ars};
 
-//    ############# start of rectangular separation ###########
-//    steps = sqrt(steps); // steps per x or y
-//    int_arg_template.dx = (int_ars.end.x - int_ars.start.x) / steps;
-//    int_arg_template.dy = (int_ars.end.y - int_ars.start.y) / steps;
-//    ####################### end #############################
-
-//  dxy - the length of the side of one integration square
     double dxy = sqrt((int_ars.end.x - int_ars.start.x) * (int_ars.end.y - int_ars.start.y) / steps);
     int_arg_template.dx = dxy;
     int_arg_template.dy = dxy;
 
     // one flow case
     if (int_ars.flow_n == 1) {
-        simple_integrate(func, int_arg_template, &res);
+//        simple_integrate(func, int_arg_template, &res);
+        simd_simple_integrate_langermann(int_arg_template, &res);
         return res;
     }
 
@@ -76,16 +109,9 @@ double integrate(func_T func, size_t steps, const integration_args &int_ars) {
     for (uint16_t i = 0; i < int_ars.flow_n; ++i) {
         int_arg_template.start.x = int_ars.start.x + int_arg_template.dx * steps * i;
         int_arg_template.end.x = int_ars.start.x + int_arg_template.dx * steps * (i + 1);
-        v.emplace_back(// create config structure for etch thread
-                simple_integrate<func_T>, func, int_arg_template, &(v_res[i]));
-
-//        simple_integrate(func, int_arg_template, &(v_res[i]));
-//        std::cout << "\nIntegration flow " << i << std::endl;
-//        std::cout << "[" << int_ars.start.x + int_dx * i << ", " << int_ars.start.x + int_dx * (i + 1) << "]" << std::endl;
+//        v.emplace_back(simple_integrate<func_T>, func, int_arg_template, &(v_res[i]));
+        v.emplace_back(simd_simple_integrate_langermann, int_arg_template, &(v_res[i]));
     }
-//    std::cout << "\nSteps " << steps * int_ars.flow_n << std::endl;
-//    std::cout << "============================ Experiment END ============================ " << std::endl;
-
     for (uint16_t i = 0; i < int_ars.flow_n; ++i) {
         v[i].join();
     }

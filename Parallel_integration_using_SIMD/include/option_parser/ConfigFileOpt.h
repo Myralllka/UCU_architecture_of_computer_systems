@@ -18,27 +18,27 @@ public:
 
     void parse(const std::string &file_name);
 
-    double get_abs_pars() const { return abs_pars; }
+    [[nodiscard]] double get_abs_pars() const { return abs_pars; }
 
-    double get_rel_pres() const { return rel_pres; }
+    [[nodiscard]] double get_rel_pres() const { return rel_pres; }
 
-    uint16_t get_flow_num() const { return flow_num; }
+    [[nodiscard]] uint16_t get_flow_num() const { return flow_num; }
 
-    size_t get_init_steps() const { return init_steps; }
+    [[nodiscard]] size_t get_init_steps() const { return init_steps; }
 
-    size_t get_max_steps() const { return max_steps; }
+    [[nodiscard]] size_t get_max_steps() const { return max_steps; }
 
-    size_t get_m() const { return m; }
+    [[nodiscard]] size_t get_m() const { return m; }
 
-    std::vector<double> get_a1() const { return a1; }
+    [[nodiscard]] std::vector<double> get_a1() const { return a1; }
 
-    std::vector<double> get_a2() const { return a2; }
+    [[nodiscard]] std::vector<double> get_a2() const { return a2; }
 
-    std::vector<double> get_c() const { return c; }
+    [[nodiscard]] std::vector<double> get_c() const { return c; }
 
-    std::pair<double, double> get_x() const { return x; }
+    [[nodiscard]] std::pair<double, double> get_x() const { return x; }
 
-    std::pair<double, double> get_y() const { return y; }
+    [[nodiscard]] std::pair<double, double> get_y() const { return y; }
 
 private:
     void init_opt_description();
@@ -60,5 +60,9 @@ private:
     boost::program_options::variables_map var_map{};
 };
 
+
+ConfigFileOpt parse_args(int argc, char **argv);
+
+void assert_valid_config(const ConfigFileOpt &conf);
 
 #endif //LAB_2_PARALLEL_INTEGRATION_CONFIGFILEOPT_H
