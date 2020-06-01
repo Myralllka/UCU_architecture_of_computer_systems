@@ -1,8 +1,8 @@
 #!/bin/bash
 config_filename=config.conf
 number_of_processes=2
-debug=true
-image=true
+debug=false
+image=false
 while true; do
   case $1 in
     -f|--file)
