@@ -35,6 +35,11 @@ while true; do
       optimize_build=true;
       shift
     ;;
+    --hostfile)
+      hostfile=true
+      hostfilename=$2
+      shift 2
+    ;;
     -h|--help)
       echo "Usage: ./start.sh [options]
   Options:
@@ -95,8 +100,12 @@ if [[ "$optimize_build" = true ]]; then
   popd
 fi;
 
-if [[ "$debug" = true ]]; then
-    mpirun --allow-run-as-root -np "$number_of_processes" ./cmake-build-debug/mpi_heat_transfer "$config_filename" || exit 1
+if [[ "$hostfile" = true ]]; then
+  mpirun --allow-run-as-root -np "$number_of_processes" --hostfile "$hostfilename" /home/mpiuser/lab_6_mpi/lab_6_mpi/cmake-build-release/mpi_heat_transfer /home/mpiuser/lab_6_mpi/lab_6_mpi/config.conf || exit 1
 else
-    mpirun --allow-run-as-root -np "$number_of_processes" ./cmake-build-release/mpi_heat_transfer "$config_filename" || exit 1
+  if [[ "$debug" = true ]]; then
+      mpirun --allow-run-as-root -np "$number_of_processes" ./cmake-build-debug/mpi_heat_transfer "$config_filename" || exit 1
+  else
+      mpirun --allow-run-as-root -np "$number_of_processes" ./cmake-build-release/mpi_heat_transfer "$config_filename" || exit 1
+  fi
 fi

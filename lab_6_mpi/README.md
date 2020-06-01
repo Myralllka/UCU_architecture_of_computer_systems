@@ -2,7 +2,6 @@
     Topic: Solving a two-dimensional thermal conductivity problem using MPI
     Task: Write a program that solves the two-dimensional thermal conductivity problem using MPI. As always, the efficient disposal of all available computers is critical.
     Authors: Morhunenko Mykola & Yuriy Pasichnyk & Leno Solomia
-# Usage
 ### Before 
 You have to make correct config file located in the root, coled `config.onf` where `[main]` is the block for simulation and `[field-properties]` is properties for field.
 more info is in comments in config file.
@@ -30,5 +29,5 @@ Possible options:
     -f      --file                  Config filename. Require second parameter. ./config.conf by default.
 ```
 ### Results
-The results are in `res/` folder.
-If it is  needed to save each image, use `-i` flag with script.  
+The results will be in the `res/` folder.
+If it is needed to save each image, use `-i` flag with script.

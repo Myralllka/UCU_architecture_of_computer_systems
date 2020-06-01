@@ -34,7 +34,7 @@ void assert_valid_rgba(std::vector<size_t> &rgba) {
             throw VisualizationException("invalid RGBA generated");
 }
 
-void write_to_png(const std::string &f_name, const m_matrix<double> to_vis, GifWriter &gif_w) {
+void write_to_png(const std::string &f_name, const m_matrix<double>& to_vis, GifWriter &gif_w) {
 #ifdef IMG
     FILE * file_ptr = fopen(f_name.data(), "wb");
     if (!file_ptr) {

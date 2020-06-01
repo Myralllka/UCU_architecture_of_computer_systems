@@ -6,6 +6,7 @@
 #include "m_matrix.h"
 #include "visualization.h"
 #include "code_controle.h"
+#include "speed_tester.h"
 
 #define NONE            0
 #define BEGIN_TAG       1                  /* message tag */
@@ -88,7 +89,15 @@ void master_code(boost::mpi::communicator &world, const ConfigFileOpt &config) {
         std::cout << "SNAPSHOT " << counter << std::endl;
 #endif
         sprintf(name, "res/%zu.png", counter++);
+#ifdef TIME
+        auto start =  get_current_time_fenced();
+#endif
         write_to_png(name, main_matrix, gif_w);
+#ifdef TIME
+        const auto finish_time = get_current_time_fenced();
+        std::cout << "Total: " << to_us(finish_time - start) << std::endl;
+#endif
+
     }
     for (int source = 1; source <= workers_num; source++) {
         world.send(source, ITER_RES_TAG, false);
