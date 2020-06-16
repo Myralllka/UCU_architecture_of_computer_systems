@@ -42,19 +42,21 @@ void simd_simple_integrate_langermann(const integration_args &int_ars, double *r
 
     point tmp_point{int_ars.start.x, int_ars.start.y};
     double tmp_local_result, diag, local_result = 0;
-    __m256d PI = {M_PI, M_PI, M_PI, M_PI}, COS, int_ars_conf_c = {int_ars.conf.c[0], int_ars.conf.c[1],
-                                                                  int_ars.conf.c[2],
-                                                                  int_ars.conf.c[3]}, d34, COORS, d12;
+    __m256d PI = {M_PI, M_PI, M_PI, M_PI},
+            COS, int_ars_conf_c = {int_ars.conf.c[0],
+                                   int_ars.conf.c[1],
+                                   int_ars.conf.c[2],
+                                   int_ars.conf.c[3]}, d34, d12;
 
     while (tmp_point.y < int_ars.end.y) {
         while (tmp_point.x < int_ars.end.x) {
-            COORS = _mm256_set_pd(tmp_point.y, tmp_point.x, tmp_point.y, tmp_point.x);
+            COS = _mm256_set_pd(tmp_point.y, tmp_point.x, tmp_point.y, tmp_point.x);
             d12 = _mm256_set_pd(int_ars.conf.a2[1], int_ars.conf.a1[1], int_ars.conf.a2[0], int_ars.conf.a1[0]);
-            d12 = _mm256_sub_pd(COORS, d12);
+            d12 = _mm256_sub_pd(COS, d12);
             d12 = _mm256_mul_pd(d12, d12);
             d34 = _mm256_set_pd(int_ars.conf.a2[3], int_ars.conf.a1[3], int_ars.conf.a2[2], int_ars.conf.a1[2]);
             diag = std::pow(tmp_point.x - int_ars.conf.a1[4], 2) + std::pow(tmp_point.y - int_ars.conf.a2[4], 2);
-            d34 = _mm256_sub_pd(COORS, d34);
+            d34 = _mm256_sub_pd(COS, d34);
             d34 = _mm256_mul_pd(d34, d34);
             d12 = _mm256_hadd_pd(d12, d34);
             d34 = _mm256_div_pd(__m256d{-d12[0], -d12[2], -d12[1], -d12[3]}, PI);
@@ -72,9 +74,6 @@ void simd_simple_integrate_langermann(const integration_args &int_ars, double *r
     }
     *res = local_result * int_ars.dx * int_ars.dy;
 }
-//                std::cout << r1[0] << " " << r1[1] << " " << r1[2] << " " << r1[3] << std::endl;
-//                std::cout << r2[0] << " " << r2[1] << " " << r2[2] << " " << r2[3] << std::endl;
-
 
 template<typename func_T>
 double integrate(func_T func, size_t steps, const integration_args &int_ars) {
@@ -92,8 +91,8 @@ double integrate(func_T func, size_t steps, const integration_args &int_ars) {
 
     // one flow case
     if (int_ars.flow_n == 1) {
-//        simple_integrate(func, int_arg_template, &res);
-        simd_simple_integrate_langermann(int_arg_template, &res);
+        simple_integrate(func, int_arg_template, &res); // 4708620
+//        simd_simple_integrate_langermann(int_arg_template, &res); // 4622123
         return res;
     }
 
@@ -108,8 +107,8 @@ double integrate(func_T func, size_t steps, const integration_args &int_ars) {
     for (uint16_t i = 0; i < int_ars.flow_n; ++i) {
         int_arg_template.start.x = int_ars.start.x + int_arg_template.dx * steps * i;
         int_arg_template.end.x = int_ars.start.x + int_arg_template.dx * steps * (i + 1);
-//        v.emplace_back(simple_integrate<func_T>, func, int_arg_template, &(v_res[i]));
-        v.emplace_back(simd_simple_integrate_langermann, int_arg_template, &(v_res[i]));
+        v.emplace_back(simple_integrate<func_T>, func, int_arg_template, &(v_res[i]));
+//        v.emplace_back(simd_simple_integrate_langermann, int_arg_template, &(v_res[i]));
     }
     for (uint16_t i = 0; i < int_ars.flow_n; ++i) {
         v[i].join();
@@ -122,5 +121,3 @@ double integrate(func_T func, size_t steps, const integration_args &int_ars) {
 }
 
 #endif //LAB_2_PARALLEL_INTEGRATION_MANUAL_INTEGRATION_H
-
-#pragma clang diagnostic pop

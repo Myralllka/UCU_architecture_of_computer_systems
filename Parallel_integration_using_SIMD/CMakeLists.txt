@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(lab_2_parallel_integration)
 
 set(CMAKE_CXX_STANDARD 17)
-#set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_COMPILER clang++)
 # PVS Studio
 #include(PVS-Studio.cmake)
 #SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)

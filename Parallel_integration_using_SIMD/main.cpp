@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     auto before = get_current_time_fenced();
     double cur_res = integrate(langermann_f, steps, int_args);
 
-    double prev_res = cur_res;
+    double prev_res;
     bool to_continue = true;
     double abs_err = -1; // Just guard value
     double rel_err = -1; // Just guard value
@@ -42,11 +42,9 @@ int main(int argc, char *argv[]) {
 //  #####################   Main Calculation Cycle   ######################
 // #define PRINT_INTERMEDIATE_STEPS
     while (to_continue) {
-
 #ifdef PRINT_INTERMEDIATE_STEPS
         std::cout << cur_res << " : " << steps << " steps" << std::endl;
 #endif
-
         prev_res = cur_res;
         steps *= 2;
         cur_res = integrate(langermann_f, steps, int_args);
@@ -64,7 +62,7 @@ int main(int argc, char *argv[]) {
 
     auto time_to_calculate = get_current_time_fenced() - before;
 
-    
+
 //  #####################   Program Output Block   ######################
     std::cout << "Result = " << cur_res << std::endl;
     std::cout << "Absolute_error = " << abs_err << std::endl;
