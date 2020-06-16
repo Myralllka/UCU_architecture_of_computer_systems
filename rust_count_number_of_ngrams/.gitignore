@@ -1,9 +1,0 @@
-.idea/
-target
-archives/archive2*
-docs/
-target/
-.idea
-res*
-perf*
-Cargo.lock
